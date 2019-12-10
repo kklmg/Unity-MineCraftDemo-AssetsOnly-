@@ -1,0 +1,51 @@
+﻿ public BlockMeshSolid()
+        {
+            m_arrTiles = new Tile[6];
+            BlockSize  Bsize= MonoSingleton<BlockManager>.Instance.m_BlockSize;
+            //MonoSingleton<BlockManager>.Instance
+            
+            m_arrTiles[(int)eDirection.backward] = new Tile();
+            m_arrTiles[(int)eDirection.backward].AddQuad(
+                new Vector3(0, 0, 0),
+                new Vector3(0, Bsize.HEIGHT, 0),
+                new Vector3(Bsize.WIDTH, Bsize.HEIGHT, 0),
+                new Vector3(Bsize.WIDTH, 0, 0));
+
+            m_arrTiles[(int)eDirection.forward] = m_arrTiles[(int)eDirection.backward].Clone();
+            m_arrTiles[(int)eDirection.forward].pyMesh.Translate(Vector3.forward, 1);
+            m_arrTiles[(int)eDirection.forward].pyMesh.reverseFace();
+
+            m_arrTiles[(int)eDirection.left] = m_arrTiles[(int)eDirection.backward].Clone();
+            m_arrTiles[(int)eDirection.left].pyMesh.rotate(new Vector3(0, -90, 0));
+            m_arrTiles[(int)eDirection.left].pyMesh.reverseFace();
+
+            m_arrTiles[(int)eDirection.right] = m_arrTiles[(int)eDirection.left].Clone();
+            m_arrTiles[(int)eDirection.right].pyMesh.Translate(Vector3.right, 1);
+            m_arrTiles[(int)eDirection.right].pyMesh.reverseFace();
+
+            m_arrTiles[(int)eDirection.down] = m_arrTiles[(int)eDirection.backward].Clone();
+            m_arrTiles[(int)eDirection.down].pyMesh.rotate(-90, Vector3.right);
+            m_arrTiles[(int)eDirection.down].pyMesh.reverseFace();
+
+            m_arrTiles[(int)eDirection.up] = m_arrTiles[(int)eDirection.down].Clone();
+            m_arrTiles[(int)eDirection.up].pyMesh.Translate(Vector3.up, 1);
+            m_arrTiles[(int)eDirection.up].pyMesh.reverseFace();
+
+
+            //m_arrTiles[1] = m_arrTiles[0].Clone();
+            //m_arrTiles[1].pyMesh.rotate(Vector3.right, -90);
+            //m_arrTiles[1].pyMesh.reverse();
+
+            //m_arrTiles[2] = m_arrTiles[0].Clone();
+            //m_arrTiles[2].pyMesh.rotate(Vector3.up, -90);
+            //m_arrTiles[2].pyMesh.reverse();
+
+            //m_arrTiles[3] = m_arrTiles[0].Clone();
+            //m_arrTiles[3].pyMesh.Translate(Vector3.back, 1);
+
+            //m_arrTiles[4] = m_arrTiles[1].Clone();
+            //m_arrTiles[4].pyMesh.Translate(Vector3.back, 1);
+
+            //m_arrTiles[5] = m_arrTiles[2].Clone();
+            //m_arrTiles[5].pyMesh.Translate(Vector3.back, 1);
+        }
