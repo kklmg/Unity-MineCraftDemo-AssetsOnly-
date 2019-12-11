@@ -7,26 +7,42 @@ using UnityEngine;
 
 namespace Assets.Scripts.World
 {
-    public class Frame
+    public struct Frame
     {
-        public float left = 0;
-        public float right = 0;
-        public float top = 0;
-        public float bottom = 0;
+        public Frame(float l, float r, float t, float b)
+        {
+            left = l;
+            right = r;
+            top = t;
+            bottom = b;
+        }
+
+        public float left;
+        public float right;
+        public float top;
+        public float bottom;
     }
+
     [CreateAssetMenu(menuName ="TextureSheet")]
     public class TextureSheet : ScriptableObject
     {
-        public Texture2D m_Texture;
+        //Filed---------------------------------------------------
+        [SerializeField]
+        private Texture2D m_Texture;
 
         private int m_nMaxRow;
         private int m_nMaxColumn;
 
         private float m_fCellWidth;
         private float m_fCellHeight;
+
+        //property---------------------------------------------------
         public int MaxRow { get { return m_nMaxRow; } }
         public int MaxColumn { get { return m_nMaxColumn; } }
+        public Texture2D TexSheet { get { return m_Texture; } }
 
+
+        //function-----------------------------------------------------
         public void SetMaxRow(int row)
         {
             m_nMaxRow = row;
@@ -43,7 +59,7 @@ namespace Assets.Scripts.World
             if (row > m_nMaxRow || column > m_nMaxColumn || row<0 || column<0)
             {
                 Debug.Log("overflow");
-                return null;
+                return new Frame();
             }
             
             Frame frame = new Frame();
@@ -54,6 +70,13 @@ namespace Assets.Scripts.World
             frame.right = (column + 1) * m_fCellWidth;
 
             return frame;
+        }
+        public Frame GetCoord(int index)
+        {
+            int row = index / m_nMaxColumn;
+            int column = index % m_nMaxColumn;
+
+            return GetCoord(row, column);
         }
     }
 }

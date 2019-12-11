@@ -11,72 +11,85 @@ namespace Assets.Scripts.World
     [CreateAssetMenu(menuName = "block")]
     public class Block : ScriptableObject
     {
-        public uint blockID;
-        public eDirection edir;
-
-        public bool[] m_IsSolid;
-        public Vector2[] M_TextureRef;
-
+        //Field------------------------------------------
         [SerializeField]
-        private MeshData[] m_MeshDatas;
+        private Tile[] m_Tiles;
 
-        public MeshData GetMesh(int dir)
-        {
-            return m_MeshDatas[dir];
-        }
+        //Unity Function 
         private void Awake()
         {
-            m_IsSolid = new bool[6] { true, true, true, true, true, true };
+            m_Tiles = new Tile[6];
         }
+
+
+        //public Function----------------------------------
+        public MeshData GetMesh(eDirection dir)
+        {
+            return m_Tiles[(int)dir].Mesh;
+        }
+       
        
         public  bool IsSolid(eDirection dir)
         {
-            return m_IsSolid[(int)dir];
+            return m_Tiles[(int)dir].IsSolid;
         }
         public  bool isOverlap(Block blk)
         {
             return true;
         }
 
-        public void ExtractMesh(eDirection dir, MeshData receiver, int x, int y, int z)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="receiver"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="texRef"></param>
+        public void ExtractMesh(eDirection dir, MeshData receiver, int x, int y, int z,TextureSheet texRef)
         {
-            //if ((int)dir > m_MeshDatas.) return;
+            if (m_Tiles[(int)dir].Mesh == null) return;
 
-
-            MeshData mesh = m_MeshDatas[(int)dir].Clone();
+            //make clone
+            MeshData mesh = m_Tiles[(int)dir].Mesh.Clone();
+            
+            //set postion
             mesh.Translate(Vector3.right, x);
             mesh.Translate(Vector3.up, y);
-            mesh.Translate(Vector3.back, z);
+            mesh.Translate(Vector3.forward, z);
 
-            Frame fr = new Frame();
-            fr.left = 0.2f;
-            fr.right = 0.8f;
-            fr.top = 0.2f;
-            fr.bottom = 0.8f;
-
+            //set texture
+            Frame fr = texRef.GetCoord(m_Tiles[(int)dir].TexID);
             mesh.SetUV_quad(fr);
 
+            //save mesh data
             receiver.add(mesh);
         }
 
 
-        public void ExtractMeshAll(MeshData receiver, int x, int y, int z)
+        public void ExtractMeshAll(MeshData receiver, int x, int y, int z, TextureSheet texRef)
         {
-            foreach (MeshData m in m_MeshDatas)
+            foreach (Tile t in m_Tiles)
             {
-                if (m == null) continue;
-                MeshData mesh = m.Clone();
+                if (t.Mesh == null) continue;
+
+                //make clone
+                MeshData mesh = t.Mesh.Clone();
+
+                //set postion
                 mesh.Translate(Vector3.right, x);
                 mesh.Translate(Vector3.up, y);
                 mesh.Translate(Vector3.back, z);
 
+                //set texture
+                Frame fr = texRef.GetCoord(t.TexID);
+                mesh.SetUV_quad(fr);
 
                 receiver.add(mesh);
             }
         }
-
-
-
 
     }
 }

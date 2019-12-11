@@ -31,13 +31,13 @@ namespace Assets.Scripts.World
     class BlockMeshFactory
     {
         private List<BlockMeshBase> m_BlockRef;
-        private TileFactory m_TileFac;
+       // private TileFactory m_TileFac;
 
 
         Dictionary<string, BlockMeshBase> m_HashMap;
         public BlockMeshFactory()
         {
-            m_TileFac = new TileFactory();
+            //m_TileFac = new TileFactory();
             m_BlockRef = new List<BlockMeshBase>(1);
 
             //m_BlockRef[0] = new BlockMesh();

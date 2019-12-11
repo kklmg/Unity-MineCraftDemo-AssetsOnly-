@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: New Texture Sheet
   m_EditorClassIdentifier: Assembly-CSharp:Assets.Scripts.World:TextureSheet
-  m_Texture: {fileID: 2800000, guid: aa93982c5b475f84dbad924549bd88cf, type: 3}
+  m_Texture: {fileID: 2800000, guid: 4d151ac3b0f462e4f8d13d8623606f3b, type: 3}

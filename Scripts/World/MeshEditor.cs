@@ -17,12 +17,12 @@ namespace Assets.Scripts.World
         {
             MeshData meshinfo = target as MeshData;
 
-            if (GUILayout.Button("forward", GUILayout.Width(200)))
+            if (GUILayout.Button("Face to -Z", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
                 meshinfo.AddQuad(new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0), new Vector3(1, 0, 0));
             }
-            if (GUILayout.Button("backward", GUILayout.Width(200)))
+            if (GUILayout.Button("Face to +Z", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
                 meshinfo.AddQuad(new Vector3(1, 0, 1), new Vector3(1, 1, 1), new Vector3(0, 1, 1), new Vector3(0, 0, 1));

@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &390264234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,12 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6b84e4c9e1fe242a63bd1d181e7cd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WIDTH: 9
-  HEIGHT: 9
-  DEPTH: 9
-  blk: {fileID: 11400000, guid: e621df907c0ada04a855806255033394, type: 2}
-  M_refBlocks: []
-  a: -68
+  m_PosWorld: {x: 0, y: 0, z: 0}
 --- !u!33 &390264235
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -178,7 +173,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 2.841, y: -0.15900001, z: -0.019000001}
 --- !u!23 &390264237
 MeshRenderer:
@@ -352,9 +347,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83bfa5ee65429942a9e585c483f0681, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chunk_width: 16
+  chunk_height: 16
+  chunk_depth: 16
+  count_x: 3
+  count_y: 3
+  count_z: 3
   m_listBlocks:
-  - {fileID: 11400000, guid: e621df907c0ada04a855806255033394, type: 2}
-  m_TextureSheet: {fileID: 0}
+  - {fileID: 11400000, guid: 0d12bf33b42703a45b1c3ae57b8587aa, type: 2}
+  m_TextureSheet: {fileID: 11400000, guid: 92a91664cffd8104584400368d1a640e, type: 2}
 --- !u!4 &797304517
 Transform:
   m_ObjectHideFlags: 0
@@ -363,11 +364,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 797304515}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.051762, y: 1.1175833, z: 1.0633707}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -468,7 +469,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &984219972
 Transform:
   m_ObjectHideFlags: 0
@@ -481,7 +482,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &984219973
 MonoBehaviour:
@@ -536,7 +537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MeshFilter: {fileID: 0}
-  m_MeshData: {fileID: 11400000, guid: 854d50091814a11409f9017f7ae572b5, type: 2}
+  m_MeshData: {fileID: 0}
 --- !u!64 &1364723085
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -609,5 +610,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
