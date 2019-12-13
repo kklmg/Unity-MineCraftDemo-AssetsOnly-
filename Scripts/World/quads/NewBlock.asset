@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: NewBlock
   m_EditorClassIdentifier: 
   m_Tiles:
-  - Mesh: {fileID: 11400000, guid: 8f77cbdb5bdccbf44b4122082483092b, type: 2}
-    IsSolid: 1
-    TexID: 0
-  - Mesh: {fileID: 11400000, guid: 1994930edd63cee4c9420afbcc47f3e2, type: 2}
-    IsSolid: 1
-    TexID: 1
-  - Mesh: {fileID: 11400000, guid: a9d8a5f6ba5f8ee469afd03930ebd0c8, type: 2}
-    IsSolid: 1
-    TexID: 2
   - Mesh: {fileID: 11400000, guid: 802d3de5a444a4c45a01b9b2ac4898e2, type: 2}
     IsSolid: 1
+    TexID: 0
+  - Mesh: {fileID: 0}
+    IsSolid: 1
+    TexID: 1
+  - Mesh: {fileID: 0}
+    IsSolid: 1
+    TexID: 2
+  - Mesh: {fileID: 0}
+    IsSolid: 1
     TexID: 3
-  - Mesh: {fileID: 11400000, guid: 7c2b5934d995f874c98fbb06306c5e3d, type: 2}
+  - Mesh: {fileID: 0}
     IsSolid: 1
     TexID: 4
-  - Mesh: {fileID: 11400000, guid: 1ad51083ad941d647a9f8585441b3f52, type: 2}
+  - Mesh: {fileID: 0}
     IsSolid: 1
     TexID: 5

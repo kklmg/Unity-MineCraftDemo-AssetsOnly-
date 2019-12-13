@@ -12,20 +12,24 @@ namespace Assets.Scripts.World
 
         //Chunk Size 
         [SerializeField]
-        private ushort chunk_width = 16;
+        private ushort m_chunk_width = 16;
         [SerializeField]
-        private ushort chunk_height = 16;
+        private ushort m_chunk_height = 16;
         [SerializeField]
-        private ushort chunk_depth = 16;
+        private ushort m_chunk_depth = 16;
 
         //chunk count 
         [SerializeField]
-        private ushort count_x = 2;
+        private ushort m_count_x = 2;
         [SerializeField]
-        private ushort count_y = 1;
+        private ushort m_count_y = 1;
         [SerializeField]
-        private ushort count_z = 1;
+        private ushort m_count_z = 1;
 
+        //terrain size
+        private uint m_TotalWidth;
+        private uint m_TotalDepth;
+        private uint m_TotalHeight;
 
 
 
@@ -37,9 +41,13 @@ namespace Assets.Scripts.World
         private TextureSheet m_TextureSheet;
 
         //Property-------------------------------------------------------
-        public ushort C_WIDTH { get { return chunk_width; } }
-        public ushort C_HEIGHT { get { return chunk_height; } }
-        public ushort C_DEPTH { get { return chunk_depth; } }
+        public ushort C_WIDTH { get { return m_chunk_width; } }
+        public ushort C_HEIGHT { get { return m_chunk_height; } }
+        public ushort C_DEPTH { get { return m_chunk_depth; } }
+
+        public uint TOTAL_WIDTH { get { return m_TotalWidth; } }
+        public uint TOTAL_DEPTH { get { return m_TotalDepth; } }
+        public uint TOTAL_HEIGHT { get { return m_TotalHeight; } }
 
         public List<Block> BlockList { get { return m_listBlocks; } }
         public TextureSheet TexSheet { get { return m_TextureSheet; } }
@@ -47,10 +55,9 @@ namespace Assets.Scripts.World
         //unity function------------------------------------------------
         private void Start()
         {
-            //Debug.Log("World_start");
-            //Debug.Log("----------------------------------------------");
-            //Debug.Log("block list size : "+ m_listBlocks.Count);
-            //Debug.Log("----------------------------------------------");
+            m_TotalWidth = (uint)(m_chunk_width * m_count_x);
+            m_TotalHeight = (uint)(m_chunk_height * m_count_y);
+            m_TotalDepth = (uint)(m_chunk_depth * m_count_z);
 
             InitWorld();
         }
@@ -59,22 +66,22 @@ namespace Assets.Scripts.World
         //Function---------------------------------------------------
         void InitWorld()
         {
-            m_arrChunks = new Chunk[count_x, count_y, count_z];
+            m_arrChunks = new Chunk[m_count_x, m_count_y, m_count_z];
 
             GameObject go;
             int i, j, k;
-            for (i = 0; i < count_x; ++i)
+            for (i = 0; i < m_count_x; ++i)
             {
-                for (j = 0; j < count_y; ++j)
+                for (j = 0; j < m_count_y; ++j)
                 {
-                    for (k = 0; k < count_z; ++k)
+                    for (k = 0; k < m_count_z; ++k)
                     {
                         //Instantiate<GameObject>()
                         go = new GameObject("Chunk" + '[' + i + ']' + '[' + j + ']' + '[' + k + ']');
                         go.AddComponent<Chunk>();
 
                         //set position
-                        go.transform.position = new Vector3(i * chunk_width, j * chunk_height, k * chunk_depth);
+                        go.transform.position = new Vector3(i * m_chunk_width, j * m_chunk_height, k * m_chunk_depth);
                         go.transform.parent = this.transform;
 
                         //save chunk reference
@@ -94,7 +101,7 @@ namespace Assets.Scripts.World
        
         public Chunk GetChunk(int x,int y,int z)
         {
-            if (x > -1 && x < count_x && y > -1 && y < count_y && z > -1 && z < count_z)
+            if (x > -1 && x < m_count_x && y > -1 && y < m_count_y && z > -1 && z < m_count_z)
             {
                 return m_arrChunks[x, y, z];
             }

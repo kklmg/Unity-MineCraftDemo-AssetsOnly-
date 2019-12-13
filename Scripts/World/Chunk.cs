@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Assets.Scripts.SMesh;
+using MyNoise.Perlin;
 
 namespace Assets.Scripts.World
 {
@@ -66,45 +67,8 @@ namespace Assets.Scripts.World
              //make instance of mesh data 
             m_MeshData = ScriptableObject.CreateInstance<MeshData>();
 
-            //Get chunk size
-            int width = m_refWorld.C_WIDTH;
-            int height = m_refWorld.C_HEIGHT;
-            int depth = m_refWorld.C_DEPTH;
-
-
-
-            //Init chunk space
-            m_arrBlockID = new byte[width, height, depth];
-
-            int x, y, z;
-            for (x = 0; x < width; x++)
-            {
-                for (y = 0; y < height; y++)
-                {
-                    for (z = 0; z < depth; z++)
-                    {
-                        //BlockMeshBase mm = new BlockMeshSolid();
-                        //m_arrBlocks[x, y, z] = ScriptableObject.CreateInstance<Block>();
-                        //m_arrBlockID[x, y, z] = 0;
-                        m_arrBlockID[x, y, z] = (byte) Random.Range (0, m_refBlocks.Count);
-
-
-                        //m_arrBlocks[x, y, z].GetMesh().ExtractMeshAll(m_MeshData, x, y, z);
-                        //m_arrBlocks[x, y, z].GetMesh().ExtractMesh(eDirection.forward,m_MeshData,x,y,z);
-                        //m_arrBlocks[x, y, z].GetMesh().ExtractMesh((eDirection)1, m_MeshData, x, y, z);
-                        //m_arrBlocks[x, y, z].GetMesh().ExtractMesh((eDirection)2, m_MeshData, x, y, z);
-                        //m_arrBlocks[x, y, z].GetMesh().ExtractMesh((eDirection)3, m_MeshData, x, y, z);
-                        //m_arrBlocks[x, y, z].GetMesh().ExtractMesh((eDirection)4, m_MeshData, x, y, z);
-                        //m_arrBlocks[x, y, z].GetMesh().ExtractMesh((eDirection)5, m_MeshData, x, y, z);
-                    }
-                }
-            }
-            UpdateChunk();
-
-
-            m_MeshData.ToMeshFilter(m_MeshFilter);
-            //Debug.Log(m_MeshFilter.mesh.);
-            // UpdateChunk();
+            //generate world
+            GenerateWorld();
         }
         private void Update()
         {
@@ -115,10 +79,72 @@ namespace Assets.Scripts.World
 
 
         //function---------------------------------------------------
+        void GenerateWorld()
+        {
+
+            //Init chunk space
+            m_arrBlockID = new byte[m_refWorld.C_WIDTH, m_refWorld.C_HEIGHT, m_refWorld.C_DEPTH];
+
+            //chunk's absolute coordinate range
+            int abs_x_min = WorldPos.x * m_refWorld.C_WIDTH;
+            int abs_y_min = WorldPos.y * m_refWorld.C_HEIGHT;
+            int abs_z_min = WorldPos.z * m_refWorld.C_DEPTH;
+
+            int abs_x_max = abs_x_min + m_refWorld.C_WIDTH;
+            int abs_y_max = abs_y_min + m_refWorld.C_HEIGHT;
+            int abs_z_max = abs_z_min + m_refWorld.C_DEPTH;
+
+            //World's Total size
+            uint t_width = m_refWorld.TOTAL_WIDTH;
+            uint t_depth = m_refWorld.TOTAL_DEPTH;
+            uint t_height = m_refWorld.TOTAL_HEIGHT;
+
+            PerlinNoiseMaker NoiseMaker = new PerlinNoiseMaker();
+
+
+            int x, y, z;
+            for (x = abs_x_min; x < abs_x_max; x++)
+            {
+                //for (y = 0; y < height; y++)
+                //{
+                for (z = abs_z_min; z < abs_z_max; z++)
+                {
+                    //int maxheight = (int)(t_height * Mathf.PerlinNoise((float)(x) / t_width, (float)(z) / t_depth));
+                    int maxheight = (int)(t_height * NoiseMaker.GetNoise_2D(new Vector2((float)(x) / t_width, (float)(z) / t_depth)));
+
+                    //Debug.Log("x : " + x / width);
+                    //Debug.Log("z : " + z / depth);
+                    //Debug.Log("y : " + maxheight);
+
+                    for (y = abs_y_min; y < maxheight; y++)
+                    {
+                        m_arrBlockID[x% m_refWorld.C_WIDTH, y% m_refWorld.C_HEIGHT, z% m_refWorld.C_DEPTH] = 1;
+
+
+                        //BlockMeshBase mm = new BlockMeshSolid();
+                        //m_arrBlocks[x, y, z] = ScriptableObject.CreateInstance<Block>();
+                        //m_arrBlockID[x, y, z] = 1;
+                        //m_arrBlockID[x, y, z] = (byte)Random.Range(0, m_refBlocks.Count);
+                    }
+                }
+                //}
+            }
+            UpdateChunk();
+
+
+            m_MeshData.ToMeshFilter(m_MeshFilter);
+
+
+
+
+        }
+
+
+
         void UpdateChunk()
         {
             //if (isDirtry == false) return;
-
+            
             Block cur, adj;
 
             int width = m_refWorld.C_WIDTH;
