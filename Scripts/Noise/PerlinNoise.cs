@@ -31,9 +31,9 @@ namespace MyNoise.Perlin
     {
         public static int MyHash(int key)
         {
-            const uint BIT_NOISE1 = 0x85297A4D;
-            const uint BIT_NOISE2 = 0x68E31DA4;
-            const uint BIT_NOISE3 = 0x1B56C4E9;
+            const uint BIT_NOISE1 = 0x53567A4D;
+            const uint BIT_NOISE2 = 0x46E71DA4;
+            const uint BIT_NOISE3 = 0x83f12d39;
 
             uint mangled = (uint)key;
             mangled *= BIT_NOISE1;
@@ -73,7 +73,7 @@ namespace MyNoise.Perlin
         public PerlinNoiseMaker()
         {
             //set default fade function
-            m_delFadeFunction = new del_FadeFunction(FadeFunction.Perlin_v0);
+            m_delFadeFunction = new del_FadeFunction(FadeFunction.Perlin_v1);
             //set defatul hash function
             m_delHashFunction = new del_HashFunction(HashFunction.MyHash);
         }
@@ -118,6 +118,31 @@ namespace MyNoise.Perlin
             float lerpBottom = FadeLerp(weight_LB, weight_RB, offset.x);
 
             return FadeLerp(lerpBottom, lerpAbove, offset.y);
+       
+        }
+
+        public float GetNoise_2D(Vector2 point, float frequency, float amplitude)
+        {
+            return GetNoise_2D(new Vector2(point.x * frequency, point.y * frequency)) * amplitude;
+        }
+
+        public float GetOctaveNoise_2D(Vector2 point,float frequency,float amplitude,int octaves=8)
+        {
+            float res = 0;
+            float maxValue = 0;  // Used for normalizing result to 0.0 - 1.0
+
+
+            for (int i = 0; i < octaves; i++)
+            {
+                res += GetNoise_2D(point,frequency,amplitude);
+
+                maxValue += amplitude;//
+
+                amplitude /= 2;
+                frequency *= 2;
+            }
+
+            return res / maxValue;
         }
 
         public float GetNoise_3D(Vector3 point) { return 0; }//XXXXXXXXXXXXXXXXXXXXXX
@@ -139,12 +164,16 @@ namespace MyNoise.Perlin
         //get weight (product of random gradient and the vector)
         private float Grad_2D(int hash, Vector2 p)
         {   
-            switch (hash & 0x3)      //get fandom gradient
+            switch (hash % 8)      //get fandom gradient
             {
-                case 0x0: return p.x + p.y;     //gradient(1,1)   * p => p.x *  1 + p.y *  1 
+                case 0x0: return  p.x + p.y;     //gradient(1,1)   * p => p.x *  1 + p.y *  1 
                 case 0x1: return -p.x + p.y;    //gradient(-1,1)  * p => p.x * -1 + p.y *  1
-                case 0x2: return p.x - p.y;     //gradient(1,-1)  * p => p.x *  1 + p.y * -1
+                case 0x2: return  p.x - p.y;     //gradient(1,-1)  * p => p.x *  1 + p.y * -1
                 case 0x3: return -p.x - p.y;    //gradient(-1,-1) * p => p.x * -1 + p.y * -1
+                case 0x4: return  p.x;    
+                case 0x5: return  p.y;    
+                case 0x6: return -p.x;    
+                case 0x7: return -p.y;  
                 default: return 0;
             }
         }

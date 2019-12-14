@@ -100,17 +100,18 @@ namespace Assets.Scripts.World
             uint t_height = m_refWorld.TOTAL_HEIGHT;
 
             PerlinNoiseMaker NoiseMaker = new PerlinNoiseMaker();
-
+            
 
             int x, y, z;
             for (x = abs_x_min; x < abs_x_max; x++)
-            {
+            {   
                 //for (y = 0; y < height; y++)
                 //{
                 for (z = abs_z_min; z < abs_z_max; z++)
                 {
-                    //int maxheight = (int)(t_height * Mathf.PerlinNoise((float)(x) / t_width, (float)(z) / t_depth));
-                    int maxheight = (int)(t_height * NoiseMaker.GetNoise_2D(new Vector2((float)(x) / t_width, (float)(z) / t_depth)));
+                    int maxheight = (int)(t_height * Mathf.PerlinNoise((float)(x) /13.0f, (float)(z) /13.0f));
+                    //int maxheight = (int)(t_height * NoiseMaker.GetNoise_2D(new Vector2((float)(x) / t_width, (float)(z) / t_depth)));
+                    //int maxheight = (int)(t_height * NoiseMaker.GetOctaveNoise_2D(new Vector2((float)(x) / t_width, (float)(z) / t_depth), 1.0f / t_width, 128.0f, 8));
 
                     //Debug.Log("x : " + x / width);
                     //Debug.Log("z : " + z / depth);
