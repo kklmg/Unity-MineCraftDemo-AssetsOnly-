@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.World
 {
+    [Serializable]
     public struct Frame
     {
         public Frame(float l, float r, float t, float b)
@@ -29,11 +30,14 @@ namespace Assets.Scripts.World
         //Filed---------------------------------------------------
         [SerializeField]
         private Texture2D m_Texture;
-
+        [SerializeField,HideInInspector]
         private int m_nMaxRow;
+        [SerializeField, HideInInspector]
         private int m_nMaxColumn;
 
+        [SerializeField, HideInInspector]
         private float m_fCellWidth;
+        [SerializeField, HideInInspector]
         private float m_fCellHeight;
 
         //property---------------------------------------------------

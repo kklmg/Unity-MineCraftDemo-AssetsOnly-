@@ -14,14 +14,13 @@ namespace Assets.Scripts.World
         TextureSheet m_TextureInfo;
         int m_nRow;
         int m_nColumn;
-        public void Awake()
+        public void OnEnable()
         {
             m_TextureInfo = target as TextureSheet;
-
             m_nRow = m_TextureInfo.MaxRow;
             m_nColumn = m_TextureInfo.MaxColumn;
-            Debug.Log("Texture Editor Awake");
         }
+
         public override void OnInspectorGUI()
         {
             m_nRow = EditorGUILayout.IntSlider(m_nRow, 0, 64);
@@ -39,8 +38,14 @@ namespace Assets.Scripts.World
             GUILayout.Space(20);
 
             base.OnInspectorGUI();
+            serializedObject.ApplyModifiedProperties();
         }
 
+        private void OnDisable()
+        {
+           
+            EditorUtility.SetDirty(target);
+        }
 
     }
 }

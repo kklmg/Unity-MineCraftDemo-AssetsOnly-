@@ -37,7 +37,7 @@ namespace Assets.Scripts.World
         public Vector3Int WorldPos { get { return m_PosWorld; } set { m_PosWorld = value; } }
 
         //unity function-----------------------------------------
-        private void Start()
+        private void Awake()
         {
             //Debug.Log("Chunk_start");
 
@@ -53,7 +53,7 @@ namespace Assets.Scripts.World
             //Debug.Log("----------------------------------------------");
             //Debug.Log("block list size : " + m_refBlocks.Count);
             //Debug.Log("----------------------------------------------");
-            
+
             m_refTexs = m_refWorld.TexSheet;
 
             m_MeshRenderer.materials = new Material[1];
@@ -64,11 +64,20 @@ namespace Assets.Scripts.World
             }
             m_MeshRenderer.materials[0].mainTexture = m_refTexs.TexSheet;
 
-             //make instance of mesh data 
+            //make instance of mesh data 
             m_MeshData = ScriptableObject.CreateInstance<MeshData>();
+            m_MeshData.Reset();
 
             //generate world
             GenerateWorld();
+
+
+        }
+
+        private void Start()
+        {
+            UpdateMesh();
+            m_MeshData.ToMeshFilter(m_MeshFilter);
         }
         private void Update()
         {
@@ -130,19 +139,12 @@ namespace Assets.Scripts.World
                 }
                 //}
             }
-            UpdateChunk();
-
-
-            m_MeshData.ToMeshFilter(m_MeshFilter);
-
-
-
-
+           
         }
 
 
 
-        void UpdateChunk()
+        void UpdateMesh()
         {
             //if (isDirtry == false) return;
             

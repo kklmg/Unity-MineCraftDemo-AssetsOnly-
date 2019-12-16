@@ -78,12 +78,12 @@ namespace Assets.Scripts.World
                     {
                         //Instantiate<GameObject>()
                         go = new GameObject("Chunk" + '[' + i + ']' + '[' + j + ']' + '[' + k + ']');
-                        go.AddComponent<Chunk>();
-
+                     
                         //set position
                         go.transform.position = new Vector3(i * m_chunk_width, j * m_chunk_height, k * m_chunk_depth);
                         go.transform.parent = this.transform;
 
+                        go.AddComponent<Chunk>();
                         //save chunk reference
                         Chunk refChunk = go.GetComponent<Chunk>();
                         m_arrChunks[i, j, k] = refChunk;

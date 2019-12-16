@@ -15,13 +15,6 @@ namespace Assets.Scripts.World
         [SerializeField]
         private Tile[] m_Tiles;
 
-        //Unity Function 
-        private void Awake()
-        {
-            m_Tiles = new Tile[6];
-        }
-
-
         //public Function----------------------------------
         public MeshData GetMesh(eDirection dir)
         {

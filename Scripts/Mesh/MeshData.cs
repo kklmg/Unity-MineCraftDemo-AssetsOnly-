@@ -9,18 +9,15 @@ namespace Assets.Scripts.SMesh
     [CreateAssetMenu(menuName = "MeshData")]
     public class MeshData : ScriptableObject, IClone<MeshData>
     {
-        private void Awake()
-        {
-            Reset();
-        }
-
+        [SerializeField]
         public List<Vector3> _Vertices;    //vertex lsit
+        [SerializeField]
         public List<int> _Indicies;        //index list
+        [SerializeField]
         public List<Vector2> _Texture;     //texture list
 
         public MeshData Clone()
-        {
-            
+        {          
             MeshData clone = CreateInstance<MeshData>();
             clone._Vertices = new List<Vector3>(_Vertices);
             clone._Indicies = new List<int>(_Indicies);

@@ -13,10 +13,18 @@ namespace Assets.Scripts.World
     [CustomEditor(typeof(MeshData))]
     class MeshEditor : Editor
     {
+        private MeshData meshinfo;
+
+        public void OnEnable()
+        {
+            meshinfo = target as MeshData;
+        }
+
         public override void OnInspectorGUI()
         {
-            MeshData meshinfo = target as MeshData;
-
+            
+            serializedObject.ApplyModifiedProperties();
+           
             if (GUILayout.Button("Face to -Z", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
@@ -47,12 +55,17 @@ namespace Assets.Scripts.World
                 //meshinfo.Reset();
                 meshinfo.AddQuad(new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 0, 1));
             }
-
+            
             GUILayout.Space(20);
 
             base.OnInspectorGUI();
+            EditorUtility.SetDirty(meshinfo);
         }
-
-
+        private void OnDisable()
+        {
+            serializedObject.ApplyModifiedProperties();
+            EditorUtility.SetDirty(meshinfo);
+            Debug.Log("diabled");
+        }
     }
 }
