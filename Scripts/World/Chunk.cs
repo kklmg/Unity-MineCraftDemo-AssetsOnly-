@@ -11,7 +11,7 @@ namespace Assets.Scripts.World
     [RequireComponent(typeof(MeshRenderer))]
     [RequireComponent(typeof(MeshCollider))]
 
-    class Chunk : MonoBehaviour
+    public class Chunk : MonoBehaviour
     {
         //Field----------------------------------------
         private MeshData m_MeshData;
@@ -73,7 +73,6 @@ namespace Assets.Scripts.World
 
 
         }
-
         private void Start()
         {
             UpdateMesh();
@@ -119,15 +118,16 @@ namespace Assets.Scripts.World
                 for (z = abs_z_min; z < abs_z_max; z++)
                 {
                     int maxheight = (int)(t_height * Mathf.PerlinNoise((float)(x) /13.0f, (float)(z) /13.0f));
-                    //int maxheight = (int)(t_height * NoiseMaker.GetNoise_2D(new Vector2((float)(x) / t_width, (float)(z) / t_depth)));
+                    //int maxheight = (int)(t_height * NoiseMaker.GetNoise_2D_abs(new Vector2((float)x/13, (float)z/13)));
                     //int maxheight = (int)(t_height * NoiseMaker.GetOctaveNoise_2D(new Vector2((float)(x) / t_width, (float)(z) / t_depth), 1.0f / t_width, 128.0f, 8));
 
                     //Debug.Log("x : " + x / width);
                     //Debug.Log("z : " + z / depth);
                     //Debug.Log("y : " + maxheight);
 
-                    for (y = abs_y_min; y < maxheight; y++)
+                    for (y = abs_y_min; y < abs_y_max; y++)
                     {
+                        if(y < maxheight)
                         m_arrBlockID[x% m_refWorld.C_WIDTH, y% m_refWorld.C_HEIGHT, z% m_refWorld.C_DEPTH] = 1;
 
 
@@ -142,7 +142,50 @@ namespace Assets.Scripts.World
            
         }
 
+        void GenerateWorld(Biome _biome,int x,int y,int z,int[,] HeightMap,IEnumerator<BlockLayer> iter)
+        {      
+            for (x = 0; x < abs_x_max; x++)
+            {
+                for (z = abs_z_min; z < abs_z_max; z++)
+                {
+                    for (y = abs_y_min; y < abs_y_max; y++)
+                    {
+                       
+                        m_arrBlockID[x % m_refWorld.C_WIDTH, y % m_refWorld.C_HEIGHT, z % m_refWorld.C_DEPTH] = 1;
 
+
+     
+                    }
+                }
+                //}
+            }
+
+
+
+
+            //Init chunk space
+            m_arrBlockID = new byte[m_refWorld.C_WIDTH, m_refWorld.C_HEIGHT, m_refWorld.C_DEPTH];
+
+            //chunk's absolute coordinate range
+            int abs_x_min = WorldPos.x * m_refWorld.C_WIDTH;
+            int abs_y_min = WorldPos.y * m_refWorld.C_HEIGHT;
+            int abs_z_min = WorldPos.z * m_refWorld.C_DEPTH;
+
+            int abs_x_max = abs_x_min + m_refWorld.C_WIDTH;
+            int abs_y_max = abs_y_min + m_refWorld.C_HEIGHT;
+            int abs_z_max = abs_z_min + m_refWorld.C_DEPTH;
+
+            //World's Total size
+            uint t_width = m_refWorld.TOTAL_WIDTH;
+            uint t_depth = m_refWorld.TOTAL_DEPTH;
+            uint t_height = m_refWorld.TOTAL_HEIGHT;
+
+            PerlinNoiseMaker NoiseMaker = new PerlinNoiseMaker();
+
+
+          
+
+        }
 
         void UpdateMesh()
         {

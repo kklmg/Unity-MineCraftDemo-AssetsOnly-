@@ -5,12 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using MyNoise.Perlin;
+using Assets.Scripts.Pattern;
 using UnityEditor;
 
 namespace Assets.Scripts.Noise
 {
     class NoiseTester : MonoBehaviour
     {
+        public ObjectPool<Vector3> abc;
+
+
         public GameObject targetprefab;
         private PerlinNoiseMaker m_NoiseMaker;
         private MeshRenderer m_MeshRenderer;
@@ -18,12 +22,16 @@ namespace Assets.Scripts.Noise
         public float m_Frequency = 1.0f;
         public int m_Octaves = 6;
 
-        
+        public List<float> result1;
+        public List<float> result2;
+
 
 
         private void Awake()
         {
             m_NoiseMaker = new PerlinNoiseMaker();
+            result1 = new List<float>();
+            result2 = new List<float>();
         }
 
         private void Start()
@@ -31,18 +39,26 @@ namespace Assets.Scripts.Noise
             m_MeshRenderer = gameObject.GetComponent<MeshRenderer>();
             
 
-            getTexture();
-            //test_1D();
+            //getTexture();
+            test_1D();
             //test_2D();
         }
 
         void test_1D()
         {
-            for (float x = 0.0f; x < 1.0f; x += 0.1f)
+            for (float x = 20.0f; x < 30f; x += 0.1f)
             {
-                float y = Mathf.PerlinNoise(x, 1.0f);
-              
-                Instantiate(targetprefab, new Vector3(x*m_Frequency, y*m_Frequency, 1.0f),Quaternion.Euler(0,180,0));
+                //float y1 = Mathf.PerlinNoise(x + 0.001f, 0.9f);
+                //float y2 = Mathf.PerlinNoise(x + 0.001f, 0.2f);
+
+                //float y1 = m_NoiseMaker.GetNoise_2D(new Vector2(x, 0.9f));
+                float y1 = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x, 0.9f), 1.0f, 128.0f, 4);
+                //float y2 = m_NoiseMaker.GetNoise_2D(new Vector2(x, 0.2f));
+
+                result1.Add(y1);
+                //result2.Add(y2);
+
+                Instantiate(targetprefab, new Vector3(x*10, y1*50, 1.0f),Quaternion.Euler(0,180,0));
             }
 
         }

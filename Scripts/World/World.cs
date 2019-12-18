@@ -3,10 +3,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.World
 {
-    class World : MonoBehaviour
+    public class ChunkColPool : ObjectPool<ChunkColumn>
+    {
+        public ChunkColPool(int size): base(size)
+        {
+
+        }
+
+        void CreateChunkCol(int x,int z)
+        {
+            //base.m_arrObj[0].obj.WorldPos = new Vector2Int(x, z);
+
+
+        }
+   
+
+    }
+
+
+
+
+    public class World : MonoBehaviour
     {
         //Filed-----------------------------------------------
 
@@ -31,12 +52,19 @@ namespace Assets.Scripts.World
         private uint m_TotalDepth;
         private uint m_TotalHeight;
 
+        //spawn position
+        public int x;
+        public int z;
 
+
+
+        [SerializeField]
+        private ObjectPool<ChunkColumn> m_ChunkColumnPool;
 
         [SerializeField]
         private List<Block> m_listBlocks;
-        [SerializeField]
-        private Chunk[,,] m_arrChunks;
+        //[SerializeField]
+        //private Chunk[,,] m_arrChunks;
         [SerializeField]
         private TextureSheet m_TextureSheet;
 
@@ -59,15 +87,15 @@ namespace Assets.Scripts.World
             m_TotalHeight = (uint)(m_chunk_height * m_count_y);
             m_TotalDepth = (uint)(m_chunk_depth * m_count_z);
 
-            InitWorld();
-        }
+            ChunkColumn ck = new ChunkColumn(x, z, this, this.transform);
 
+            //InitWorld();
+        }
+        
 
         //Function---------------------------------------------------
         void InitWorld()
         {
-            m_arrChunks = new Chunk[m_count_x, m_count_y, m_count_z];
-
             GameObject go;
             int i, j, k;
             for (i = 0; i < m_count_x; ++i)
@@ -86,7 +114,7 @@ namespace Assets.Scripts.World
                         go.AddComponent<Chunk>();
                         //save chunk reference
                         Chunk refChunk = go.GetComponent<Chunk>();
-                        m_arrChunks[i, j, k] = refChunk;
+                        //m_arrChunks[i, j, k] = refChunk;
 
                         //set relative position
                         refChunk.WorldPos = new Vector3Int(i, j, k);
@@ -97,15 +125,38 @@ namespace Assets.Scripts.World
             }
         }
 
+        void CreateChunkColumn(int x, int z)
+        {
+            ChunkColumn ck = new ChunkColumn( x, z, this, this.transform);
 
+
+            //Instantiate<GameObject>()
+            //GameObject go = new GameObject("Chunk" + '[' + x + ']' + '[' + z+ ']');
+
+            //set position
+            //go.transform.position = new Vector3(x * m_chunk_width,z * m_chunk_depth);
+            //go.transform.parent = this.transform;
+
+           // m_ChunkColumnPool.
+
+            //ChunkColumn refChunk = go.AddComponent<ChunkColumn>();
+
+            //save chunk reference
+            //m_arrChunks[i, j, k] = refChunk;
+
+            //set relative position
+            //refChunk.WorldPos = new Vector2Int(x,z);
+
+        }
        
         public Chunk GetChunk(int x,int y,int z)
         {
-            if (x > -1 && x < m_count_x && y > -1 && y < m_count_y && z > -1 && z < m_count_z)
-            {
-                return m_arrChunks[x, y, z];
-            }
-            else return null;
+            //if (x > -1 && x < m_count_x && y > -1 && y < m_count_y && z > -1 && z < m_count_z)
+            //{
+            //    return m_arrChunks[x, y, z];
+            //}
+            //else return null;
+            return null;
         }
 
         public Chunk GetChunk(Vector3Int posWorld)

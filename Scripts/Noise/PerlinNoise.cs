@@ -57,8 +57,11 @@ namespace MyNoise.Perlin
     /// <summary>
     /// class perlin noise maker
     /// </summary>
-    class PerlinNoiseMaker : INoiseMaker
+    public class PerlinNoiseMaker : INoiseMaker
     {
+        //Fileld
+        const float NOISE_OFFSET = 0.001f;
+
         //Delegate----------------------------------------------------------------
         private del_FadeFunction m_delFadeFunction;       //Fade Function
         private del_HashFunction m_delHashFunction;       //Hash Function
@@ -66,7 +69,6 @@ namespace MyNoise.Perlin
         //Property----------------------------------------------------------------
         public del_FadeFunction FadeFun {set { m_delFadeFunction = value; } }
         public del_HashFunction HashFun { set { m_delHashFunction = value; } }
-
 
 
         //Constructor----------------------------------------------------------------
@@ -80,8 +82,22 @@ namespace MyNoise.Perlin
 
 
         //Public Function---------------------------------------------------------------
+        /// <summary>
+        /// get a perlin noise 
+        /// </summary>
+        /// <param name="point">2 dimensiol input</param>
+        /// <returns>outout range(0,1)</returns>
         public float GetNoise_2D(Vector2 point)
         {
+            //for avoid integer input
+            point.x += NOISE_OFFSET;
+            point.y += NOISE_OFFSET;
+
+            //Debug.Log("offset " + NOISE_OFFSET);
+
+            //Debug.Log("point x" + point.x);
+            //Debug.Log("point y" + point.y);
+            //Debug.Log("point " + point);
             //       _______________
             //      |               |
             //      |  point        |
@@ -92,10 +108,13 @@ namespace MyNoise.Perlin
 
             //keep interger
             Vector2 p_int = new Vector2((int)point.x, (int)point.y);
+            //Debug.Log("point_int " + p_int);
 
             //offset between  p_int and point: (0.0f,0.0f) ~ (1.0f,1.0f)
             Vector2 offset = point - p_int;
 
+            //Debug.Log("offset :"+ offset.x);
+            //Debug.Log("offset :" + offset.y);
             //vector positon to Lattice  surrounded the point
             Vector2[] verticies = new Vector2[4]
             {
@@ -103,14 +122,23 @@ namespace MyNoise.Perlin
                 new Vector2(p_int.x + 1, p_int.y + 1),  //right_top
                 new Vector2(p_int.x, p_int.y),          //left_bottom
                 new Vector2(p_int.x + 1, p_int.y),      //right_bottom
-
             };
+
+            //Debug.Log("verticies0 :" + verticies[0]);
+            //Debug.Log("verticies1 :" + verticies[1]);
+            //Debug.Log("verticies2 :" + verticies[2]);
+            //Debug.Log("verticies3 :" + verticies[3]);
 
             // weight : product of random gradient and vector(position -> lattice)
             float weight_LT = Grad_2D(Hash_2D(verticies[0]), offset - new Vector2(0.0f, 1.0f));
             float weight_RT = Grad_2D(Hash_2D(verticies[1]), offset - new Vector2(1.0f, 1.0f));
             float weight_LB = Grad_2D(Hash_2D(verticies[2]), offset /*- new Vector2(0.0f, 0.0f)*/);
             float weight_RB = Grad_2D(Hash_2D(verticies[3]), offset - new Vector2(1.0f, 0.0f));
+
+            //Debug.Log("wieght LT" + weight_LT.ToString("F16"));
+            //Debug.Log("wieght RT" + weight_RT.ToString("F16"));
+            //Debug.Log("wieght LB" + weight_LB.ToString("F16"));
+            //Debug.Log("wieght RB" + weight_RB.ToString("F16"));
 
 
             //learp
@@ -121,9 +149,19 @@ namespace MyNoise.Perlin
        
         }
 
+        public float GetNoise_2D_abs(Vector2 point)
+        {
+            return (GetNoise_2D(point) + 1) / 2;
+        }
+
         public float GetNoise_2D(Vector2 point, float frequency, float amplitude)
         {
             return GetNoise_2D(new Vector2(point.x * frequency, point.y * frequency)) * amplitude;
+        }
+
+        public float GetNoise_2D_abs(Vector2 point, float frequency, float amplitude)
+        {
+            return ((GetNoise_2D(new Vector2(point.x * frequency, point.y * frequency))+1)/2) * amplitude;
         }
 
         public float GetOctaveNoise_2D(Vector2 point,float frequency,float amplitude,int octaves=8)
@@ -164,16 +202,12 @@ namespace MyNoise.Perlin
         //get weight (product of random gradient and the vector)
         private float Grad_2D(int hash, Vector2 p)
         {   
-            switch (hash % 8)      //get fandom gradient
+            switch (hash % 4)      //get fandom gradient
             {
                 case 0x0: return  p.x + p.y;     //gradient(1,1)   * p => p.x *  1 + p.y *  1 
                 case 0x1: return -p.x + p.y;    //gradient(-1,1)  * p => p.x * -1 + p.y *  1
                 case 0x2: return  p.x - p.y;     //gradient(1,-1)  * p => p.x *  1 + p.y * -1
                 case 0x3: return -p.x - p.y;    //gradient(-1,-1) * p => p.x * -1 + p.y * -1
-                case 0x4: return  p.x;    
-                case 0x5: return  p.y;    
-                case 0x6: return -p.x;    
-                case 0x7: return -p.y;  
                 default: return 0;
             }
         }

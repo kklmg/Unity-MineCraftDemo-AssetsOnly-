@@ -25,9 +25,9 @@ MonoBehaviour:
   - Mesh: {fileID: 11400000, guid: 802d3de5a444a4c45a01b9b2ac4898e2, type: 2}
     IsSolid: 1
     TexID: 5
-  - Mesh: {fileID: 11400000, guid: a0d4bfdda52094f45ad184c455a5abd2, type: 2}
+  - Mesh: {fileID: 11400000, guid: 8b4879a45d4697c449a6f18af2a9abe6, type: 2}
     IsSolid: 1
     TexID: 6
-  - Mesh: {fileID: 11400000, guid: 8b4879a45d4697c449a6f18af2a9abe6, type: 2}
+  - Mesh: {fileID: 11400000, guid: a0d4bfdda52094f45ad184c455a5abd2, type: 2}
     IsSolid: 1
     TexID: 7
