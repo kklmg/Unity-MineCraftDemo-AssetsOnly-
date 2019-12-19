@@ -232,7 +232,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &390264234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -595,7 +595,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &797304516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -603,7 +603,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 797304515}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b83bfa5ee65429942a9e585c483f0681, type: 3}
   m_Name: 
@@ -614,9 +614,16 @@ MonoBehaviour:
   m_count_x: 1
   m_count_y: 2
   m_count_z: 3
+  x: 0
+  z: 0
+  m_Bimoes:
+  - {fileID: 11400000, guid: a1414901358bc5b4f8984f667a907ebf, type: 2}
   m_listBlocks:
   - {fileID: 0}
   - {fileID: 11400000, guid: 0d12bf33b42703a45b1c3ae57b8587aa, type: 2}
+  - {fileID: 11400000, guid: c8103f1fb2358bc4386ef28271c3b446, type: 2}
+  - {fileID: 11400000, guid: eb10ec92ba4b3b341aa98020cfd905e6, type: 2}
+  - {fileID: 11400000, guid: 0c53ab98a946d144381c985a900a23dd, type: 2}
   m_TextureSheet: {fileID: 11400000, guid: 92a91664cffd8104584400368d1a640e, type: 2}
 --- !u!4 &797304517
 Transform:

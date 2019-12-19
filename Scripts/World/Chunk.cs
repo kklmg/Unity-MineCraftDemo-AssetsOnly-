@@ -21,7 +21,7 @@ namespace Assets.Scripts.World
         private TextureSheet m_refTexs;
 
         [SerializeField]
-        private Vector3Int m_PosWorld;
+        private Vector3Int m_WorldSlot;
 
         [SerializeField]
         private byte[,,] m_arrBlockID;
@@ -34,7 +34,7 @@ namespace Assets.Scripts.World
         //property--------------------------------------
         public bool isDirtry { get; set; }
 
-        public Vector3Int WorldPos { get { return m_PosWorld; } set { m_PosWorld = value; } }
+        public Vector3Int WorldSlot { get { return m_WorldSlot; } set { m_WorldSlot = value; } }
 
         //unity function-----------------------------------------
         private void Awake()
@@ -69,14 +69,14 @@ namespace Assets.Scripts.World
             m_MeshData.Reset();
 
             //generate world
-            GenerateWorld();
+            //GenerateWorld();
 
 
         }
         private void Start()
         {
+            Debug.Log("mesh update");
             UpdateMesh();
-            m_MeshData.ToMeshFilter(m_MeshFilter);
         }
         private void Update()
         {
@@ -87,109 +87,35 @@ namespace Assets.Scripts.World
 
 
         //function---------------------------------------------------
-        void GenerateWorld()
+        public void GenerateChunk(LayerData LayerData, int[,] HeightMap,int abs_y)
         {
+            //add to hash map
+            m_refWorld.RegisterChunk(m_WorldSlot,this);
+
+            ushort width = m_refWorld.C_WIDTH;
+            ushort height = m_refWorld.C_HEIGHT;
+            ushort depth = m_refWorld.C_DEPTH;
 
             //Init chunk space
-            m_arrBlockID = new byte[m_refWorld.C_WIDTH, m_refWorld.C_HEIGHT, m_refWorld.C_DEPTH];
-
-            //chunk's absolute coordinate range
-            int abs_x_min = WorldPos.x * m_refWorld.C_WIDTH;
-            int abs_y_min = WorldPos.y * m_refWorld.C_HEIGHT;
-            int abs_z_min = WorldPos.z * m_refWorld.C_DEPTH;
-
-            int abs_x_max = abs_x_min + m_refWorld.C_WIDTH;
-            int abs_y_max = abs_y_min + m_refWorld.C_HEIGHT;
-            int abs_z_max = abs_z_min + m_refWorld.C_DEPTH;
-
-            //World's Total size
-            uint t_width = m_refWorld.TOTAL_WIDTH;
-            uint t_depth = m_refWorld.TOTAL_DEPTH;
-            uint t_height = m_refWorld.TOTAL_HEIGHT;
-
-            PerlinNoiseMaker NoiseMaker = new PerlinNoiseMaker();
-            
+            m_arrBlockID = new byte[width, height, depth];
 
             int x, y, z;
-            for (x = abs_x_min; x < abs_x_max; x++)
-            {   
-                //for (y = 0; y < height; y++)
-                //{
-                for (z = abs_z_min; z < abs_z_max; z++)
-                {
-                    int maxheight = (int)(t_height * Mathf.PerlinNoise((float)(x) /13.0f, (float)(z) /13.0f));
-                    //int maxheight = (int)(t_height * NoiseMaker.GetNoise_2D_abs(new Vector2((float)x/13, (float)z/13)));
-                    //int maxheight = (int)(t_height * NoiseMaker.GetOctaveNoise_2D(new Vector2((float)(x) / t_width, (float)(z) / t_depth), 1.0f / t_width, 128.0f, 8));
-
-                    //Debug.Log("x : " + x / width);
-                    //Debug.Log("z : " + z / depth);
-                    //Debug.Log("y : " + maxheight);
-
-                    for (y = abs_y_min; y < abs_y_max; y++)
-                    {
-                        if(y < maxheight)
-                        m_arrBlockID[x% m_refWorld.C_WIDTH, y% m_refWorld.C_HEIGHT, z% m_refWorld.C_DEPTH] = 1;
-
-
-                        //BlockMeshBase mm = new BlockMeshSolid();
-                        //m_arrBlocks[x, y, z] = ScriptableObject.CreateInstance<Block>();
-                        //m_arrBlockID[x, y, z] = 1;
-                        //m_arrBlockID[x, y, z] = (byte)Random.Range(0, m_refBlocks.Count);
-                    }
-                }
-                //}
-            }
-           
-        }
-
-        void GenerateWorld(Biome _biome,int x,int y,int z,int[,] HeightMap,IEnumerator<BlockLayer> iter)
-        {      
-            for (x = 0; x < abs_x_max; x++)
+            for (x = 0; x < width; x++)
             {
-                for (z = abs_z_min; z < abs_z_max; z++)
+                for (z = 0; z < depth; z++)
                 {
-                    for (y = abs_y_min; y < abs_y_max; y++)
+                    for (y = 0; y < height; y++)
                     {
-                       
-                        m_arrBlockID[x % m_refWorld.C_WIDTH, y % m_refWorld.C_HEIGHT, z % m_refWorld.C_DEPTH] = 1;
-
-
-     
+                        m_arrBlockID[x, y, z] = LayerData.GetBlockID(y+abs_y, HeightMap[x, z]);
                     }
                 }
-                //}
             }
-
-
-
-
-            //Init chunk space
-            m_arrBlockID = new byte[m_refWorld.C_WIDTH, m_refWorld.C_HEIGHT, m_refWorld.C_DEPTH];
-
-            //chunk's absolute coordinate range
-            int abs_x_min = WorldPos.x * m_refWorld.C_WIDTH;
-            int abs_y_min = WorldPos.y * m_refWorld.C_HEIGHT;
-            int abs_z_min = WorldPos.z * m_refWorld.C_DEPTH;
-
-            int abs_x_max = abs_x_min + m_refWorld.C_WIDTH;
-            int abs_y_max = abs_y_min + m_refWorld.C_HEIGHT;
-            int abs_z_max = abs_z_min + m_refWorld.C_DEPTH;
-
-            //World's Total size
-            uint t_width = m_refWorld.TOTAL_WIDTH;
-            uint t_depth = m_refWorld.TOTAL_DEPTH;
-            uint t_height = m_refWorld.TOTAL_HEIGHT;
-
-            PerlinNoiseMaker NoiseMaker = new PerlinNoiseMaker();
-
-
-          
-
         }
 
-        void UpdateMesh()
+        public void UpdateMesh()
         {
             //if (isDirtry == false) return;
+            m_MeshData.clear();
             
             Block cur, adj;
 
@@ -253,6 +179,7 @@ namespace Assets.Scripts.World
                     }
                 }
             }
+            m_MeshData.ToMeshFilter(m_MeshFilter);
         }
 
 
@@ -319,7 +246,7 @@ namespace Assets.Scripts.World
             else
             {
                 //Get adjacent chunk
-                Chunk adjChunk = m_refWorld.GetChunk(m_PosWorld + offset);
+                Chunk adjChunk = m_refWorld.GetChunk(m_WorldSlot + offset);
 
                 if (adjChunk == null) return null;
 
@@ -327,7 +254,7 @@ namespace Assets.Scripts.World
                 int relative_y = (m_refWorld.C_HEIGHT + offset.y) % m_refWorld.C_HEIGHT;
                 int relative_z = (m_refWorld.C_DEPTH + offset.z) % m_refWorld.C_DEPTH;
 
-                return GetBlock(relative_x, relative_y, relative_z);
+                return adjChunk.GetBlock(relative_x, relative_y, relative_z);
             }
         }
 

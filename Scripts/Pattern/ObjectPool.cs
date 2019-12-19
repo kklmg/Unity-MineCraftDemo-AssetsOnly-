@@ -8,27 +8,30 @@ using System.Runtime.InteropServices;
 
 namespace Assets.Scripts.Pattern
 {
-    public abstract class ObjectPool<T> : MonoBehaviour where T : /*ILifeCycle,*/new()
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct PoolObj<T> where T: new()
     {
-        [StructLayout(LayoutKind.Explicit)]
-        public struct PoolObj
-        {
-            [FieldOffset(0)]
-            public T obj;
-            [FieldOffset(0)]
-            public int NextAvailable;
-        }
+        [FieldOffset(0)]
+        public T obj;
+        [FieldOffset(0)]
+        public int NextAvailable;
+    }
 
-        public PoolObj[] m_arrObj;
+    public abstract class ObjectPool<T> where T : /*ILifeCycle,*/new()
+    {
+       
+        [SerializeField]
+        protected PoolObj<T>[] m_arrObj;
 
-        private readonly int m_nPoolSize;
-        private int m_nFirstAvailable;
-        
-        
-        public ObjectPool(int size)
+        protected readonly int m_nPoolSize;
+        protected int m_nFirstAvailable;
+
+
+        protected ObjectPool(int size)
         {    
             m_nPoolSize = size;          
-            m_arrObj = new PoolObj[m_nPoolSize];
+            m_arrObj = new PoolObj<T>[m_nPoolSize];
 
             m_nFirstAvailable = 0;
             for (int i = 0; i < m_nPoolSize-1; ++i)
@@ -38,14 +41,14 @@ namespace Assets.Scripts.Pattern
             m_arrObj[m_nPoolSize - 1].NextAvailable = -1;
         }
 
-        private bool PutObject()
+        private bool CreateObject()
         {
             if (m_nFirstAvailable == -1) return false;
 
             int NewID = m_nFirstAvailable;
             m_nFirstAvailable = m_arrObj[m_nFirstAvailable].NextAvailable;
 
-            m_arrObj[NewID] = new PoolObj();
+            m_arrObj[NewID] = new PoolObj<T>();
 
             return true;
         }

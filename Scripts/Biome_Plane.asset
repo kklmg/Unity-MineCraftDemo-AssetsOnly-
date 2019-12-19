@@ -10,18 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a861b9406e20da4bba04fd688eafd1e, type: 3}
-  m_Name: New Sob
+  m_Name: Biome_Plane
   m_EditorClassIdentifier: 
-  a: 10
-  b: 20
-  anc:
-  - {x: 1, y: 0, z: 1}
-  - {x: 2, y: 0, z: 2}
-  - {x: 3, y: 0, z: 3}
-  - {x: 4, y: 0, z: 4}
-  - {x: 5, y: 0, z: 5}
-  - {x: 67, y: 0, z: 6}
-  - {x: 7, y: 0, z: 7}
-  - {x: 8, y: 0, z: 8}
-  - {x: 8, y: 0, z: 9}
-  - {x: 9, y: 0, z: 0}
+  m_LayerData:
+    m_Layers:
+    - offset: 10
+      blockID: 1
+    - offset: 20
+      blockID: 2
+    - offset: 30
+      blockID: 3
+    DefaultBlockID: 0
+    baseBlockID: 4
+    baseBlockHeight: 3
+  Offset: 0.1
+  Frequency: 1
+  Amplitude: 100

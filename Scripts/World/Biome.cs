@@ -9,81 +9,97 @@ using MyNoise.Perlin;
 [Serializable]
 public struct BlockLayer :IComparable<BlockLayer>
 {
-    public float proportion;
-    public int weight;
-    public int blockID;
-    private int TotalWeight;
+    [SerializeField]
+    public int offset;
+
+    [SerializeField]
+    public byte blockID;
 
     public int CompareTo(BlockLayer other)
     {
-        return this.proportion < other.proportion ? 1 : -1;
+        return this.offset < other.offset ? 1 : -1;
     }
 }
+
+[Serializable]
+public class LayerData
+{
+    [SerializeField]
+    private List<BlockLayer> m_Layers;
+
+    [SerializeField]
+    private byte DefaultBlockID;
+    [SerializeField]
+    private byte baseBlockID;
+    [SerializeField]
+    private byte baseBlockHeight;
+
+    public void Init()
+    {
+        m_Layers.Sort();
+    }
+
+    public byte GetBlockID(int CurHeight,int MaxHeight)
+    {
+        if (CurHeight > MaxHeight) return 0;
+        if (CurHeight < baseBlockHeight) return baseBlockID;
+
+        foreach (var layer in m_Layers)
+        {
+            if (CurHeight > MaxHeight - layer.offset)
+                return layer.blockID;
+        }
+        return DefaultBlockID;
+    }
+}
+
+
+
 
 [CreateAssetMenu(menuName ="Biome")]
 public class Biome : ScriptableObject
 {
-    public BlockLayer[] Layers;
-    public int[] asdf;
+    [SerializeField]
+    private LayerData m_LayerData;
+
+
+    public int GroundHeight;
     public float Offset;
     public float Frequency;
     public float Amplitude;
 
-    // Start is called before the first frame update
-    public IEnumerator GetLayerIter()
-    {
-        return Layers.GetEnumerator();
-    }
 
     void Start()
     {
-        Layers.GetLowerBound(1);
-        
-        //TotalWeight;
-
-
-
+        m_LayerData.Init();
     }
 
-    public int GetMappedBlockID(float target)
-    {
-        int low = 0;
-        int high = Layers.Length;
-
-        while (low < high)
-        {
-            int mid = low + (high - low) / 2;
-
-            if (target > Layers[mid].proportion)
-                low = mid + 1;
-            else if (target < Layers[mid].proportion) 
-                high = mid - 1;
-            else
-                return mid;
-        }
-        return Layers[low].blockID;  
-    }
     // Update is called once per frame
     void Update()
     {
         
     }
 
-    public int[,] GenerateHeightMap(int x,int z,int width,int depth)
+    public int[,] GenerateHeightMap(int abs_x,int abs_z,int width,int depth)
     {
         PerlinNoiseMaker noisemaker = new PerlinNoiseMaker();
         int[,] heightMap = new int[width, depth];
 
         int i, j;
-        int imax = width + x, jmax = depth + z;
-        for (i = 0; i < imax; ++i)
+        for (i = 0; i < width; ++i)
         {
-            for (j = 0; j < jmax; ++j)
+            for (j = 0; j < depth; ++j)
             {
                 heightMap[i, j] = 
-                    (int)noisemaker.GetNoise_2D_abs(new Vector2((i + x + Offset), j + z + Offset), Frequency, Amplitude);
+                    (int)noisemaker.GetNoise_2D_abs(new Vector2((i + abs_x + Offset), j + abs_z + Offset), Frequency, Amplitude-GroundHeight);
+                heightMap[i, j] += (int)Amplitude - GroundHeight;
             }
         }
         return heightMap;
+    }
+
+    public LayerData getLayerData()
+    {
+        return m_LayerData;
     }
 }

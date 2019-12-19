@@ -7,26 +7,6 @@ using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.World
 {
-    public class ChunkColPool : ObjectPool<ChunkColumn>
-    {
-        public ChunkColPool(int size): base(size)
-        {
-
-        }
-
-        void CreateChunkCol(int x,int z)
-        {
-            //base.m_arrObj[0].obj.WorldPos = new Vector2Int(x, z);
-
-
-        }
-   
-
-    }
-
-
-
-
     public class World : MonoBehaviour
     {
         //Filed-----------------------------------------------
@@ -47,6 +27,10 @@ namespace Assets.Scripts.World
         [SerializeField]
         private ushort m_count_z = 1;
 
+        [SerializeField]
+        private ChunkColPool m_ChunkColPool;
+
+
         //terrain size
         private uint m_TotalWidth;
         private uint m_TotalDepth;
@@ -56,10 +40,12 @@ namespace Assets.Scripts.World
         public int x;
         public int z;
 
-
-
+        //Biomes
         [SerializeField]
-        private ObjectPool<ChunkColumn> m_ChunkColumnPool;
+        private List<Biome> m_Bimoes;
+
+        //[SerializeField]
+        private Dictionary<Vector3Int, Chunk> m_ChunksMap;
 
         [SerializeField]
         private List<Block> m_listBlocks;
@@ -86,9 +72,23 @@ namespace Assets.Scripts.World
             m_TotalWidth = (uint)(m_chunk_width * m_count_x);
             m_TotalHeight = (uint)(m_chunk_height * m_count_y);
             m_TotalDepth = (uint)(m_chunk_depth * m_count_z);
+            Debug.Log("world start");
+            //testing
+            m_ChunksMap = new Dictionary<Vector3Int, Chunk>();
+            m_ChunkColPool = new ChunkColPool(5);
 
-            ChunkColumn ck = new ChunkColumn(x, z, this, this.transform);
+            m_ChunkColPool.CreateChunkCol(x, z, this, this.transform, m_Bimoes[0]);
+            //m_ChunkColPool.CreateChunkCol(x + 1, z + 1, this, this.transform, m_Bimoes[0]);
+            m_ChunkColPool.CreateChunkCol(x, z + 1, this, this.transform, m_Bimoes[0]);
+            //m_ChunkColPool.CreateChunkCol(x + 1, z, this, this.transform, m_Bimoes[0]);
+            //m_ChunkColPool.CreateChunkCol(x + 2, z, this, this.transform, m_Bimoes[0]);
 
+            Debug.Log("chunk created");
+
+            //ChunkColumn ck = new ChunkColumn(x, z, this, this.transform,m_Bimoes[0]);
+            //ChunkColumn cck = new ChunkColumn(x+ m_chunk_width, z+m_chunk_depth, this, this.transform, m_Bimoes[0]);
+            //ChunkColumn ccck = new ChunkColumn(x, z + m_chunk_depth, this, this.transform, m_Bimoes[0]);
+            //ChunkColumn cccck = new ChunkColumn(x + m_chunk_width, z, this, this.transform, m_Bimoes[0]);
             //InitWorld();
         }
         
@@ -117,7 +117,7 @@ namespace Assets.Scripts.World
                         //m_arrChunks[i, j, k] = refChunk;
 
                         //set relative position
-                        refChunk.WorldPos = new Vector3Int(i, j, k);
+                        //refChunk.WorldPos = new Vector3Int(i, j, k);
 
 
                     }
@@ -127,9 +127,9 @@ namespace Assets.Scripts.World
 
         void CreateChunkColumn(int x, int z)
         {
-            ChunkColumn ck = new ChunkColumn( x, z, this, this.transform);
+            ChunkColumn ck = new ChunkColumn( x, z, this, this.transform,m_Bimoes[0]);
 
-
+            
             //Instantiate<GameObject>()
             //GameObject go = new GameObject("Chunk" + '[' + x + ']' + '[' + z+ ']');
 
@@ -137,7 +137,7 @@ namespace Assets.Scripts.World
             //go.transform.position = new Vector3(x * m_chunk_width,z * m_chunk_depth);
             //go.transform.parent = this.transform;
 
-           // m_ChunkColumnPool.
+            // m_ChunkColumnPool.
 
             //ChunkColumn refChunk = go.AddComponent<ChunkColumn>();
 
@@ -147,6 +147,11 @@ namespace Assets.Scripts.World
             //set relative position
             //refChunk.WorldPos = new Vector2Int(x,z);
 
+        }
+
+        public void RegisterChunk(Vector3Int slot,Chunk _chunk)
+        {
+            m_ChunksMap.Add(slot, _chunk);
         }
        
         public Chunk GetChunk(int x,int y,int z)
@@ -159,9 +164,14 @@ namespace Assets.Scripts.World
             return null;
         }
 
-        public Chunk GetChunk(Vector3Int posWorld)
+        public Chunk GetChunk(Vector3Int Slot)
         {
-            return GetChunk(posWorld.x, posWorld.y, posWorld.z);
+            Chunk receiver;
+            if (m_ChunksMap.TryGetValue(Slot, out receiver))
+            {
+                return receiver;
+            }
+            else return null;
         }
     }
 }
