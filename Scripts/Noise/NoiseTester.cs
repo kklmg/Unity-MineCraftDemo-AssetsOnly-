@@ -12,7 +12,7 @@ namespace Assets.Scripts.Noise
 {
     class NoiseTester : MonoBehaviour
     {
-        public ObjectPool<Vector3> abc;
+        //public ObjectPool<Vector3> abc;
 
 
         public GameObject targetprefab;

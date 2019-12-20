@@ -8,71 +8,46 @@ using System.Runtime.InteropServices;
 
 namespace Assets.Scripts.Pattern
 {
-
-    [StructLayout(LayoutKind.Explicit)]
-    public struct PoolObj<T> where T: new()
+    public class Pool<T> where T : new()
     {
-        [FieldOffset(0)]
-        public T obj;
-        [FieldOffset(0)]
-        public int NextAvailable;
-    }
-
-    public abstract class ObjectPool<T> where T : /*ILifeCycle,*/new()
-    {
-       
         [SerializeField]
-        protected PoolObj<T>[] m_arrObj;
+        protected T[] m_Pool;
+
+        private readonly Action<T> m_DelOnSpawn;
+        private readonly Action<T> m_DelOnDeSpawn;
 
         protected readonly int m_nPoolSize;
-        protected int m_nFirstAvailable;
 
+        protected Pool(int size,Action<T> spawn, Action<T> despawn)
+        {
+            m_DelOnSpawn = spawn;
+            m_DelOnDeSpawn = despawn;
+            m_Pool = new T[size];
+        }
 
-        protected ObjectPool(int size)
-        {    
-            m_nPoolSize = size;          
-            m_arrObj = new PoolObj<T>[m_nPoolSize];
+        private T Spawn()
+        {
+            int Length = m_Pool.Length;
 
-            m_nFirstAvailable = 0;
-            for (int i = 0; i < m_nPoolSize-1; ++i)
+            for (int i = 0; i < Length; ++i)
             {
-                m_arrObj[i].NextAvailable = i + 1;
+                if (m_Pool[i] == null)
+                {
+                    m_Pool[i] = new T();
+
+                    m_DelOnSpawn(m_Pool[i]);
+                    return m_Pool[i];
+                }
             }
-            m_arrObj[m_nPoolSize - 1].NextAvailable = -1;
-        }
-
-        private bool CreateObject()
-        {
-            if (m_nFirstAvailable == -1) return false;
-
-            int NewID = m_nFirstAvailable;
-            m_nFirstAvailable = m_arrObj[m_nFirstAvailable].NextAvailable;
-
-            m_arrObj[NewID] = new PoolObj<T>();
-
-            return true;
+            return default(T);
         }
 
 
 
-        private void Update()
-        {
-            //int length = m_arrObj.Length;
-            //for (int i = 0; i < length; ++i)
-            //{
-            //    if (m_arrObj[i].obj.Tick() == false)
-            //    {
-
-            //    }
-            //    else
-            //    {
-
-            //    }
-            //}
-   
-
+        private void DeSpawn()
+        { 
         }
-
+        
     }
 
 }

@@ -11,11 +11,12 @@ namespace Assets.Scripts.World
     [RequireComponent(typeof(MeshRenderer))]
     [RequireComponent(typeof(MeshCollider))]
 
-    public class Chunk : MonoBehaviour
+    public class Section : MonoBehaviour
     {
         //Field----------------------------------------
         private MeshData m_MeshData;
 
+        private Chunk m_refChunk;
         private World m_refWorld;
         private List<Block> m_refBlocks;
         private TextureSheet m_refTexs;
@@ -39,7 +40,7 @@ namespace Assets.Scripts.World
         //unity function-----------------------------------------
         private void Awake()
         {
-            //Debug.Log("Chunk_start");
+            //Debug.Log("Section_start");
 
             //get unity component
             m_MeshFilter = gameObject.GetComponent<MeshFilter>();
@@ -47,14 +48,15 @@ namespace Assets.Scripts.World
             m_Collider = gameObject.GetComponent<MeshCollider>();
 
             //save World reference
-            m_refWorld = GetComponentInParent<World>();
-            m_refBlocks = m_refWorld.BlockList;
+            m_refChunk = GetComponentInParent<Chunk>();
+            m_refWorld = m_refChunk.WorldReference;
+            m_refBlocks = m_refChunk.WorldReference.BlockList;
 
             //Debug.Log("----------------------------------------------");
             //Debug.Log("block list size : " + m_refBlocks.Count);
             //Debug.Log("----------------------------------------------");
 
-            m_refTexs = m_refWorld.TexSheet;
+            m_refTexs = m_refChunk.WorldReference.TexSheet;
 
             m_MeshRenderer.materials = new Material[1];
             m_MeshRenderer.materials[0] = new Material(Shader.Find("Unlit/Texture"));
@@ -87,16 +89,16 @@ namespace Assets.Scripts.World
 
 
         //function---------------------------------------------------
-        public void GenerateChunk(LayerData LayerData, int[,] HeightMap,int abs_y)
+        public void GenerateSection(LayerData LayerData, int[,] HeightMap,int abs_y)
         {
             //add to hash map
-            m_refWorld.RegisterChunk(m_WorldSlot,this);
+            m_refWorld.RegisterSection(m_WorldSlot,this);
 
             ushort width = m_refWorld.C_WIDTH;
             ushort height = m_refWorld.C_HEIGHT;
             ushort depth = m_refWorld.C_DEPTH;
 
-            //Init chunk space
+            //Init Section space
             m_arrBlockID = new byte[width, height, depth];
 
             int x, y, z;
@@ -182,7 +184,14 @@ namespace Assets.Scripts.World
             m_MeshData.ToMeshFilter(m_MeshFilter);
         }
 
-
+        private void OnBecameInvisible()
+        {
+            //gameObject.SetActive(false);
+        }
+        private void OnBecameVisible()
+        {
+            //gameObject.SetActive(true);
+        }
         void GetMesh(int x, int y, int z)
         {
             //Block adj = GetBlock(x, y - 1, z);
@@ -196,7 +205,7 @@ namespace Assets.Scripts.World
             //}
         }
 
-        bool BlockInThisChunk(int x, int y, int z,out Vector3Int offset)
+        bool BlockInThisSection(int x, int y, int z,out Vector3Int offset)
         {
             if (x < 0)
             {
@@ -237,24 +246,25 @@ namespace Assets.Scripts.World
         {
             Vector3Int offset;
 
-            //Case: Target block in this chunk
-            if (BlockInThisChunk(x, y, z, out offset))
+            //Case: Target block in this Section
+            if (BlockInThisSection(x, y, z, out offset))
             {
                 return m_refBlocks[m_arrBlockID[x, y, z]];
             }
-            //Case: Target block out of this chunk
+            //Case: Target block out of this Section
             else
             {
-                //Get adjacent chunk
-                Chunk adjChunk = m_refWorld.GetChunk(m_WorldSlot + offset);
+                //Get adjacent Section
+                Section adjSection = m_refWorld.GetSection(m_WorldSlot + offset);
 
-                if (adjChunk == null) return null;
+                if (adjSection == null) return null;
 
                 int relative_x = (m_refWorld.C_WIDTH + offset.x) % m_refWorld.C_WIDTH;
                 int relative_y = (m_refWorld.C_HEIGHT + offset.y) % m_refWorld.C_HEIGHT;
                 int relative_z = (m_refWorld.C_DEPTH + offset.z) % m_refWorld.C_DEPTH;
 
-                return adjChunk.GetBlock(relative_x, relative_y, relative_z);
+                
+                return adjSection.GetBlock(relative_x, relative_y, relative_z);
             }
         }
 

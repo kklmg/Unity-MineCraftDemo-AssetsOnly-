@@ -60,12 +60,18 @@ public class LayerData
 public class Biome : ScriptableObject
 {
     [SerializeField]
-    private LayerData m_LayerData;
+    public LayerData m_LayerData;
 
-
+    [SerializeField]
     public int GroundHeight;
+
+    [SerializeField]
     public float Offset;
+
+    [SerializeField]
     public float Frequency;
+
+    [SerializeField]
     public float Amplitude;
 
 
@@ -80,10 +86,11 @@ public class Biome : ScriptableObject
         
     }
 
-    public int[,] GenerateHeightMap(int abs_x,int abs_z,int width,int depth)
+    public int[,] GenerateHeightMap(int abs_x,int abs_z,int width,int depth,out int Rec_MaxHeight)
     {
         PerlinNoiseMaker noisemaker = new PerlinNoiseMaker();
         int[,] heightMap = new int[width, depth];
+        int MaxHeight = 0;
 
         int i, j;
         for (i = 0; i < width; ++i)
@@ -93,8 +100,11 @@ public class Biome : ScriptableObject
                 heightMap[i, j] = 
                     (int)noisemaker.GetNoise_2D_abs(new Vector2((i + abs_x + Offset), j + abs_z + Offset), Frequency, Amplitude-GroundHeight);
                 heightMap[i, j] += (int)Amplitude - GroundHeight;
+
+                MaxHeight = Math.Max(MaxHeight, heightMap[i, j]);
             }
         }
+        Rec_MaxHeight = MaxHeight;
         return heightMap;
     }
 
