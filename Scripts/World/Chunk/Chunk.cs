@@ -11,21 +11,22 @@ namespace Assets.Scripts.World
 {
     public class Chunk : MonoBehaviour
     {
-        //Field------------------------------------------------------------------------
-        private World m_refWorld;
-
+        //Field
+        //------------------------------------------------------------------------
         [SerializeField]
         private int m_WorldSlot_x;
         [SerializeField]
         private int m_WorldSlot_z;
         [SerializeField]
-        private int m_Coord_abs_x;
+        private int m_Coord_x;
         [SerializeField]
-        private int m_Coord_abs_z;
+        private int m_Coord_z;
 
-        int m_MaxHeight;
-        Biome m_refBiome;
-        Transform m_Parent;
+
+        private int m_MaxHeight;
+        private Transform m_Parent;
+        private World m_refWorld;
+        private Biome m_refBiome;
 
         [SerializeField]
         int[,] m_arrHeightMap;
@@ -33,8 +34,8 @@ namespace Assets.Scripts.World
         //[SerializeField]
         private Section[] m_arrSections;  //Sections
 
-        //property----------------------------------------------------------------------
-        //public bool isDirtry { get; set; }
+        //property
+        //------------------------------------------------------------------------
 
         //public Vector2Int WorldPos { get { return m_PosWorld; } set { m_PosWorld = value; } }
         public World WorldReference { get { return m_refWorld; } }
@@ -45,51 +46,44 @@ namespace Assets.Scripts.World
         private void Awake()
         {
             m_refWorld = transform.parent.GetComponent<World>();
+            m_arrSections = new Section[m_refWorld.Chunk_Height];
         }
 
-        public void Init(int slot_x, int slot_z, World RefWorld, Transform parent, Biome RefBiome)
+        public void Init(int slot_x, int slot_z, Transform parent, Biome RefBiome)
         {
             m_WorldSlot_x = slot_x;
             m_WorldSlot_z = slot_z;
 
-            m_Coord_abs_x = slot_x * RefWorld.C_WIDTH;
-            m_Coord_abs_z = slot_z * RefWorld.C_DEPTH;
-
-            //m_PosWorld = new Vector2Int(x, z);
-           
-
-            if(m_arrSections == null)
-            m_arrSections = new Section[RefWorld.C_HEIGHT];
+            m_Coord_x = slot_x * m_refWorld.Section_Width;
+            m_Coord_z = slot_z * m_refWorld.Section_Depth;
 
             m_Parent = parent;
             m_refBiome = RefBiome;
 
             m_arrHeightMap = m_refBiome.GenerateHeightMap
-                (m_Coord_abs_x, m_Coord_abs_z, m_refWorld.C_WIDTH, m_refWorld.C_HEIGHT, out m_MaxHeight);
+                (m_Coord_x, m_Coord_z, m_refWorld.Section_Width, m_refWorld.Section_Height, out m_MaxHeight);
 
-            Debug.Log(m_MaxHeight);
             CreateAllSections();
         }
 
         //create instance of Section
         public void CreateSection(int slot_y)
-        {          
-            if (slot_y * m_refWorld.C_HEIGHT > m_MaxHeight) return;
+        {
+            if (slot_y * m_refWorld.Chunk_Height > m_MaxHeight) return;
 
             GameObject NewGo = new GameObject("Section" + '[' + slot_y + ']');
-            NewGo.transform.parent = this.transform;
-
-            NewGo.transform.position = new Vector3(m_Coord_abs_x, slot_y * m_refWorld.C_HEIGHT, m_Coord_abs_z);
+            NewGo.transform.parent = transform;
+            NewGo.transform.position = new Vector3(m_Coord_x, slot_y * m_refWorld.Chunk_Height, m_Coord_z);
 
             m_arrSections[slot_y] = NewGo.AddComponent<Section>();
-            m_arrSections[slot_y].WorldSlot = new Vector3Int(m_WorldSlot_x, slot_y,m_WorldSlot_z);
-            m_arrSections[slot_y].GenerateSection(m_refBiome.getLayerData(), m_arrHeightMap, slot_y * m_refWorld.C_HEIGHT);
+            m_arrSections[slot_y].WorldSlot = new Vector3Int(m_WorldSlot_x, slot_y, m_WorldSlot_z);
+            m_arrSections[slot_y].GenerateSection(m_refBiome.getLayerData(), m_arrHeightMap, slot_y * m_refWorld.Chunk_Height);
         }
-        
+
 
         public void CreateAllSections()
         {
-            for (int i = 0; i < m_refWorld.C_HEIGHT; ++i)
+            for (int i = 0; i < m_refWorld.Chunk_Height; ++i)
             {
                 CreateSection(i);
             }

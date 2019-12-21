@@ -74,7 +74,7 @@ public class Biome : ScriptableObject
     [SerializeField]
     public float Amplitude;
 
-
+  
     void Start()
     {
         m_LayerData.Init();
@@ -97,6 +97,9 @@ public class Biome : ScriptableObject
         {
             for (j = 0; j < depth; ++j)
             {
+                //heightMap[i, j] =(int)( Mathf.PerlinNoise((i + abs_x + Offset)*Frequency, (j + abs_z + Offset)*Frequency) * (Amplitude - GroundHeight));
+                //heightMap[i, j] = (int)(noisemaker.GetNoise_2D_abs(new Vector2((i + abs_x + Offset) * Frequency, (j + abs_z + Offset) * Frequency)) * (Amplitude - GroundHeight));
+
                 heightMap[i, j] = 
                     (int)noisemaker.GetNoise_2D_abs(new Vector2((i + abs_x + Offset), j + abs_z + Offset), Frequency, Amplitude-GroundHeight);
                 heightMap[i, j] += (int)Amplitude - GroundHeight;

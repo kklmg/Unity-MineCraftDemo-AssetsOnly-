@@ -46,13 +46,13 @@ namespace Assets.Scripts.Noise
 
         void test_1D()
         {
-            for (float x = 20.0f; x < 30f; x += 0.1f)
+            for (float x = -10.0f; x < 10f; x += 0.1f)
             {
-                //float y1 = Mathf.PerlinNoise(x + 0.001f, 0.9f);
+                //float y1 = Mathf.PerlinNoise(x + 0.01f, 0.9f);
                 //float y2 = Mathf.PerlinNoise(x + 0.001f, 0.2f);
 
-                //float y1 = m_NoiseMaker.GetNoise_2D(new Vector2(x, 0.9f));
-                float y1 = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x, 0.9f), 1.0f, 128.0f, 4);
+                float y1 = m_NoiseMaker.GetNoise_2D(new Vector2(x+0.01f, 0.1f));
+                //float y1 = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x, 0.9f), 1.0f, 128.0f, 4);
                 //float y2 = m_NoiseMaker.GetNoise_2D(new Vector2(x, 0.2f));
 
                 result1.Add(y1);
@@ -77,8 +77,8 @@ namespace Assets.Scripts.Noise
                 {
                     //float k = Mathf.PerlinNoise((float)i / (float)width, (float)j / (float)height);
                     //float k = m_NoiseMaker.GetNoise_2D(new Vector2(i, j), 1.0f/255, 1.0f);
-                    float k = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(i, j), 1.0f / 255, 128.0f, 8);
-                    Tex.SetPixel(i, j, Color.red*k);
+                    //float k = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(i, j), 1.0f / 255, 128.0f, 8);
+                    //Tex.SetPixel(i, j, Color.red*k);
                     //Debug.Log(Color.white * k);
                 }
             }

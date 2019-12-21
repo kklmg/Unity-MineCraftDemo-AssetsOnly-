@@ -24,6 +24,6 @@ MonoBehaviour:
     baseBlockID: 3
     baseBlockHeight: 3
   GroundHeight: 10
-  Offset: 0.1
-  Frequency: 0.1
-  Amplitude: 25
+  Offset: 0.5
+  Frequency: 0.05
+  Amplitude: 40

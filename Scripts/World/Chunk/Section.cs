@@ -52,10 +52,6 @@ namespace Assets.Scripts.World
             m_refWorld = m_refChunk.WorldReference;
             m_refBlocks = m_refChunk.WorldReference.BlockList;
 
-            //Debug.Log("----------------------------------------------");
-            //Debug.Log("block list size : " + m_refBlocks.Count);
-            //Debug.Log("----------------------------------------------");
-
             m_refTexs = m_refChunk.WorldReference.TexSheet;
 
             m_MeshRenderer.materials = new Material[1];
@@ -71,17 +67,23 @@ namespace Assets.Scripts.World
             m_MeshData.Reset();
 
             //generate world
-            //GenerateWorld();
+            //
 
 
         }
         private void Start()
         {
-            Debug.Log("mesh update");
-            UpdateMesh();
+            //Debug.Log("mesh update");
         }
+
         private void Update()
         {
+            if (isDirtry == true)
+            {
+                UpdateMesh();
+                isDirtry = false;
+            }
+
             //transform.Rotate(Vector3.up, 45 * Time.deltaTime);
             //transform.Rotate(Vector3.right, 45 * Time.deltaTime);
             //transform.Rotate(Vector3.forward, 45 * Time.deltaTime);
@@ -94,9 +96,9 @@ namespace Assets.Scripts.World
             //add to hash map
             m_refWorld.RegisterSection(m_WorldSlot,this);
 
-            ushort width = m_refWorld.C_WIDTH;
-            ushort height = m_refWorld.C_HEIGHT;
-            ushort depth = m_refWorld.C_DEPTH;
+            ushort width = m_refWorld.Section_Width;
+            ushort height = m_refWorld.Section_Height;
+            ushort depth = m_refWorld.Section_Depth;
 
             //Init Section space
             m_arrBlockID = new byte[width, height, depth];
@@ -112,6 +114,7 @@ namespace Assets.Scripts.World
                     }
                 }
             }
+            isDirtry = true;
         }
 
         public void UpdateMesh()
@@ -121,9 +124,9 @@ namespace Assets.Scripts.World
             
             Block cur, adj;
 
-            int width = m_refWorld.C_WIDTH;
-            int height = m_refWorld.C_HEIGHT;
-            int depth = m_refWorld.C_DEPTH;
+            int width = m_refWorld.Section_Width;
+            int height = m_refWorld.Section_Height;
+            int depth = m_refWorld.Section_Depth;
 
             int x, y, z;
             for (x = 0; x < width; x++)
@@ -212,7 +215,7 @@ namespace Assets.Scripts.World
                 offset = Vector3Int.left;
                 return false;
             }
-            if (x >= m_refWorld.C_WIDTH)
+            if (x >= m_refWorld.Section_Width)
             {
                 offset = Vector3Int.right;
                 return false;
@@ -222,7 +225,7 @@ namespace Assets.Scripts.World
                 offset = Vector3Int.down;
                 return false;
             }
-            if (y >= m_refWorld.C_HEIGHT)
+            if (y >= m_refWorld.Section_Height)
             {
                 offset = Vector3Int.up;
                 return false;
@@ -232,7 +235,7 @@ namespace Assets.Scripts.World
                 offset = new Vector3Int(0, 0, -1);
                 return false;
             }
-            if (z >= m_refWorld.C_DEPTH)
+            if (z >= m_refWorld.Section_Depth)
             {
                 offset = new Vector3Int(0, 0, 1);
                 return false;
@@ -248,7 +251,7 @@ namespace Assets.Scripts.World
 
             //Case: Target block in this Section
             if (BlockInThisSection(x, y, z, out offset))
-            {
+            {               
                 return m_refBlocks[m_arrBlockID[x, y, z]];
             }
             //Case: Target block out of this Section
@@ -259,9 +262,9 @@ namespace Assets.Scripts.World
 
                 if (adjSection == null) return null;
 
-                int relative_x = (m_refWorld.C_WIDTH + offset.x) % m_refWorld.C_WIDTH;
-                int relative_y = (m_refWorld.C_HEIGHT + offset.y) % m_refWorld.C_HEIGHT;
-                int relative_z = (m_refWorld.C_DEPTH + offset.z) % m_refWorld.C_DEPTH;
+                int relative_x = (m_refWorld.Section_Width + offset.x) % m_refWorld.Section_Width;
+                int relative_y = (m_refWorld.Section_Height + offset.y) % m_refWorld.Section_Height;
+                int relative_z = (m_refWorld.Section_Depth + offset.z) % m_refWorld.Section_Depth;
 
                 
                 return adjSection.GetBlock(relative_x, relative_y, relative_z);

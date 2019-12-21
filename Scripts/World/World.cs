@@ -1,44 +1,25 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Assets.Scripts.Pattern;
+
 
 namespace Assets.Scripts.World
 {
     public class World : MonoBehaviour
     {
-        //Filed-----------------------------------------------
-
+        //Filed
+        //--------------------------------------------------------------------
         //Section Size 
         [SerializeField]
-        private ushort m_Section_width = 16;
+        private ushort m_Section_Width = 16;
         [SerializeField]
-        private ushort m_Section_height = 16;
+        private ushort m_Section_Height = 16;
         [SerializeField]
-        private ushort m_Section_depth = 16;
+        private ushort m_Section_Depth = 16;
 
-        //chunk count 
+        //chunk Height 
         [SerializeField]
-        private ushort m_count_x = 2;
-        [SerializeField]
-        private ushort m_count_y = 1;
-        [SerializeField]
-        private ushort m_count_z = 1;
+        private ushort m_Chunk_Height = 16;
 
-        [SerializeField]
-        private ChunkPool m_ChunkPool;
-
-
-        //terrain size
-        private uint m_TotalWidth;
-        private uint m_TotalDepth;
-        private uint m_TotalHeight;
-
-        //spawn position
-        public int x;
-        public int z;
 
         //Biomes
         [SerializeField]
@@ -55,59 +36,48 @@ namespace Assets.Scripts.World
 
         public Transform player;
 
-        //Property-------------------------------------------------------
-        public ushort C_WIDTH { get { return m_Section_width; } }
-        public ushort C_HEIGHT { get { return m_Section_height; } }
-        public ushort C_DEPTH { get { return m_Section_depth; } }
-
-        public uint TOTAL_WIDTH { get { return m_TotalWidth; } }
-        public uint TOTAL_DEPTH { get { return m_TotalDepth; } }
-        public uint TOTAL_HEIGHT { get { return m_TotalHeight; } }
+        //Property
+        //--------------------------------------------------------------------
+        public ushort Section_Width { get { return m_Section_Width; } }
+        public ushort Section_Height { get { return m_Section_Height; } }
+        public ushort Section_Depth { get { return m_Section_Depth; } }
+        public ushort Chunk_Height { get { return m_Chunk_Height; } }
 
         public List<Block> BlockList { get { return m_listBlocks; } }
         public TextureSheet TexSheet { get { return m_TextureSheet; } }
+        public List<Biome> Biomes { get { return m_Bimoes; } } 
 
-        public Vector3Int CoordToSlot(Vector3 pos)
-        {
-            return new Vector3Int((int)pos.x / m_Section_width, (int)pos.y / m_Section_height, (int)pos.z / m_Section_depth);
-        }
 
-        //unity function------------------------------------------------
+        //unity function
+        //--------------------------------------------------------------------
         private void Awake()
         {
-            m_TotalWidth = (uint)(m_Section_width * m_count_x);
-            m_TotalHeight = (uint)(m_Section_height * m_count_y);
-            m_TotalDepth = (uint)(m_Section_depth * m_count_z);
-            //Debug.Log("world start");
-
-            //testing
             m_SectionMap = new Dictionary<Vector3Int, Section>();
-            m_ChunkPool = new ChunkPool(9);
         }
-        
 
-        //Function---------------------------------------------------
-        public void CreateChunk(int x, int z)
+
+        //Public Function
+        //--------------------------------------------------------------------
+        public Vector3Int CoordToSlot(Vector3 pos)
         {
-            m_ChunkPool.Spawn(x, z, this, this.transform, m_Bimoes[0]);
-            Debug.Log("chunk Created");
+            return new Vector3Int(
+                (int)pos.x / m_Section_Width,
+                (int)pos.y / m_Section_Height,
+                (int)pos.z / m_Section_Depth);
+        }
+        public Vector3 SlotToCoord(Vector3Int pos)
+        {
+            return new Vector3(
+                (int)pos.x * m_Section_Width,
+                (int)pos.y * m_Section_Height,
+                (int)pos.z * m_Section_Depth);
         }
 
         public void RegisterSection(Vector3Int slot,Section _section)
         {
             m_SectionMap.Add(slot, _section);
         }
-       
-        public Section GetSection(int x,int y,int z)
-        {
-            //if (x > -1 && x < m_count_x && y > -1 && y < m_count_y && z > -1 && z < m_count_z)
-            //{
-            //    return m_arrChunks[x, y, z];
-            //}
-            //else return null;
-            return null;
-        }
-
+      
         public Section GetSection(Vector3Int Slot)
         {
             Section receiver;

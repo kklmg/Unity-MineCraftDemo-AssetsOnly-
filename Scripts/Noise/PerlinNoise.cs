@@ -107,14 +107,14 @@ namespace MyNoise.Perlin
             //    p_int
 
             //keep interger
-            Vector2 p_int = new Vector2((int)point.x, (int)point.y);
-            //Debug.Log("point_int " + p_int);
+            Vector2 p_int;
+
+            p_int.x = point.x >= 0 ? (int)point.x : (int)point.x - 1;
+            p_int.y = point.y >= 0 ? (int)point.y : (int)point.y - 1;
 
             //offset between  p_int and point: (0.0f,0.0f) ~ (1.0f,1.0f)
             Vector2 offset = point - p_int;
 
-            //Debug.Log("offset :"+ offset.x);
-            //Debug.Log("offset :" + offset.y);
             //vector positon to Lattice  surrounded the point
             Vector2[] verticies = new Vector2[4]
             {
@@ -189,7 +189,9 @@ namespace MyNoise.Perlin
         //Private Function----------------------------------------------------------------
         private int Hash_2D(Vector2 vertex)
         {
-            return m_delHashFunction((int)vertex.x)/2 + m_delHashFunction((int)vertex.y)/2;
+            return m_delHashFunction(((int)(vertex.x) << 8) + (int)(vertex.y));
+
+            //return m_delHashFunction((int)vertex.x) + m_delHashFunction((int)vertex.y);
         }
 
         private int Hash_3D(Vector3 vertex)

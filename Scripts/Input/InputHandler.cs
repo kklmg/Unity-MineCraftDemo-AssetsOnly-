@@ -24,7 +24,6 @@ namespace Assets.Scripts.InputHandler
     }
     public class InputHandler : MonoBehaviour
     {
-        public Transform Camera;
         public float Horizontol;
         public float Vertical;
         public float Mouse_Horizontol;

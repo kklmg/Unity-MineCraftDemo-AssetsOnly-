@@ -6,17 +6,22 @@ using Assets.Scripts.World;
 
 
 
-[RequireComponent(typeof(Camera))]
+//[RequireComponent(typeof(Camera))]
 public class Player : MonoBehaviour
 {
+    [SerializeField][Range(1,5)]
+    private byte m_ViewDistance;
+
     private Camera m_Camera;
-    public Vector3Int m_worldSlot;
-    public World m_World;
+    public Vector3Int m_WorldSlot;
+    public World m_RefWorld;
+
+    public Vector3Int WorldSlot { get { return m_WorldSlot; } }
+    public byte ViewDistance { get { return m_ViewDistance; } }
+
 
     private void Awake()
     {
-        m_worldSlot = m_World.CoordToSlot(transform.position);
-
         Debug.Log("Awake is called!");
         m_Camera = GetComponent<Camera>();
     }
@@ -27,15 +32,10 @@ public class Player : MonoBehaviour
         Debug.Log("Start is called!");
     }
 
+
     // Update is called once per frame
     void Update()
     {
-        Vector3Int slot = m_World.CoordToSlot(transform.position);
-
-        if (slot != m_worldSlot)
-        {
-            m_worldSlot = slot;
-            m_World.CreateChunk(slot.x, slot.z);
-        }
+        m_WorldSlot = m_RefWorld.CoordToSlot(transform.position);
     }
 }
