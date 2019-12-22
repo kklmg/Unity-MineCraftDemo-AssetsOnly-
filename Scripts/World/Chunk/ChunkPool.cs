@@ -55,7 +55,7 @@ namespace Assets.Scripts.World
             {
                 GameObject Go = new GameObject("Chunk" + "[" + slot_x + "]" + "[" + slot_z + "]");
                 Go.transform.SetParent(transform);
-                Go.transform.transform.position = m_RefWorld.SlotToCoord(new Vector3Int(slot_x,0,slot_z));
+                Go.transform.transform.position = m_RefWorld.SectionSlotToCoord(new Vector3Int(slot_x,0,slot_z));
                 
                 _Chunk = Go.AddComponent<Chunk>();
                 _Chunk.Init(slot_x, slot_z, this.transform, m_RefWorld.Biomes[0]);
@@ -68,18 +68,18 @@ namespace Assets.Scripts.World
         }
         private void CreateChunkInView()
         {
-            Vector3Int CurSlot = m_RefPlayer.WorldSlot;
+            Vector3Int CurSlot = m_RefPlayer.PlayerSlot;
             if (m_PreSlot == CurSlot) return;
         
             byte PlayerView = m_RefPlayer.ViewDistance;
 
-            int i, j;
+            int left, bottom;
             Spawn(CurSlot.x, CurSlot.z);
-            for (i = CurSlot.x - PlayerView; i < PlayerView*2; ++i)
+            for (left = CurSlot.x - PlayerView; left < CurSlot.x+PlayerView ; ++left)
             {
-                for (j = CurSlot.y - PlayerView; j < PlayerView*2; ++j)
+                for (bottom = CurSlot.z - PlayerView; bottom < CurSlot.z+PlayerView; ++bottom)
                 {
-                    Spawn(CurSlot.x + i, CurSlot.z + j);                    
+                    Spawn(left, bottom);                    
                 }
             }
             m_PreSlot = CurSlot;

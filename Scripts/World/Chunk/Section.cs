@@ -81,12 +81,30 @@ namespace Assets.Scripts.World
             if (isDirtry == true)
             {
                 UpdateMesh();
+
+                //update adjacent Sections
+                Section adjSection;
+                //up
+                adjSection = m_refWorld.GetSection(m_WorldSlot + Vector3Int.up);
+                if (adjSection != null) adjSection.UpdateMesh();
+                //down
+                adjSection = m_refWorld.GetSection(m_WorldSlot + Vector3Int.down);
+                if (adjSection != null) adjSection.UpdateMesh();
+                //left
+                adjSection = m_refWorld.GetSection(m_WorldSlot + Vector3Int.left);
+                if (adjSection != null) adjSection.UpdateMesh();
+                //right
+                adjSection = m_refWorld.GetSection(m_WorldSlot + Vector3Int.right);
+                if (adjSection != null) adjSection.UpdateMesh();
+                //front
+                adjSection = m_refWorld.GetSection(m_WorldSlot +  new Vector3Int(0,0,1));
+                if (adjSection != null) adjSection.UpdateMesh();
+                //back
+                adjSection = m_refWorld.GetSection(m_WorldSlot + new Vector3Int(0, 0,-1));
+                if (adjSection != null) adjSection.UpdateMesh();
+
                 isDirtry = false;
             }
-
-            //transform.Rotate(Vector3.up, 45 * Time.deltaTime);
-            //transform.Rotate(Vector3.right, 45 * Time.deltaTime);
-            //transform.Rotate(Vector3.forward, 45 * Time.deltaTime);
         }
 
 
@@ -266,7 +284,6 @@ namespace Assets.Scripts.World
                 int relative_y = (m_refWorld.Section_Height + offset.y) % m_refWorld.Section_Height;
                 int relative_z = (m_refWorld.Section_Depth + offset.z) % m_refWorld.Section_Depth;
 
-                
                 return adjSection.GetBlock(relative_x, relative_y, relative_z);
             }
         }

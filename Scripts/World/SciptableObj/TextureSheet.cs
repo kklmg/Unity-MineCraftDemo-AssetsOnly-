@@ -68,9 +68,9 @@ namespace Assets.Scripts.World
             
             Frame frame = new Frame();
 
-            frame.top = row * m_fCellHeight;
-            frame.left =  column * m_fCellWidth;
-            frame.bottom = (row + 1) * m_fCellHeight;
+            frame.top = (m_nMaxRow - row) * m_fCellHeight;
+            frame.left = column * m_fCellWidth;
+            frame.bottom = (m_nMaxRow - row - 1) * m_fCellHeight;
             frame.right = (column + 1) * m_fCellWidth;
 
             return frame;

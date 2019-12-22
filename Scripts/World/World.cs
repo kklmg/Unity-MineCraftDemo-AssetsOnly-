@@ -58,14 +58,14 @@ namespace Assets.Scripts.World
 
         //Public Function
         //--------------------------------------------------------------------
-        public Vector3Int CoordToSlot(Vector3 pos)
+        public Vector3Int CoordToSectionSlot(Vector3 pos)
         {
             return new Vector3Int(
                 (int)pos.x / m_Section_Width,
                 (int)pos.y / m_Section_Height,
                 (int)pos.z / m_Section_Depth);
         }
-        public Vector3 SlotToCoord(Vector3Int pos)
+        public Vector3 SectionSlotToCoord(Vector3Int pos)
         {
             return new Vector3(
                 (int)pos.x * m_Section_Width,
@@ -73,11 +73,35 @@ namespace Assets.Scripts.World
                 (int)pos.z * m_Section_Depth);
         }
 
-        public void RegisterSection(Vector3Int slot,Section _section)
+        //public Vector3 CoordBlockSlot()
+        //{
+
+
+
+        //}
+
+
+
+
+        public void RegisterSection(Vector3Int SectionSlot,Section _section)
         {
-            m_SectionMap.Add(slot, _section);
+            m_SectionMap.Add(SectionSlot, _section);
         }
-      
+
+        public Block GetBlock(Vector3Int WorldPostion)
+        {
+            Section tempSec = GetSection(CoordToSectionSlot(WorldPostion));
+
+            WorldPostion = new Vector3Int(
+                WorldPostion.x % m_Section_Width,
+                WorldPostion.y % m_Section_Height,
+                WorldPostion.z % m_Section_Depth);
+
+            if (tempSec != null)
+                return tempSec.GetBlock(WorldPostion.x, WorldPostion.y, WorldPostion.z);
+            else return null;
+        }
+
         public Section GetSection(Vector3Int Slot)
         {
             Section receiver;

@@ -14,16 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LayerData:
     m_Layers:
-    - offset: 10
+    - offset: 1
       blockID: 1
-    - offset: 20
+    - offset: 5
       blockID: 2
-    - offset: 30
-      blockID: 3
-    DefaultBlockID: 1
-    baseBlockID: 3
+    DefaultBlockID: 3
+    baseBlockID: 4
     baseBlockHeight: 3
   GroundHeight: 10
   Offset: 0.5
-  Frequency: 0.05
+  Frequency: 0.15
   Amplitude: 40

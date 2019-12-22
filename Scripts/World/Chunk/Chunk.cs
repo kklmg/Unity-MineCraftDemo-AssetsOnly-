@@ -24,6 +24,7 @@ namespace Assets.Scripts.World
 
 
         private int m_MaxHeight;
+        private int m_MinHeight;
         private Transform m_Parent;
         private World m_refWorld;
         private Biome m_refBiome;
@@ -61,7 +62,8 @@ namespace Assets.Scripts.World
             m_refBiome = RefBiome;
 
             m_arrHeightMap = m_refBiome.GenerateHeightMap
-                (m_Coord_x, m_Coord_z, m_refWorld.Section_Width, m_refWorld.Section_Height, out m_MaxHeight);
+                (m_Coord_x, m_Coord_z, m_refWorld.Section_Width, m_refWorld.Section_Height,
+                out m_MaxHeight,out m_MinHeight);
 
             CreateAllSections();
         }
@@ -69,7 +71,10 @@ namespace Assets.Scripts.World
         //create instance of Section
         public void CreateSection(int slot_y)
         {
-            if (slot_y * m_refWorld.Chunk_Height > m_MaxHeight) return;
+            int sec_minHeight = slot_y * m_refWorld.Chunk_Height;
+
+            if (sec_minHeight > m_MaxHeight) return;
+            if (sec_minHeight + m_refWorld.Chunk_Height < m_MinHeight) return;
 
             GameObject NewGo = new GameObject("Section" + '[' + slot_y + ']');
             NewGo.transform.parent = transform;

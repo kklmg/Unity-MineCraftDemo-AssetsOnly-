@@ -9,7 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 171db21026f4a4c4dab8f2afc9b01732, type: 3}
-  m_Name: Block_Wood
+  m_Script: {fileID: 11500000, guid: 5ca0e229a368f6c4a8a74071b7072d99, type: 3}
+  m_Name: MineCraftTex
   m_EditorClassIdentifier: 
-  m_Tiles: []
+  m_Texture: {fileID: 2800000, guid: adc478e5c29fe9e4e9ddc256918d5479, type: 3}
+  m_nMaxRow: 16
+  m_nMaxColumn: 16
+  m_fCellWidth: 0.0625
+  m_fCellHeight: 0.0625

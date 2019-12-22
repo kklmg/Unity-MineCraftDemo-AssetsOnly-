@@ -86,11 +86,13 @@ public class Biome : ScriptableObject
         
     }
 
-    public int[,] GenerateHeightMap(int abs_x,int abs_z,int width,int depth,out int Rec_MaxHeight)
+    public int[,] GenerateHeightMap(int abs_x,int abs_z,int width,int depth,
+        out int Out_MaxHeight,out int Out_MinHeight)
     {
         PerlinNoiseMaker noisemaker = new PerlinNoiseMaker();
         int[,] heightMap = new int[width, depth];
         int MaxHeight = 0;
+        int MinHeight = (int)Amplitude;
 
         int i, j;
         for (i = 0; i < width; ++i)
@@ -102,12 +104,14 @@ public class Biome : ScriptableObject
 
                 heightMap[i, j] = 
                     (int)noisemaker.GetNoise_2D_abs(new Vector2((i + abs_x + Offset), j + abs_z + Offset), Frequency, Amplitude-GroundHeight);
-                heightMap[i, j] += (int)Amplitude - GroundHeight;
+                heightMap[i, j] += GroundHeight;
 
                 MaxHeight = Math.Max(MaxHeight, heightMap[i, j]);
+                MinHeight = Math.Min(MinHeight, heightMap[i, j]);
             }
         }
-        Rec_MaxHeight = MaxHeight;
+        Out_MaxHeight = MaxHeight;
+        Out_MinHeight = MinHeight;
         return heightMap;
     }
 

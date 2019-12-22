@@ -37,15 +37,15 @@ namespace Assets.Scripts.InputHandler
             Mouse_Horizontol = Input.GetAxis("Mouse X");
             Mouse_Vertical = Input.GetAxis("Mouse Y");
            
-            dir = new Vector3(Horizontol, 0, Vertical);
-            dir.Normalize();
+            dir = new Vector3(Horizontol, 0, Vertical);            
             Vector3 rotation = new Vector3(0, transform.eulerAngles.y, 0);
             dir = Quaternion.Euler(rotation) * dir;
+            dir.Normalize(); 
             //Camera.Rotate(Vector3.up * Mouse_Horizontol);
             //Camera.Rotate(Vector3.right * -Mouse_Vertical);
-
+            transform.Rotate(Vector3.right * -Mouse_Vertical);
             transform.Rotate(Vector3.up * Mouse_Horizontol);
-            //transform.Rotate(Vector3.right * -Mouse_Vertical);
+           
             transform.transform.position += dir * velocity * Time.deltaTime;
         }
     }
