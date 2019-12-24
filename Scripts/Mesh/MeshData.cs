@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Interface;
-using Assets.Scripts.World;
+using Assets.Scripts.WorldComponent;
 
 namespace Assets.Scripts.SMesh
 {

@@ -8,7 +8,7 @@ using Assets.Scripts.SMesh;
 using Assets.Scripts.Pattern;
 
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     public enum eDirection { up, down, left, right, forward, backward };
 

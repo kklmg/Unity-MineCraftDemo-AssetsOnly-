@@ -7,7 +7,7 @@ using UnityEngine;
 using Assets.Scripts.Pattern;
 
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     [Serializable]
     public class BlockSize

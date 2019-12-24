@@ -15,6 +15,8 @@ namespace Assets.Scripts.InputHandler
         public const string JUMP = "Jump";
         public const string SWITCH = "Switch";
         public const string RUN = "Run";
+        public const string MOUSE_HORIZONTAL = "Mouse X";
+        public const string MOUSE_VERTICAL = "Mouse Y";
     }
 
     public interface IMoveHandler
@@ -22,31 +24,6 @@ namespace Assets.Scripts.InputHandler
 
 
     }
-    public class InputHandler : MonoBehaviour
-    {
-        public float Horizontol;
-        public float Vertical;
-        public float Mouse_Horizontol;
-        public float Mouse_Vertical;
-        public int velocity = 1;
-        public Vector3 dir;
-        private void Update()
-        {          
-            Horizontol = Input.GetAxis("Horizontal");
-            Vertical = Input.GetAxis("Vertical");
-            Mouse_Horizontol = Input.GetAxis("Mouse X");
-            Mouse_Vertical = Input.GetAxis("Mouse Y");
-           
-            dir = new Vector3(Horizontol, 0, Vertical);            
-            Vector3 rotation = new Vector3(0, transform.eulerAngles.y, 0);
-            dir = Quaternion.Euler(rotation) * dir;
-            dir.Normalize(); 
-            //Camera.Rotate(Vector3.up * Mouse_Horizontol);
-            //Camera.Rotate(Vector3.right * -Mouse_Vertical);
-            transform.Rotate(Vector3.right * -Mouse_Vertical);
-            transform.Rotate(Vector3.up * Mouse_Horizontol);
-           
-            transform.transform.position += dir * velocity * Time.deltaTime;
-        }
-    }
+    
+    
 }

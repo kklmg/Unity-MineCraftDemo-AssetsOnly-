@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Assets.Scripts.SMesh;
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     [CreateAssetMenu(menuName = "block")]
     public class Block : ScriptableObject

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     [CustomEditor(typeof(TextureSheet))]
     class TextureSheetEditor : Editor

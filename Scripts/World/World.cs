@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     public class World : MonoBehaviour
     {
@@ -73,6 +73,20 @@ namespace Assets.Scripts.World
                 (int)pos.z * m_Section_Depth);
         }
 
+        public Block GetBlock(Vector3 Coord)
+        {
+            Vector3Int SectionSlot = CoordToSectionSlot(Coord);
+            Section section = GetSection(SectionSlot);
+
+            if (section == null) return null;
+            
+            return section.GetBlock(
+                (int)Coord.x % m_Section_Width, 
+                (int)Coord.y % m_Section_Height, 
+                (int)Coord.z % m_Section_Depth);
+        }
+
+
         //public Vector3 CoordBlockSlot()
         //{
 
@@ -88,19 +102,6 @@ namespace Assets.Scripts.World
             m_SectionMap.Add(SectionSlot, _section);
         }
 
-        public Block GetBlock(Vector3Int WorldPostion)
-        {
-            Section tempSec = GetSection(CoordToSectionSlot(WorldPostion));
-
-            WorldPostion = new Vector3Int(
-                WorldPostion.x % m_Section_Width,
-                WorldPostion.y % m_Section_Height,
-                WorldPostion.z % m_Section_Depth);
-
-            if (tempSec != null)
-                return tempSec.GetBlock(WorldPostion.x, WorldPostion.y, WorldPostion.z);
-            else return null;
-        }
 
         public Section GetSection(Vector3Int Slot)
         {

@@ -4,7 +4,7 @@ using UnityEditor;
 
 using Assets.Scripts.SMesh;
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     [Serializable]
     struct Tile

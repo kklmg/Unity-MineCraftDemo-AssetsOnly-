@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using Assets.Scripts.Pattern;
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     [RequireComponent(typeof(World))]
     public class ChunkPool : MonoBehaviour

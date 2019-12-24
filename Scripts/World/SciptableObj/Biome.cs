@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Assets.Scripts.World;
+using Assets.Scripts.WorldComponent;
 using MyNoise.Perlin;
 
 

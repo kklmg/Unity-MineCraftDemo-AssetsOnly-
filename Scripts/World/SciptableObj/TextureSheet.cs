@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     [Serializable]
     public struct Frame

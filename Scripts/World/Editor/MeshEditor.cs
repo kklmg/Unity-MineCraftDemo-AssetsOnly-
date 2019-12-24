@@ -8,7 +8,7 @@ using UnityEditor;
 using Assets.Scripts.SMesh;
 
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     [CustomEditor(typeof(MeshData))]
     class MeshEditor : Editor

@@ -7,7 +7,7 @@ using UnityEngine;
 using Assets.Scripts.Noise;
 using MyNoise.Perlin;
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     public class Chunk : MonoBehaviour
     {
@@ -81,7 +81,7 @@ namespace Assets.Scripts.World
             NewGo.transform.position = new Vector3(m_Coord_x, slot_y * m_refWorld.Chunk_Height, m_Coord_z);
 
             m_arrSections[slot_y] = NewGo.AddComponent<Section>();
-            m_arrSections[slot_y].WorldSlot = new Vector3Int(m_WorldSlot_x, slot_y, m_WorldSlot_z);
+            m_arrSections[slot_y].SectionSlot = new Vector3Int(m_WorldSlot_x, slot_y, m_WorldSlot_z);
             m_arrSections[slot_y].GenerateSection(m_refBiome.getLayerData(), m_arrHeightMap, slot_y * m_refWorld.Chunk_Height);
         }
 

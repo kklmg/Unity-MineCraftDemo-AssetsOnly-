@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Assets.Scripts.Interface;
 
-namespace Assets.Scripts.World
+namespace Assets.Scripts.WorldComponent
 {
     public abstract class FactoryBase<T> where T : IClone<T>
     {
