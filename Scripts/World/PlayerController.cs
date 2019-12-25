@@ -61,33 +61,33 @@ namespace Assets.Scripts.WorldComponent
         /// </summary>
         private void FixedUpdate()
         {
-            if (m_JumpRequest)
-            {
-                m_VerticalMomentum = m_JumpForce;
-                m_isGrounded = false;
-                m_JumpRequest = false;
-            }
+            //if (m_JumpRequest)
+            //{
+            //    m_VerticalMomentum = m_JumpForce;
+            //    m_isGrounded = false;
+            //    m_JumpRequest = false;
+            //}
 
-            //Compute velocity
-            m_Velocity = ((transform.forward * m_Vertical) + (transform.right * m_Horizontol) )
-                * Time.fixedDeltaTime * m_refPlayer.WalkSpeed;
+            ////Compute velocity
+            //m_Velocity = ((transform.forward * m_Vertical) + (transform.right * m_Horizontol) )
+            //    * Time.fixedDeltaTime * m_refPlayer.WalkSpeed;
 
-            //Apply vertical momentum 
-            //m_Velocity += Vector3.up * m_VerticalMomentum * Time.fixedDeltaTime;
-
-
-
-            if ((m_Velocity.z > 0 && Front()) || (m_Velocity.z < 0 && Back()))
-                m_Velocity.z = 0;
-            if ((m_Velocity.x > 0 && Right()) || (m_Velocity.x < 0 && Left()))
-                m_Velocity.x = 0;
+            ////Apply vertical momentum 
+            ////m_Velocity += Vector3.up * m_VerticalMomentum * Time.fixedDeltaTime;
 
 
-            if (!Down())
-            {
-                m_Velocity.y = -1;
-                //m_isGrounded = true;
-            }
+
+            //if ((m_Velocity.z > 0 && Front()) || (m_Velocity.z < 0 && Back()))
+            //    m_Velocity.z = 0;
+            //if ((m_Velocity.x > 0 && Right()) || (m_Velocity.x < 0 && Left()))
+            //    m_Velocity.x = 0;
+
+
+            //if (!Down())
+            //{
+            //    m_Velocity.y = -1;
+            //    //m_isGrounded = true;
+            //}
              
             //Vector3 rotation = new Vector3(0, transform.eulerAngles.y, 0);
             //dir = Quaternion.Euler(rotation) * dir;
@@ -105,41 +105,5 @@ namespace Assets.Scripts.WorldComponent
             transform.Translate(m_Velocity, Space.World);
         }
 
-        public bool Front()
-        {
-            Block target = m_refWorld.GetBlock(transform.position + Vector3.forward);
-            if (target == null) return false;
-            return target.IsSolid(eDirection.backward);
-        }
-        public bool Back()
-        {
-            Block target = m_refWorld.GetBlock(transform.position + Vector3.back);
-            if (target == null) return false;
-            return target.IsSolid(eDirection.forward);
-        }
-        public bool Left()
-        {
-            Block target = m_refWorld.GetBlock(transform.position + Vector3.left);
-            if (target == null) return false;
-            return target.IsSolid(eDirection.right);
-        }
-        public bool Right()
-        {
-            Block target = m_refWorld.GetBlock(transform.position + Vector3.right);
-            if (target == null) return false;
-            return target.IsSolid(eDirection.left);
-        }
-        public bool Up()
-        {
-            Block target = m_refWorld.GetBlock(transform.position + Vector3.up);
-            if (target == null) return false;
-            return target.IsSolid(eDirection.down);
-        }
-        public bool Down()
-        {
-            Block target = m_refWorld.GetBlock(transform.position + Vector3.down);
-            if (target == null) return false;
-            return target.IsSolid(eDirection.up);
-        }
     }
 }

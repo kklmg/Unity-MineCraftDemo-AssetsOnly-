@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.WorldComponent
 {
-    public class World : MonoBehaviour
+    public class World : MonoSingleton<World>
     {
         //Filed
         //--------------------------------------------------------------------
@@ -19,7 +20,6 @@ namespace Assets.Scripts.WorldComponent
         //chunk Height 
         [SerializeField]
         private ushort m_Chunk_Height = 16;
-
 
         //Biomes
         [SerializeField]
