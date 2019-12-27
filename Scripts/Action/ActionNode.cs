@@ -14,10 +14,10 @@ namespace Assets.Scripts.Action
             m_Trans = trans;
         }
 
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
             m_Trans.Translate(Vector3.up);
-            return eNodeState.Suceed;
+            return eRunningState.Suceed;
         }
     }
 }

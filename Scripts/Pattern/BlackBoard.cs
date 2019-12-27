@@ -24,8 +24,7 @@ namespace Assets.Scripts.Pattern
             else
             {
                 m_Items[key] = value;
-            }
-            
+            }          
         }
         public bool GetValue<T>(string key, out T outData)
         {

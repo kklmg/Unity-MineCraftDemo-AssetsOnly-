@@ -224,7 +224,6 @@ GameObject:
   - component: {fileID: 88312329}
   - component: {fileID: 88312328}
   - component: {fileID: 88312327}
-  - component: {fileID: 88312326}
   m_Layer: 0
   m_Name: i am a cube
   m_TagString: Untagged
@@ -232,18 +231,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &88312326
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 88312325}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bd4ffe2ac766e8409dc0007235aa865, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &88312327
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -332,7 +319,7 @@ GameObject:
   - component: {fileID: 366383134}
   - component: {fileID: 366383141}
   - component: {fileID: 366383140}
-  - component: {fileID: 366383135}
+  - component: {fileID: 366383142}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -353,34 +340,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ViewDistance: 3
+  m_Camera: {fileID: 963194228}
   m_PlayerSlot: {x: 0, y: 0, z: 0}
   m_refWorld: {fileID: 797304516}
   m_Gravity: 1
   m_WalkSpeed: 10
-  m_RunSpeed: 2
---- !u!114 &366383135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 366383133}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6be3bc7fb27aba418af601df1fbfbff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Camera: {fileID: 963194228}
-  m_refPlayer: {fileID: 0}
-  m_refWorld: {fileID: 0}
-  m_Horizontol: 0
-  m_Vertical: 0
-  m_Mouse_Horizontol: 0
-  m_Mouse_Vertical: 0
-  m_Velocity: {x: 0, y: 0, z: 0}
-  m_isGrounded: 0
-  m_JumpForce: 5
-  m_JumpRequest: 0
+  m_RunSpeed: 10
 --- !u!65 &366383136
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -485,6 +450,18 @@ MonoBehaviour:
   m_CurSection: {fileID: 0}
   m_CurSectionSlot: {x: 0, y: 0, z: 0}
   m_CurBlockSlot: {x: 0, y: 0, z: 0}
+--- !u!114 &366383142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366383133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bd4ffe2ac766e8409dc0007235aa865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &390264233
 GameObject:
   m_ObjectHideFlags: 0
@@ -647,6 +624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ViewDistance: 0
+  m_Camera: {fileID: 0}
   m_PlayerSlot: {x: 0, y: 0, z: 0}
   m_refWorld: {fileID: 0}
   m_Gravity: 1
@@ -841,7 +819,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 1, y: 0, z: 0, w: 1.49e-43}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0

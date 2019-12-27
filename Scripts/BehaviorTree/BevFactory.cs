@@ -7,6 +7,7 @@ namespace Assets.Scripts.BehaviorTree
 {
     class BevFactory : Singleton<BevFactory>
     {
+        //just test.....
         public BevNodeBase MakePlayerInputBehavior(Transform trans)
         {           
             BevSequence root = new BevSequence();

@@ -19,12 +19,12 @@ namespace Assets.Scripts.BehaviorTree
     [CreateAssetMenu(menuName = "Bev/Repeator")]
     class BevRepeator : BevDecorator
     {
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
-            eNodeState res;
-            res = m_Child.Evaluate();
+            eRunningState res;
+            res = m_Child.Evaluate(workData);
 
-            if (res == eNodeState.Completed) res = eNodeState.Ready;
+            if (res == eRunningState.Completed) res = eRunningState.Ready;
             return res;
         }
     };
@@ -33,12 +33,12 @@ namespace Assets.Scripts.BehaviorTree
     [CreateAssetMenu(menuName = "Bev/Reverser")]
     class BevReverser : BevDecorator
     {
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
-            eNodeState res;
+            eRunningState res;
 
-            res = m_Child.Evaluate();
-            res = res == eNodeState.Suceed ? eNodeState.Failed : eNodeState.Suceed;
+            res = m_Child.Evaluate(workData);
+            res = res == eRunningState.Suceed ? eRunningState.Failed : eRunningState.Suceed;
 
             return res;
         }

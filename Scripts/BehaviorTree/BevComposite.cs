@@ -28,15 +28,17 @@ namespace Assets.Scripts.BehaviorTree
     [CreateAssetMenu(menuName = "Bev/Sequence")]
     class BevSequence : BevComposite
     {
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
-            eNodeState res;
+            eRunningState res;
             foreach (var node in m_listNodes)
             {
-                res = node.Evaluate();
-                if (res == eNodeState.Running || res == eNodeState.Failed) return eNodeState.Failed;
+                res = node.Evaluate(workData);
+                //Debug.Log(res);
+                if (res == eRunningState.Running || res == eRunningState.Failed) return eRunningState.Failed;
             }
-            return eNodeState.Failed;
+           
+            return eRunningState.Failed;
         }
     };
 
@@ -44,15 +46,15 @@ namespace Assets.Scripts.BehaviorTree
     [CreateAssetMenu(menuName = "Bev/Selector")]
     class BevSelector : BevComposite
     {
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
-            eNodeState res;
+            eRunningState res;
             foreach (var node in m_listNodes)
             {
-                res = node.Evaluate();
-                if (res == eNodeState.Running || res == eNodeState.Suceed) return res;
+                res = node.Evaluate(workData);
+                if (res == eRunningState.Running || res == eRunningState.Suceed) return res;
             }
-            return eNodeState.Failed;
+            return eRunningState.Failed;
         }
     }
 
@@ -61,16 +63,30 @@ namespace Assets.Scripts.BehaviorTree
     [CreateAssetMenu(menuName = "Bev/Parall")]
     class BevParallel : BevComposite
     {
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
-            eNodeState res = eNodeState.Ready;
+            eRunningState res = eRunningState.Ready;
             foreach (var node in m_listNodes)
             {
-                res = node.Evaluate();
+                res = node.Evaluate(workData);
             }
             return res;
         }
     };
+
+    //[CreateAssetMenu(menuName = "Bev/Parall_Or")]
+    //class BevParallel_Or : BevComposite
+    //{
+    //    protected override eRunningState Tick(BevData workData)
+    //    {
+    //        eRunningState res = eRunningState.Ready;
+    //        foreach (var node in m_listNodes)
+    //        {
+    //            res = node.Evaluate(workData);
+    //        }
+    //        return res;
+    //    }
+    //};
 
     //Random Selector
     [CreateAssetMenu(menuName = "Bev/RandSelector")]
@@ -78,9 +94,9 @@ namespace Assets.Scripts.BehaviorTree
     {
         [SerializeField]
         private int m_nRandFigure;
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
-            eNodeState res = m_listNodes[m_nRandFigure].Evaluate();
+            eRunningState res = m_listNodes[m_nRandFigure].Evaluate(workData);
             return res;
         }
     };

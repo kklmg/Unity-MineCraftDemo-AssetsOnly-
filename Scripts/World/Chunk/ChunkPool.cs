@@ -15,7 +15,7 @@ namespace Assets.Scripts.WorldComponent
         //Field
         //---------------------------------------------------------------------------
         [SerializeField]
-        private Player m_RefPlayer;
+        private Actor m_RefPlayer;
         private Vector3Int m_PreSlot;
 
         [SerializeField]

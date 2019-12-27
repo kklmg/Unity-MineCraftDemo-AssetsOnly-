@@ -1,31 +1,75 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+
 using Assets.Scripts.Condition;
 
 
 namespace Assets.Scripts.BehaviorTree
 {
-    //Abstact Condition Node
+    //Base Condition Node
     public abstract class BevConditionBase : BevNodeBase
-    {
-        //Field
+    { //Field
         //------------------------------------------------------------
         [SerializeField]
-        private bool isTrue;
+        private bool m_bTrue;
 
         //Override Function
         //-------------------------------------------------------------
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
-            isTrue = Check();
-            if (isTrue)
-                return eNodeState.Suceed;
+            m_bTrue = Check(workData);
+            if (m_bTrue)
+                return eRunningState.Suceed;
             else
-                return eNodeState.Failed;
+                return eRunningState.Failed;
         }
 
         //Abstact Function
-        protected abstract bool Check();
+        public abstract bool Check(BevData workData);
+       
     };
+    public abstract class BevConComposite: BevConditionBase
+    {
+        //Field
+        //----------------------------------------------------------------       
+        [SerializeField]
+        protected List<BevConditionBase> m_listNodes = new List<BevConditionBase>(); //Child node
+
+        //Property
+        //----------------------------------------------------------------       
+        protected List<BevConditionBase> Children { get { return m_listNodes; } }
+
+        //public Function
+        //-----------------------------------------------------------------
+        public void AddChild(BevConditionBase child)
+        {
+            m_listNodes.Add(child);
+        }
+    }
+    public class BevCondition_And : BevConComposite
+    {
+        public override bool Check(BevData workData)
+        {
+            bool res = true;
+            foreach (var node in m_listNodes)
+            {
+                res &= node.Check(workData);            
+            }
+            return res;
+        }
+    }
+    public class BevCondition_Or : BevConComposite
+    {
+        public override bool Check(BevData workData)
+        {
+            bool res = false;
+            foreach (var node in m_listNodes)
+            {
+                res |= node.Check(workData);
+            }
+            return res;
+        }
+    }
 
     //Condition Node construct use Interface
     public class BevCondition_Itf : BevNodeBase
@@ -48,13 +92,13 @@ namespace Assets.Scripts.BehaviorTree
 
         //Override Function
         //-------------------------------------------------------------
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
             isTrue = m_Con.Check();
             if (isTrue)
-                return eNodeState.Suceed;
+                return eRunningState.Suceed;
             else
-                return eNodeState.Failed;
+                return eRunningState.Failed;
         }
     };
     //Condition Node construct use delegate
@@ -79,15 +123,13 @@ namespace Assets.Scripts.BehaviorTree
 
         //Override Function
         //-------------------------------------------------------------
-        protected override eNodeState Tick()
+        protected override eRunningState Tick(BevData workData)
         {
             isTrue = m_delCondition();
             if (isTrue)
-                return eNodeState.Suceed;
+                return eRunningState.Suceed;
             else
-                return eNodeState.Failed;
+                return eRunningState.Failed;
         }
     };
-
-
 }

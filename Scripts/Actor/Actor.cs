@@ -7,11 +7,13 @@ using Assets.Scripts.Pattern;
 
 
 //[RequireComponent(typeof(Camera))]
-public class Player : MonoBehaviour
+public class Actor : MonoBehaviour
 {
     [SerializeField][Range(1,5)]
     private byte m_ViewDistance;
 
+    [SerializeField]
+    private Transform m_Camera;
     [SerializeField]
     private Vector3Int m_PlayerSlot;
     [SerializeField]
@@ -23,6 +25,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float m_RunSpeed = 2;
 
+    public Transform Camera { get { return m_Camera; } }
     public float WalkSpeed { get { return m_WalkSpeed; } }
     public float RunSpeed { get { return m_RunSpeed; } }
     public float Gravity { get { return m_Gravity; } }

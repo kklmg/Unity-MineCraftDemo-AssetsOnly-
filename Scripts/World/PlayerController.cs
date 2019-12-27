@@ -8,11 +8,11 @@ using Assets.Scripts.InputHandler;
 
 namespace Assets.Scripts.WorldComponent
 {
-    [RequireComponent(typeof(Player))]
+    [RequireComponent(typeof(Actor))]
     public class PlayerController : MonoBehaviour
     {
         public Transform m_Camera;
-        public Player m_refPlayer;
+        public Actor m_refPlayer;
         public World m_refWorld;
 
         [SerializeField]
@@ -40,7 +40,7 @@ namespace Assets.Scripts.WorldComponent
 
         private void Awake()
         {
-            m_refPlayer = GetComponent<Player>();
+            m_refPlayer = GetComponent<Actor>();
             m_refWorld = m_refPlayer.refWorld;           
         }
 
