@@ -1,5 +1,10 @@
 ﻿using Assets.Scripts.BehaviorTree;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.InputHandler;
+using Assets.Scripts.EventManager;
+using Assets.Scripts.CharacterSpace;
+using UnityEngine;
+
 
 namespace Assets.Scripts.InputHandler
 {
@@ -44,8 +49,8 @@ namespace Assets.Scripts.InputHandler
         }
         public BevConditionBase HasInput_Axis()
         {
-            ConInputAxis inputHor = new ConInputAxis(INPUT_STR.HORIZONTAL);
-            ConInputAxis inputVer = new ConInputAxis(INPUT_STR.VERTICAL);
+            ConInputAxis inputHor = new ConInputAxis(KEY_INPUT.HORIZONTAL);
+            ConInputAxis inputVer = new ConInputAxis(KEY_INPUT.VERTICAL);
 
             BevCondition_Or HasInput = new BevCondition_Or();
 
@@ -56,8 +61,8 @@ namespace Assets.Scripts.InputHandler
         }
         public BevConditionBase HasInput_MouseAxis()
         {
-            ConInputAxis MouseHor = new ConInputAxis(INPUT_STR.MOUSE_HORIZONTAL);
-            ConInputAxis MouseVer = new ConInputAxis(INPUT_STR.MOUSE_VERTICAL);
+            ConInputAxis MouseHor = new ConInputAxis(KEY_INPUT.MOUSE_HORIZONTAL);
+            ConInputAxis MouseVer = new ConInputAxis(KEY_INPUT.MOUSE_VERTICAL);
 
             BevCondition_Or HasInput = new BevCondition_Or();
             HasInput.AddChild(MouseVer);

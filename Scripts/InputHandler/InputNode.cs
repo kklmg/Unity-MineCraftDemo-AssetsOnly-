@@ -1,5 +1,5 @@
-﻿using Assets.Scripts.BehaviorTree;
-using UnityEngine;
+﻿using UnityEngine;
+using Assets.Scripts.BehaviorTree;
 
 namespace Assets.Scripts.InputHandler
 {
@@ -25,6 +25,7 @@ namespace Assets.Scripts.InputHandler
         public ConInputAxis(string key) : base(key) { }
         public override bool Check(BevData workData)
         {
+            
             AxisValue = Input.GetAxis(m_strKey);
 
             if (!Mathf.Approximately(AxisValue, 0))
@@ -86,4 +87,5 @@ namespace Assets.Scripts.InputHandler
             return false;
         }
     }
+
 }

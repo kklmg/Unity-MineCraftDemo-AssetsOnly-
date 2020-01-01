@@ -5,7 +5,15 @@ using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.WorldComponent
 {
-    public class World : MonoSingleton<World>
+    public interface IWorld
+    {
+        ushort Section_Width { get; }
+        ushort Section_Height { get; }
+        ushort Section_Depth { get; }
+        ushort Chunk_Height { get; }
+    }
+    
+    public class World : MonoBehaviour,IWorld
     {
         //Filed
         //--------------------------------------------------------------------
@@ -86,22 +94,10 @@ namespace Assets.Scripts.WorldComponent
                 (int)Coord.z % m_Section_Depth);
         }
 
-
-        //public Vector3 CoordBlockSlot()
-        //{
-
-
-
-        //}
-
-
-
-
         public void RegisterSection(Vector3Int SectionSlot,Section _section)
         {
             m_SectionMap.Add(SectionSlot, _section);
         }
-
 
         public Section GetSection(Vector3Int Slot)
         {

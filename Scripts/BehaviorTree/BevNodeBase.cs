@@ -35,18 +35,17 @@ namespace Assets.Scripts.BehaviorTree
 
         //Public Function
         //----------------------------------------------------------------------
-
         //Run Node
         public eRunningState Evaluate(BevData workData)
         {
             if (m_bVisited == false)
-                Enter();
+                VEnter(workData);
 
             //run node
             m_enRunningState = Tick(workData);
 
             if (m_enRunningState == eRunningState.Completed)
-                Exit();
+                VExit(workData);
 
             return m_enRunningState;
         }
@@ -58,11 +57,18 @@ namespace Assets.Scripts.BehaviorTree
             m_bVisited = false;
             m_enRunningState = eRunningState.Ready;
         }
-        protected virtual void Enter() { }
-        protected virtual void Exit() { }
+        protected virtual void VEnter(BevData workData) { }
+        protected virtual void VExit(BevData workData) { }
 
         //abstract Function
         //----------------------------------------------------------------------
         protected abstract eRunningState Tick(BevData workData);
+    }
+
+
+    public abstract class LoggedNode
+    {
+
+
     }
 }

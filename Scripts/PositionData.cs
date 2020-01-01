@@ -8,7 +8,7 @@ using Assets.Scripts.WorldComponent;
 
 namespace Assets.Scripts
 {
-    [RequireComponent(typeof(Actor))]
+    [RequireComponent(typeof(Character))]
     class PositionData : MonoBehaviour
     {
         //Field
@@ -37,7 +37,7 @@ namespace Assets.Scripts
         private void Awake()
         {
             m_TransSelf = this.transform;
-            m_refWorld = GetComponent<Actor>().refWorld;
+            m_refWorld = GetComponent<Character>().refWorld;
         }
         private void FixedUpdate()
         {

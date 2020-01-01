@@ -7,7 +7,7 @@ using Assets.Scripts.Pattern;
 
 
 //[RequireComponent(typeof(Camera))]
-public class Actor : MonoBehaviour
+public class Character : MonoBehaviour
 {
     [SerializeField][Range(1,5)]
     private byte m_ViewDistance;

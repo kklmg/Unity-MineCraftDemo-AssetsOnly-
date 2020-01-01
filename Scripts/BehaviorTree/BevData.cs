@@ -27,7 +27,7 @@ namespace Assets.Scripts.BehaviorTree
 
     //Working Data
     public class BevData
-    {
+    {       
         public BevData()
         {
             m_BLackBoard = new BlackBoard();
