@@ -9,27 +9,33 @@ namespace Assets.Scripts.CharacterSpace
 {
     class Control_Cha_Move : BevConditionBase
     {
-        private float Cache_Hor;
-        private float Cache_ver;
+        private float m_fHor;
+        private float m_fVer;
+        private E_Cha_TryMove m_ECha_TryMove = new E_Cha_TryMove();
 
         public override bool Check(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-            IController control = ServiceLocator<IController>.GetService();
+            IController control = Locator<IController>.GetService();
 
             //get input
-            Cache_Hor = control.Horizontal();
-            Cache_ver = control.Vertical();
+            m_fHor = control.Horizontal();
+            m_fVer = control.Vertical();
 
             //not valid input
-            if (Mathf.Approximately(0.0f, Cache_Hor)
-                && Mathf.Approximately(0.0f, Cache_ver)) return false;
+            if (Mathf.Approximately(0.0f, m_fHor)
+                && Mathf.Approximately(0.0f, m_fVer)) return false;
 
             //calculate movement
-            thisData.Movement.x = Cache_Hor * Time.deltaTime
+            thisData.Movement.x = m_fHor * Time.deltaTime
                 * (thisData.isWalking ? thisData.Character.WalkSpeed : thisData.Character.RunSpeed);
-            thisData.Movement.z = Cache_ver * Time.deltaTime
+            thisData.Movement.z = m_fVer * Time.deltaTime
             * (thisData.isWalking ? thisData.Character.WalkSpeed : thisData.Character.RunSpeed);
+
+            //publish this event
+            m_ECha_TryMove.Trans = thisData.Character.transform;
+            m_ECha_TryMove.Movement = thisData.Movement;
+            Locator<IEventPublisher>.GetService().PublishAndHandle(m_ECha_TryMove);
 
             return true;
         }
@@ -40,7 +46,7 @@ namespace Assets.Scripts.CharacterSpace
         public override bool Check(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-            IController control = ServiceLocator<IController>.GetService();
+            IController control = Locator<IController>.GetService();
 
             //get input
             Cache_Rotate = control.Rotate_Y();
@@ -59,7 +65,7 @@ namespace Assets.Scripts.CharacterSpace
         public override bool Check(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-            IController control = ServiceLocator<IController>.GetService();
+            IController control = Locator<IController>.GetService();
 
             //get input
             Cache_Rotate = control.Rotate_Z();
@@ -75,14 +81,18 @@ namespace Assets.Scripts.CharacterSpace
 
 
     }
-
     public class Cha_Move : BevLeaf
     {
-        Vector3 Cache_Velocity; 
+        Vector3 Cache_Velocity;
+        E_Cha_Moved m_ECha_move = new E_Cha_Moved();
         protected override eRunningState Tick(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-            thisData.Character.transform.Translate(thisData.Movement);        
+            thisData.Character.transform.Translate(thisData.Movement);
+
+            //notify orther system
+            m_ECha_move.Cha = thisData.Character;
+            Locator<IEventPublisher>.GetService().Publish(m_ECha_move);    
 
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;

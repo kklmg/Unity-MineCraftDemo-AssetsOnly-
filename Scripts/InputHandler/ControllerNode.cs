@@ -9,7 +9,7 @@ namespace Assets.Scripts.InputHandler
         private float Cache_Hor;
         public override bool Check(BevData workData)
         {
-            Cache_Hor = ServiceLocator<IController>.GetService().Horizontal();
+            Cache_Hor = Locator<IController>.GetService().Horizontal();
 
             if (Mathf.Approximately(Cache_Hor, 0)) return false;
             else
@@ -24,7 +24,7 @@ namespace Assets.Scripts.InputHandler
         private float Cache_Ver;
         public override bool Check(BevData workData)
         {
-            Cache_Ver = ServiceLocator<IController>.GetService().Vertical();
+            Cache_Ver = Locator<IController>.GetService().Vertical();
 
             if (Mathf.Approximately(Cache_Ver, 0)) return false;
             else
@@ -39,7 +39,7 @@ namespace Assets.Scripts.InputHandler
         private float cache;
         public override bool Check(BevData workData)
         {
-            cache = ServiceLocator<IController>.GetService().Rotate_X();
+            cache = Locator<IController>.GetService().Rotate_X();
 
             if (Mathf.Approximately(cache, 0)) return false;
             else
@@ -54,7 +54,7 @@ namespace Assets.Scripts.InputHandler
         private float cache;
         public override bool Check(BevData workData)
         {
-            cache = ServiceLocator<IController>.GetService().Rotate_Y();
+            cache = Locator<IController>.GetService().Rotate_Y();
 
             if (Mathf.Approximately(cache, 0)) return false;
             else
@@ -69,7 +69,7 @@ namespace Assets.Scripts.InputHandler
         private float cache;
         public override bool Check(BevData workData)
         {
-            cache = ServiceLocator<IController>.GetService().Rotate_Z();
+            cache = Locator<IController>.GetService().Rotate_Z();
 
             if (Mathf.Approximately(cache, 0)) return false;
             else
@@ -83,21 +83,21 @@ namespace Assets.Scripts.InputHandler
     {
         public override bool Check(BevData workData)
         {
-            return ServiceLocator<IController>.GetService().Jump();
+            return Locator<IController>.GetService().Jump();
         }
     }
     class Control_Fire : BevConditionBase
     {
         public override bool Check(BevData workData)
         {
-            return ServiceLocator<IController>.GetService().Fire();
+            return Locator<IController>.GetService().Fire();
         }
     }
     class Control_Sprint : BevConditionBase
     {
         public override bool Check(BevData workData)
         {
-            return ServiceLocator<IController>.GetService().Sprint();
+            return Locator<IController>.GetService().Sprint();
         }
     }
 }

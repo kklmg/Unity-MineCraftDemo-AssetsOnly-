@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Assets.Scripts.Pattern
-{
-    public class ServiceLocator<T>
+{   
+    public class Locator<T>
     {
         private static T m_Service;
         public static T GetService()

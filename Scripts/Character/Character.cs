@@ -51,6 +51,6 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        m_PlayerSlot = m_refWorld.CoordToSectionSlot(transform.position);
+        //m_PlayerSlot = m_refWorld.CoordToSectionSlot(transform.position);
     }
 }

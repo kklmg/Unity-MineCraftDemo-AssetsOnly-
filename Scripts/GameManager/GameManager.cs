@@ -8,19 +8,28 @@ namespace Assets.Scripts.GameManager
 {
     class GameManager : MonoBehaviour
     {
+        public GameObject m_WorldPrefab;
         private void Awake()
         {
-            //InitWorrld();
+            InitWorrld();
+            Debug.Log("tell me why?");
             InitController();
         }
         private void InitWorrld()
         {
-            GameObject MyWorld = new GameObject("World");
-            IWorld refWorld = MyWorld.AddComponent<World>();
-            ServiceLocator<IWorld>.ProvideService(refWorld);
+            GameObject newWorld = Instantiate(m_WorldPrefab);
+            Debug.Log(newWorld.GetComponent<World>() + "world");
+
+
+            Locator<World>.ProvideService(newWorld.GetComponent<World>());
+
+            Debug.Log(Locator<IWorld>.GetService()+"service");
         }
         private bool InitController()
         {
+
+            Debug.Log(SystemInfo.deviceType);
+
             switch (SystemInfo.deviceType)  
             {
                 case DeviceType.Unknown:
@@ -30,13 +39,14 @@ namespace Assets.Scripts.GameManager
                 case DeviceType.Console:
                     break;
                 case DeviceType.Desktop:
-                    ServiceLocator<IController>.ProvideService(new Controller_PC());
+                    Locator<IController>.ProvideService(new Controller_PC());
                     break;
                 default:
                     break;
             }
-
-            if (ServiceLocator<IController>.GetService() == null) return false;
+           
+            if (Locator<IController>.GetService() == null)
+                Locator<IController>.ProvideService(new Controller_PC());
 
             return true;
         }

@@ -8,11 +8,6 @@ using UnityEngine;
 
 namespace Assets.Scripts.EventManager
 {
-    [Serializable]
-    public class Unique<T>
-    {
-        public static readonly Guid ID = Guid.NewGuid();
-    } 
     public interface IEvent
     {
         Guid Type { get; }
@@ -20,8 +15,8 @@ namespace Assets.Scripts.EventManager
     public abstract class EventBase<T> : IEvent
     {
         [SerializeField]
-        private Unique<T> m_guid;
+        public static readonly Guid ID = Guid.NewGuid();
         //property
-        public Guid Type { get { return Unique<T>.ID; } }
+        public Guid Type { get { return ID; } }
     }
 }

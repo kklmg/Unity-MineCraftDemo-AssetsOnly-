@@ -1,24 +1,23 @@
 ﻿using System.Collections.Generic;
-
 using UnityEngine;
+
+using Assets.Scripts.EventManager;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.CharacterSpace;
 
 namespace Assets.Scripts.WorldComponent
 {
     public interface IChunkPool
     {
         void Spawn(int slot_x, int slot_z);
-
-        void CreateVisibleChunk();
     }
 
     [RequireComponent(typeof(World))]
-    public class ChunkPool : MonoBehaviour,IChunkPool
+    public class ChunkPool : MonoBehaviour, IChunkPool
     {
         //Field
         //---------------------------------------------------------------------------
         [SerializeField]
-        private Character m_refPlayer;
         private Vector3Int m_PreSlot;
 
         [SerializeField]
@@ -37,12 +36,10 @@ namespace Assets.Scripts.WorldComponent
         {
             m_refWorld = GetComponent<World>();
             m_DicChunks = new Dictionary<Vector2Int, Chunk>();
-            CreateVisibleChunk();
         }
-
-        private void Update()
+        private void Start()
         {
-            CreateVisibleChunk();
+            Locator<IEventSubscriber>.GetService().Subscribe(E_Cha_Moved.ID, SpawnChunk_NearPlayer);
         }
 
         //public Function
@@ -58,8 +55,8 @@ namespace Assets.Scripts.WorldComponent
             {
                 GameObject Go = new GameObject("Chunk" + "[" + slot_x + "]" + "[" + slot_z + "]");
                 Go.transform.SetParent(transform);
-                Go.transform.transform.position = m_refWorld.SectionSlotToCoord(new Vector3Int(slot_x,0,slot_z));
-                
+                Go.transform.transform.position = m_refWorld.SectionSlotToCoord(new Vector3Int(slot_x, 0, slot_z));
+
                 _Chunk = Go.AddComponent<Chunk>();
                 _Chunk.Init(slot_x, slot_z, this.transform, m_refWorld.Biomes[0]);
 
@@ -69,23 +66,28 @@ namespace Assets.Scripts.WorldComponent
             //Case: No Space in Pool
             else return;
         }
-        public void CreateVisibleChunk()
+
+        public bool SpawnChunk_NearPlayer(IEvent _event)
         {
-            Vector3Int CurSlot = m_refPlayer.PlayerSlot;
-            if (m_PreSlot == CurSlot) return;
-        
-            byte PlayerView = m_refPlayer.ViewDistance;
+            Character Cha = (_event as E_Cha_Moved).Cha;
+            Vector3Int CurSlot = m_refWorld.CoordToSectionSlot(Cha.transform.position);
+
+            if (m_PreSlot == CurSlot) return false;
+            Debug.Log(CurSlot);
+
+            byte PlayerView = Cha.ViewDistance;
 
             int left, bottom;
             Spawn(CurSlot.x, CurSlot.z);
-            for (left = CurSlot.x - PlayerView; left < CurSlot.x+PlayerView ; ++left)
+            for (left = CurSlot.x - PlayerView; left < CurSlot.x + PlayerView; ++left)
             {
-                for (bottom = CurSlot.z - PlayerView; bottom < CurSlot.z+PlayerView; ++bottom)
+                for (bottom = CurSlot.z - PlayerView; bottom < CurSlot.z + PlayerView; ++bottom)
                 {
-                    Spawn(left, bottom);                    
+                    Spawn(left, bottom);
                 }
             }
             m_PreSlot = CurSlot;
+            return true;
         }
     }
 }

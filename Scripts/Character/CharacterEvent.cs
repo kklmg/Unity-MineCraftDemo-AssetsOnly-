@@ -4,36 +4,38 @@ using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.CharacterSpace
 {
-    public class Event_Character_Transform : EventBase<Event_Character_Transform>
+    public class E_Cha_TryMove : EventBase<E_Cha_TryMove>
     {
-        public Event_Character_Transform(Transform trans)
+        public Transform Trans { set; get; }
+        public  Vector3 Movement { set; get; }
+        public E_Cha_TryMove() { }
+        public E_Cha_TryMove(ref Transform _trans,ref Vector3 _move)
         {
-            
+            Trans = _trans;
+            Movement = _move;
         }
-
     }
 
 
-
-
-    public class Event_Character_TryMove : EventBase<Event_Character_TryMove>
+    public class E_Cha_Moved : EventBase<E_Cha_Moved>
     {
-        public Event_Character_TryMove(Vector3 velocity)
+        //character reference
+        public Character Cha { get; set; }
+
+        //Contructor;
+        public E_Cha_Moved() { }
+        public E_Cha_Moved(Character cha)
         {
-            m_Velocity = velocity;
+            Cha = cha;
         }
-
-        public Vector3 m_Velocity;
-    }
-
-    public class Event_Character_Movement : EventBase<Event_Character_Movement>
-    {
     }
 
 
 
 
-    // ServiceLocator<IEventPublisher>.GetService().Publish(this);
+
+
+    // Locator<IEventPublisher>.GetService().Publish(this);
 
 
 

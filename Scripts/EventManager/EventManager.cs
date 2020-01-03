@@ -14,22 +14,17 @@ namespace Assets.Scripts.EventManager
 
         private void Awake()
         {
-            InitBaseEventSystem();
-        }
-        private void Update()
-        {
-            m_EventCenter.HandleAll();
-        }
-
-        void InitBaseEventSystem()
-        {
             m_EventCenter = new EventCenter();
 
             EventPublisher publisher = new EventPublisher(m_EventCenter);
             EventSubscriber Subscriber = new EventSubscriber(m_EventCenter);
 
-            ServiceLocator<IEventPublisher>.ProvideService(publisher);
-            ServiceLocator<IEventSubscriber>.ProvideService(Subscriber);
+            Locator<IEventPublisher>.ProvideService(publisher);
+            Locator<IEventSubscriber>.ProvideService(Subscriber);
+        }
+        private void Update()
+        {
+            m_EventCenter.HandleAll();
         }
     }
 }

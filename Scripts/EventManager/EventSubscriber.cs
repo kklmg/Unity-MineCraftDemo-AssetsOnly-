@@ -8,7 +8,7 @@ namespace Assets.Scripts.EventManager
 {
     public interface IEventSubscriber
     {
-        void Subscribe(Guid EventID, IEventHandler handler, bool HighPriority = false);
+        void Subscribe(Guid EventID, Del_HandleEvent handler, bool HighPriority = false);
     }
 
     class EventSubscriber : IEventSubscriber
@@ -22,10 +22,9 @@ namespace Assets.Scripts.EventManager
         }
 
         //subscribe
-        public void Subscribe(Guid EventID, IEventHandler handler, bool HighPriority = false)
+        public void Subscribe(Guid EventID, Del_HandleEvent handler, bool HighPriority = false)
         {
             m_refEventCenter.SubScribe(EventID, handler, HighPriority);
         }
-
     }
 }

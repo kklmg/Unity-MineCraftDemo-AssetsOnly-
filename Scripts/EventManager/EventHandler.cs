@@ -10,4 +10,6 @@ namespace Assets.Scripts.EventManager
     {
         bool Handle(IEvent _event);
     }
+
+    public delegate bool Del_HandleEvent(IEvent _event);
 }
