@@ -72,4 +72,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PreSlot: {x: 0, y: 0, z: 0}
   m_WorldSeed: 0
-  m_MaxCount: 4
+  m_MaxCount: 10

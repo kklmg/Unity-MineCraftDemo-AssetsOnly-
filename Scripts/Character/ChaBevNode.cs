@@ -2,6 +2,7 @@
 using Assets.Scripts.InputHandler;
 using Assets.Scripts.EventManager;
 using Assets.Scripts.Pattern;
+using Assets.Scripts.WorldComponent;
 
 using UnityEngine;
 
@@ -11,11 +12,17 @@ namespace Assets.Scripts.CharacterSpace
     {
         private float m_fHor;
         private float m_fVer;
-        private E_Cha_TryMove m_ECha_TryMove = new E_Cha_TryMove();
+        private ChaBevData m_ThisData;
+        E_Cha_TryMove m_ETryMove;
+
+        protected override void VEnter(BevData workData)
+        {  
+            m_ThisData = workData as ChaBevData;
+            m_ETryMove = new E_Cha_TryMove(m_ThisData);
+        }  
 
         public override bool Check(BevData workData)
         {
-            ChaBevData thisData = workData as ChaBevData;
             IController control = Locator<IController>.GetService();
 
             //get input
@@ -27,15 +34,16 @@ namespace Assets.Scripts.CharacterSpace
                 && Mathf.Approximately(0.0f, m_fVer)) return false;
 
             //calculate movement
-            thisData.Movement.x = m_fHor * Time.deltaTime
-                * (thisData.isWalking ? thisData.Character.WalkSpeed : thisData.Character.RunSpeed);
-            thisData.Movement.z = m_fVer * Time.deltaTime
-            * (thisData.isWalking ? thisData.Character.WalkSpeed : thisData.Character.RunSpeed);
+            m_ThisData.Movement.x = m_fHor * Time.deltaTime
+                * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
+            m_ThisData.Movement.z = m_fVer * Time.deltaTime
+            * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
 
-            //publish this event
-            m_ECha_TryMove.Trans = thisData.Character.transform;
-            m_ECha_TryMove.Movement = thisData.Movement;
-            Locator<IEventPublisher>.GetService().PublishAndHandle(m_ECha_TryMove);
+
+            //notify to global event center
+            Locator<IEventPublisher>.GetService().PublishAndHandle(m_ETryMove);
+            //notify to other component
+            m_ThisData.Communicator.PublishEvent(m_ETryMove);
 
             return true;
         }
@@ -122,6 +130,42 @@ namespace Assets.Scripts.CharacterSpace
 
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;
+        }
+    }
+    public class Cha_Jump : BevConditionBase
+    { 
+        public override bool Check(BevData workData)
+        {
+            ChaBevData thisData = workData as ChaBevData;
+            IController control = Locator<IController>.GetService();
+
+            //get input
+            bool trigger = control.Jump();
+            if (!trigger) return false;
+
+            //notify subscribed component
+            thisData.Communicator.PublishEvent(new E_Cha_Jump(thisData.Character.JumpForce));
+            Debug.Log("jump triggerd");
+            return true;
+        }
+    }
+
+    public class Cha_NotGrounded : BevConditionBase
+    {
+        private World m_refWorld;
+        //private E_Cha_TryMove m_ECha_TryMove = new E_Cha_TryMove();
+
+        protected override void VEnter(BevData workData)
+        {
+            m_refWorld = Locator<World>.GetService();
+        }
+        public override bool Check(BevData workData)
+        {
+            ChaBevData thisData = workData as ChaBevData;
+            IController control = Locator<IController>.GetService();
+
+            Block adj = m_refWorld.GetBlock(thisData.Character.transform.position + Vector3.down);
+            return !(adj != null && adj.IsSolid(eDirection.up));
         }
     }
 }

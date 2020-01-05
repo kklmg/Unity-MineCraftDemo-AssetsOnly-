@@ -39,6 +39,10 @@ namespace Assets.Scripts.WorldComponent
         }
         private void Start()
         {
+            Spawn(0, 0);
+            Spawn(0, 1);
+            Spawn(1, 0);
+            Spawn(1, 1);
             Locator<IEventSubscriber>.GetService().Subscribe(E_Cha_Moved.ID, SpawnChunk_NearPlayer);
         }
 

@@ -9,7 +9,7 @@ namespace Assets.Scripts.CharacterSpace
     {
         public BevNodeBase ChaMoving_Control()
         {
-            BevRepeator repeat = new BevRepeator();
+           
             BevSequence seq = new BevSequence();
 
             Control_Cha_Move control = new Control_Cha_Move();
@@ -18,13 +18,13 @@ namespace Assets.Scripts.CharacterSpace
             seq.AddChild(control);
             seq.AddChild(move);
 
-            repeat.setChild(seq);
+            BevRepeator repeat = new BevRepeator(seq);
 
             return repeat;
         }
         public BevNodeBase ChaRotate_Control()
         {
-            BevRepeator repeat = new BevRepeator();
+            
             BevSequence seq = new BevSequence();
 
             Control_Cha_RotateY control = new Control_Cha_RotateY();
@@ -33,13 +33,13 @@ namespace Assets.Scripts.CharacterSpace
             seq.AddChild(control);
             seq.AddChild(rotate);
 
-            repeat.setChild(seq);
+            BevRepeator repeat = new BevRepeator(seq);
 
             return repeat;
         }
         public BevNodeBase Camera_Control()
         {
-            BevRepeator repeat = new BevRepeator();
+            
             BevSequence seq = new BevSequence();
 
             Control_Camera_UpDown control = new Control_Camera_UpDown();
@@ -48,14 +48,15 @@ namespace Assets.Scripts.CharacterSpace
             seq.AddChild(control);
             seq.AddChild(cam);
 
-            repeat.setChild(seq);
+            BevRepeator repeat = new BevRepeator(seq);
 
             return repeat;
         }
-        public BevNodeBase Base_ChaControl()
+        public BevNodeBase ChaControl_Base()
         {
             BevParallel parall = new BevParallel();
-
+           
+            parall.AddChild(new BevRepeator(new Cha_Jump()));
             parall.AddChild(this.ChaMoving_Control());
             parall.AddChild(this.ChaRotate_Control());
             parall.AddChild(this.Camera_Control());

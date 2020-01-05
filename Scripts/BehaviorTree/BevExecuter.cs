@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.BehaviorTree;
+using Assets.Scripts.EventManager;
 using Assets.Scripts.CharacterSpace;
 
 namespace Assets.Scripts.BehaviorTree
 {
+    [RequireComponent(typeof(Character))]
+    [RequireComponent(typeof(ComponentCommunicator))]
     class BevExecuter : MonoBehaviour
     {      
         private BevNodeBase m_Root;
@@ -12,8 +15,8 @@ namespace Assets.Scripts.BehaviorTree
 
         private void Awake()
         {
-            m_Root = ChaBevFactory.Instance.Base_ChaControl();            
-            m_bevData = new ChaBevData(GetComponent<Character>());            
+            m_Root = ChaBevFactory.Instance.ChaControl_Base();            
+            m_bevData = new ChaBevData(GetComponent<Character>(),GetComponent<ComponentCommunicator>());            
         }
 
         private void Update()

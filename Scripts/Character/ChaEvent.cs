@@ -1,20 +1,35 @@
 ﻿using Assets.Scripts.EventManager;
 using UnityEngine;
+using Assets.Scripts.CharacterSpace;
 using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.CharacterSpace
 {
     public class E_Cha_TryMove : EventBase<E_Cha_TryMove>
     {
-        public Transform Trans { set; get; }
-        public  Vector3 Movement { set; get; }
-        public E_Cha_TryMove() { }
-        public E_Cha_TryMove(ref Transform _trans,ref Vector3 _move)
+        public ChaBevData Cha_Data { set; get; }
+        public E_Cha_TryMove(ChaBevData data)
         {
-            Trans = _trans;
-            Movement = _move;
+            Cha_Data = data;
         }
     }
+
+    public class E_Cha_Spawned : EventBase<E_Cha_Spawned>
+    {
+
+
+    }
+    public class E_Cha_Jump : EventBase<E_Cha_Jump>
+    {
+        private float m_Force;
+        public float Force { get { return m_Force; } }
+
+        public E_Cha_Jump(float force)
+        {
+            m_Force = force;
+        }
+    }
+
 
 
     public class E_Cha_Moved : EventBase<E_Cha_Moved>

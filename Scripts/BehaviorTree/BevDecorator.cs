@@ -9,6 +9,12 @@ namespace Assets.Scripts.BehaviorTree
         [SerializeField]
         protected BevNodeBase m_Child;
 
+        public BevDecorator() { }
+        public BevDecorator(BevNodeBase child)
+        {
+            m_Child = child;
+        }
+
         public void setChild(BevNodeBase Child)
         {
             m_Child = Child;
@@ -19,6 +25,7 @@ namespace Assets.Scripts.BehaviorTree
     [CreateAssetMenu(menuName = "Bev/Repeator")]
     class BevRepeator : BevDecorator
     {
+        public BevRepeator(BevNodeBase child) : base(child) { }
         protected override eRunningState Tick(BevData workData)
         {
             eRunningState res;
@@ -33,6 +40,7 @@ namespace Assets.Scripts.BehaviorTree
     [CreateAssetMenu(menuName = "Bev/Reverser")]
     class BevReverser : BevDecorator
     {
+        public BevReverser(BevNodeBase child) : base(child) { }
         protected override eRunningState Tick(BevData workData)
         {
             eRunningState res;

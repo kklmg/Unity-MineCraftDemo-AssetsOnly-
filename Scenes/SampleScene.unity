@@ -316,10 +316,13 @@ GameObject:
   - component: {fileID: 366383138}
   - component: {fileID: 366383137}
   - component: {fileID: 366383136}
+  - component: {fileID: 366383144}
   - component: {fileID: 366383134}
   - component: {fileID: 366383141}
   - component: {fileID: 366383140}
   - component: {fileID: 366383142}
+  - component: {fileID: 366383143}
+  - component: {fileID: 366383135}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -339,13 +342,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec733c4c8a142be458e134274ceb3a67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ViewDistance: 3
+  m_ViewDistance: 1
   m_Camera: {fileID: 963194228}
   m_PlayerSlot: {x: 0, y: 0, z: 0}
   m_refWorld: {fileID: 0}
-  m_Gravity: 1
   m_WalkSpeed: 10
   m_RunSpeed: 10
+  m_JumpForce: 2
+--- !u!114 &366383135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366383133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75ddde30de8a1ba40957954b4911c207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Gravity: 1
 --- !u!65 &366383136
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -413,7 +429,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 366383133}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 50, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}
@@ -432,7 +448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12cfcb65a47559c4ca5e0d7bfb824e6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Gravity: 10
+  m_Gravity: 1
   m_Height: 0
 --- !u!114 &366383141
 MonoBehaviour:
@@ -460,6 +476,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9bd4ffe2ac766e8409dc0007235aa865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &366383143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366383133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1db15f4e9215ca741a2bbc410b045ca1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &366383144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366383133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cf12f0f7ff5ce94cab03a43a44feb16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &390264233
@@ -627,9 +667,9 @@ MonoBehaviour:
   m_Camera: {fileID: 0}
   m_PlayerSlot: {x: 0, y: 0, z: 0}
   m_refWorld: {fileID: 0}
-  m_Gravity: 1
   m_WalkSpeed: 1
   m_RunSpeed: 2
+  m_JumpForce: 3
 --- !u!20 &658392310
 Camera:
   m_ObjectHideFlags: 0
