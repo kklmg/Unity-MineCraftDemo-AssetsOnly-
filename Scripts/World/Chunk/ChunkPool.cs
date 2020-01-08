@@ -7,13 +7,8 @@ using Assets.Scripts.CharacterSpace;
 
 namespace Assets.Scripts.WorldComponent
 {
-    public interface IChunkPool
-    {
-        void Spawn(int slot_x, int slot_z);
-    }
-
     [RequireComponent(typeof(World))]
-    public class ChunkPool : MonoBehaviour, IChunkPool
+    public class ChunkPool : MonoBehaviour
     {
         //Field
         //---------------------------------------------------------------------------
@@ -21,7 +16,7 @@ namespace Assets.Scripts.WorldComponent
         private Vector3Int m_PreSlot;
 
         [SerializeField]
-        private Dictionary<Vector2Int, Chunk> m_DicChunks;
+        private Dictionary<Vector2Int, Chunk> m_DicChunks = new Dictionary<Vector2Int, Chunk>();
 
         [SerializeField]
         private uint m_WorldSeed;
@@ -35,7 +30,7 @@ namespace Assets.Scripts.WorldComponent
         private void Awake()
         {
             m_refWorld = GetComponent<World>();
-            m_DicChunks = new Dictionary<Vector2Int, Chunk>();
+            //m_DicChunks = new Dictionary<Vector2Int, Chunk>();
         }
         private void Start()
         {
@@ -59,7 +54,7 @@ namespace Assets.Scripts.WorldComponent
             {
                 GameObject Go = new GameObject("Chunk" + "[" + slot_x + "]" + "[" + slot_z + "]");
                 Go.transform.SetParent(transform);
-                Go.transform.transform.position = m_refWorld.SectionSlotToCoord(new Vector3Int(slot_x, 0, slot_z));
+                Go.transform.transform.position = m_refWorld.SlotToCoord(new Vector3Int(slot_x, 0, slot_z));
 
                 _Chunk = Go.AddComponent<Chunk>();
                 _Chunk.Init(slot_x, slot_z, this.transform, m_refWorld.Biomes[0]);
@@ -67,14 +62,13 @@ namespace Assets.Scripts.WorldComponent
                 //put to pool
                 m_DicChunks.Add(new Vector2Int(slot_x, slot_z), _Chunk);
             }
-            //Case: No Space in Pool
+            //Case: No Enough Space in Pool
             else return;
         }
-
         public bool SpawnChunk_NearPlayer(IEvent _event)
         {
             Character Cha = (_event as E_Cha_Moved).Cha;
-            Vector3Int CurSlot = m_refWorld.CoordToSectionSlot(Cha.transform.position);
+            Vector3Int CurSlot = m_refWorld.CoordToSlot(Cha.transform.position);
 
             if (m_PreSlot == CurSlot) return false;
             Debug.Log(CurSlot);
@@ -92,6 +86,15 @@ namespace Assets.Scripts.WorldComponent
             }
             m_PreSlot = CurSlot;
             return true;
+        }
+
+        public Chunk GetChunk(Vector2Int slot)
+        {
+            Chunk _Chunk;
+            //Case: The Chunk is already spawned
+            if (m_DicChunks.TryGetValue(slot, out _Chunk))
+                return _Chunk;
+            return null;
         }
     }
 }

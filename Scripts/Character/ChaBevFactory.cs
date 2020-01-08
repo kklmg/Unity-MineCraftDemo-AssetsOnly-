@@ -8,8 +8,7 @@ namespace Assets.Scripts.CharacterSpace
     public class ChaBevFactory : Singleton<ChaBevFactory>
     {
         public BevNodeBase ChaMoving_Control()
-        {
-           
+        {         
             BevSequence seq = new BevSequence();
 
             Control_Cha_Move control = new Control_Cha_Move();

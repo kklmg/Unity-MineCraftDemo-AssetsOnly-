@@ -17,8 +17,6 @@ public class Character : MonoBehaviour
     [SerializeField]
     private Vector3Int m_PlayerSlot;
     [SerializeField]
-    private World m_refWorld;
-    [SerializeField]
     private float m_WalkSpeed = 1;
     [SerializeField]
     private float m_RunSpeed = 2;
@@ -30,7 +28,6 @@ public class Character : MonoBehaviour
     public float WalkSpeed { get { return m_WalkSpeed; } }
     public float RunSpeed { get { return m_RunSpeed; } }
     public float JumpForce { get { return m_JumpForce; } }
-    public World refWorld { get { return m_refWorld; } }  
     public Vector3Int PlayerSlot { get { return m_PlayerSlot; } }
     //public MySubject<Vector3Int> SubjectWorldSlot { get { return m_WorldSlot; } }
     public byte ViewDistance { get { return m_ViewDistance; } }

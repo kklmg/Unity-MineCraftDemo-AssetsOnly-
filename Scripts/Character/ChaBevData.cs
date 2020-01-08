@@ -5,25 +5,30 @@ using UnityEngine;
 
 namespace Assets.Scripts.CharacterSpace
 {
-    public class ChaBevData : BevData
+    public class ChaMove
     {
-        public ChaBevData(Character _Character, ComponentCommunicator communicator)
-        {
-            Character = _Character;
-            Communicator = communicator;
-        }
-
+        public float Trans_x;
+        public float Trans_y;
+        public float Trans_z;
         public float Rotation_X;
         public float Rotation_Y;
         public float Rotation_Z;
+    }
+    public class ChaBevData : BevData
+    {
+        public ChaBevData(Character _Character, Communicator communicator)
+        {
+            Character = _Character;
+            Communicator = communicator;
+            Move = new ChaMove();
+        }
 
-        public Vector3 Movement;
         public bool isWalking;
         public bool isGrounded;
         public bool isJumping;
         public Character Character;
-
-        public ComponentCommunicator Communicator;
+        public ChaMove Move;
+        public Communicator Communicator;
     }
 
 

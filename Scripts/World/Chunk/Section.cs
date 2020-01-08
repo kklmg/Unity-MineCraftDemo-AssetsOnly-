@@ -76,7 +76,6 @@ namespace Assets.Scripts.WorldComponent
         {
             //Debug.Log("mesh update");
         }
-
         private void Update()
         {
             if (isDirtry == true)
@@ -112,9 +111,6 @@ namespace Assets.Scripts.WorldComponent
         //function---------------------------------------------------
         public void GenerateSection(LayerData LayerData, int[,] HeightMap,int abs_y)
         {
-            //add to hash map
-            m_refWorld.RegisterSection(m_SecionSlot, this);
-
             ushort width = m_refWorld.Section_Width;
             ushort height = m_refWorld.Section_Height;
             ushort depth = m_refWorld.Section_Depth;
@@ -122,6 +118,7 @@ namespace Assets.Scripts.WorldComponent
             //Init Section space
             m_arrBlockID = new byte[width, height, depth];
 
+            //init blockType 
             int x, y, z;
             for (x = 0; x < width; x++)
             {
@@ -213,18 +210,6 @@ namespace Assets.Scripts.WorldComponent
         private void OnBecameVisible()
         {
             //gameObject.SetActive(true);
-        }
-        void GetMesh(int x, int y, int z)
-        {
-            //Block adj = GetBlock(x, y - 1, z);
-            ////check above block
-            //adj = 
-
-            //if (adj == null) { }
-            //if (adj != null && adj.GetMesh().IsSolid(eDirection.down) == false)
-            //{
-            //    cur.GetMesh().ExtractMesh(eDirection.up, m_MeshData, x, y, z);
-            //}
         }
 
         bool BlockInThisSection(int x, int y, int z,out Vector3Int offset)

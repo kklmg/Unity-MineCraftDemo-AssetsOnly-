@@ -1,9 +1,10 @@
 ﻿using System;
 using UnityEngine;
+using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.EventManager
 {
-    public class ComponentCommunicator : MonoBehaviour
+    public class Communicator : MonoBehaviour
     {
         private EventCenter m_EventCenter;
         private EventPublisher m_Publisher;

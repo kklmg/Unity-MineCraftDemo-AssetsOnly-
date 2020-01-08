@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using Assets.Scripts.WorldComponent;
+using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts
 {
@@ -37,7 +33,7 @@ namespace Assets.Scripts
         private void Awake()
         {
             m_TransSelf = this.transform;
-            m_refWorld = GetComponent<Character>().refWorld;
+            m_refWorld = Locator<World>.GetService();
         }
         private void FixedUpdate()
         {
@@ -46,7 +42,7 @@ namespace Assets.Scripts
                 (int)m_TransSelf.position.y, 
                 (int)m_TransSelf.position.z );
 
-            m_CurSectionSlot = m_refWorld.CoordToSectionSlot(m_WorldPos);
+            m_CurSectionSlot = m_refWorld.CoordToSlot(m_WorldPos);
             m_CurSection = m_refWorld.GetSection(m_CurSectionSlot);
 
             m_CurBlockSlot = new Vector3Int(

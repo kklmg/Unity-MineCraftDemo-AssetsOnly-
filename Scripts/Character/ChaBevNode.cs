@@ -18,7 +18,7 @@ namespace Assets.Scripts.CharacterSpace
         protected override void VEnter(BevData workData)
         {  
             m_ThisData = workData as ChaBevData;
-            m_ETryMove = new E_Cha_TryMove(m_ThisData);
+            m_ETryMove = new E_Cha_TryMove(m_ThisData.Move);
         }  
 
         public override bool Check(BevData workData)
@@ -34,9 +34,9 @@ namespace Assets.Scripts.CharacterSpace
                 && Mathf.Approximately(0.0f, m_fVer)) return false;
 
             //calculate movement
-            m_ThisData.Movement.x = m_fHor * Time.deltaTime
+            m_ThisData.Move.Trans_x = m_fHor * Time.deltaTime
                 * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
-            m_ThisData.Movement.z = m_fVer * Time.deltaTime
+            m_ThisData.Move.Trans_z = m_fVer * Time.deltaTime
             * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
 
 
@@ -62,7 +62,7 @@ namespace Assets.Scripts.CharacterSpace
             //not valid input
             if (Mathf.Approximately(0.0f, Cache_Rotate)) return false;
 
-            thisData.Rotation_Y = Cache_Rotate;
+            thisData.Move.Rotation_Y = Cache_Rotate;
 
             return true;
         }
@@ -96,7 +96,8 @@ namespace Assets.Scripts.CharacterSpace
         protected override eRunningState Tick(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-            thisData.Character.transform.Translate(thisData.Movement);
+            thisData.Character.transform.Translate(
+                new Vector3(thisData.Move.Trans_x, thisData.Move.Trans_y, thisData.Move.Trans_z));
 
             //notify orther system
             m_ECha_move.Cha = thisData.Character;
@@ -112,7 +113,7 @@ namespace Assets.Scripts.CharacterSpace
         {
             ChaBevData thisData = workData as ChaBevData;
 
-            thisData.Character.transform.Rotate(Vector3.up * thisData.Rotation_Y);
+            thisData.Character.transform.Rotate(Vector3.up * thisData.Move.Rotation_Y);
 
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;

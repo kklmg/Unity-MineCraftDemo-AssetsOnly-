@@ -7,7 +7,7 @@ using Assets.Scripts.CharacterSpace;
 namespace Assets.Scripts.BehaviorTree
 {
     [RequireComponent(typeof(Character))]
-    [RequireComponent(typeof(ComponentCommunicator))]
+    [RequireComponent(typeof(Communicator))]
     class BevExecuter : MonoBehaviour
     {      
         private BevNodeBase m_Root;
@@ -16,7 +16,7 @@ namespace Assets.Scripts.BehaviorTree
         private void Awake()
         {
             m_Root = ChaBevFactory.Instance.ChaControl_Base();            
-            m_bevData = new ChaBevData(GetComponent<Character>(),GetComponent<ComponentCommunicator>());            
+            m_bevData = new ChaBevData(GetComponent<Character>(),GetComponent<Communicator>());            
         }
 
         private void Update()

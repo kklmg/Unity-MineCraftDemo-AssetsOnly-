@@ -15,7 +15,6 @@ namespace Assets.Scripts.WorldComponent
         [SerializeField]
         private int m_Coord_z;
 
-
         private int m_MaxHeight;
         private int m_MinHeight;
         private Transform m_Parent;
@@ -27,6 +26,44 @@ namespace Assets.Scripts.WorldComponent
 
         //[SerializeField]
         private Section[] m_arrSections;  //Sections
+
+        public Section GetSection(int h)
+        {
+            h = h % m_refWorld.Chunk_Height;
+            
+            if (h < 0 || h > m_refWorld.Chunk_Height) return null;
+            return m_arrSections[h];
+        }
+        //public float GetGroundHeight(int x,int y,int z)
+        //{
+        //    while (y>-1)
+        //    {
+        //        int Height = y % m_refWorld.Chunk_Height;
+        //        int SHeight = y % m_refWorld.Section_Height;
+        //        Section cur = GetSection(Height);
+        //        if (cur == null)
+        //        {
+        //            y -= m_refWorld.Chunk_Height;
+        //            continue;
+        //        }
+
+        //        if (SHeight>-1)
+        //        {
+        //            block.x;
+
+        //            if(cur.GetBlock().IsSolid(eDirection.up))
+
+        //        }
+        //        m_arrSections[]
+        //    }
+        //    return m_arrHeightMap[x, z];
+        //}
+
+        //public float GetBlock(int y)
+        //{
+        //    return m_arrHeightMap[x, z];
+        //}
+
 
         //property
         //------------------------------------------------------------------------
@@ -77,7 +114,6 @@ namespace Assets.Scripts.WorldComponent
             m_arrSections[slot_y].SectionSlot = new Vector3Int(m_WorldSlot_x, slot_y, m_WorldSlot_z);
             m_arrSections[slot_y].GenerateSection(m_refBiome.getLayerData(), m_arrHeightMap, slot_y * m_refWorld.Chunk_Height);
         }
-
 
         public void CreateAllSections()
         {

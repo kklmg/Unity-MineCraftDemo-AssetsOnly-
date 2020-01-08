@@ -7,10 +7,10 @@ namespace Assets.Scripts.CharacterSpace
 {
     public class E_Cha_TryMove : EventBase<E_Cha_TryMove>
     {
-        public ChaBevData Cha_Data { set; get; }
-        public E_Cha_TryMove(ChaBevData data)
+        public ChaMove Move_Data { get; }
+        public E_Cha_TryMove(ChaMove data)
         {
-            Cha_Data = data;
+            Move_Data = data;
         }
     }
 
@@ -19,6 +19,7 @@ namespace Assets.Scripts.CharacterSpace
 
 
     }
+
     public class E_Cha_Jump : EventBase<E_Cha_Jump>
     {
         private float m_Force;
@@ -29,8 +30,6 @@ namespace Assets.Scripts.CharacterSpace
             m_Force = force;
         }
     }
-
-
 
     public class E_Cha_Moved : EventBase<E_Cha_Moved>
     {
