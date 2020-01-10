@@ -2,6 +2,7 @@
 using UnityEngine;
 
 using Assets.Scripts.Pattern;
+using Assets.Scripts.Noise;
 
 namespace Assets.Scripts.WorldComponent
 {
@@ -29,12 +30,15 @@ namespace Assets.Scripts.WorldComponent
         [SerializeField]
         private ushort m_Chunk_Height = 16;
 
+        [SerializeField]
+        private uint m_Seed = 0xffffffff;
+
+        private PerlinNoiseMaker m_NoiseMaker;
+
         //Biomes
         [SerializeField]
         private List<Biome> m_Bimoes;
 
-        //[SerializeField]
-        //private Dictionary<Vector2Int, Section> m_SectionMap;
 
         [SerializeField]
         private List<Block> m_listBlocks;
@@ -49,7 +53,9 @@ namespace Assets.Scripts.WorldComponent
         public ushort Section_Height { get { return m_Section_Height; } }
         public ushort Section_Depth { get { return m_Section_Depth; } }
         public ushort Chunk_Height { get { return m_Chunk_Height; } }
+        public uint Seed { get { return m_Seed; } }
 
+        public PerlinNoiseMaker NoiseMaker { get { return m_NoiseMaker; } }
         public List<Block> BlockList { get { return m_listBlocks; } }
         public TextureSheet TexSheet { get { return m_TextureSheet; } }
         public List<Biome> Biomes { get { return m_Bimoes; } }
@@ -59,19 +65,19 @@ namespace Assets.Scripts.WorldComponent
         private void Awake()
         {
             m_refPool = GetComponent<ChunkPool>();
-            // m_SectionMap = new Dictionary<Vector3Int, Section>();
+            m_NoiseMaker = new PerlinNoiseMaker(m_Seed);
         }
 
 
         //Public Function
         //--------------------------------------------------------------------
         public Vector3Int CoordToSlot(Vector3 pos)
-        {
-            return new Vector3Int(
-                (int)pos.x / m_Section_Width,
-                (int)pos.y / m_Section_Height,
-                (int)pos.z / m_Section_Depth);
-        }
+            {
+                return new Vector3Int(
+                    (int)pos.x / m_Section_Width,
+                    (int)pos.y / m_Section_Height,
+                    (int)pos.z / m_Section_Depth);
+            }
         public Vector3 SlotToCoord(Vector3Int pos)
         {
             return new Vector3(
@@ -138,36 +144,28 @@ namespace Assets.Scripts.WorldComponent
             return block;
         }
 
+        public float GetGroundHeight(Vector3 Coord)
+        {
+            Chunk chk = GetChunk(Coord);
+            if (chk == null) return float.MinValue;
+            float res;
+            if (chk.GetGroundHeight(
+                (int)Coord.x % m_Section_Width,
+                (int)Coord.z % m_Section_Depth,
+                (int)Coord.y, out res))
+                return res;
+            else return float.MinValue;
+        }
 
         public class PlayerSelection
         {
             public Camera m_Camrea;
-
-
         }
-        //public void RegisterSection(Vector3Int SectionSlot, Section _section)
-        //{
-        //    m_SectionMap.Add(SectionSlot, _section);
-        //}
-        //public float GetGroundHeight(Vector3 Coord)
-        //{
-        //    Vector3Int Slot = CoordToSlot(Coord);
-        //    Chunk cur = m_refPool.GetChunk(new Vector2Int(Slot.x, Slot.z));
-
-
-
-        //    if (m_SectionMap.TryGetValue(Slot, out receiver))
-        //    {
-        //        return receiver;
-        //    }
-        //}
-
-
 
         public class PosData
         {
             World m_refWorld = null;
-            Vector3Int m_Slot = Vector3Int.zero;            
+            Vector3Int m_Slot = Vector3Int.zero;
             Chunk m_Chunk = null;
             Section m_Section = null;
             Vector3Int m_SlotInSection = Vector3Int.zero;
@@ -207,13 +205,13 @@ namespace Assets.Scripts.WorldComponent
                 //update section
                 m_Section = m_Chunk.GetSection(m_Slot.y);
                 if (m_Section == null)
-                {              
+                {
                     m_Block = null;
                     return;
                 }
                 //update block
                 m_Section.GetBlock(m_SlotInSection.x, m_SlotInSection.y, m_SlotInSection.z);
-            }    
+            }
         }
 
     }

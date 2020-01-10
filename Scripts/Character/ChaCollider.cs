@@ -8,44 +8,49 @@ namespace Assets.Scripts.CharacterSpace
 {
     [RequireComponent(typeof(Communicator))]
     class ChaCollider : MonoBehaviour
-    {        
+    {
+        private Character m_refCha;
+
         void Start()
         {
             GetComponent<Communicator>().SubsribeEvent(E_Cha_TryMove.ID, Handle);
+            m_refCha = GetComponent<Character>();
         }
         private bool Handle(IEvent _event)
         {
             var Data = (_event as E_Cha_TryMove);
             World world = Locator<World>.GetService();
             ChaMove ThisData = Data.Move_Data;
-     
+
+            float HalfWidth = m_refCha.BodyWidth / 2;
+         
+               
             Block adj;
 
             //right
             if (ThisData.Trans_x > 0)
             {
-                adj = world.GetBlock(transform.position + Vector3.right);
+                adj = world.GetBlock(transform.position + new Vector3(HalfWidth + 1, 0,0));
                 if (adj != null && adj.IsSolid(eDirection.left))
                 {
-                    ThisData.Trans_x = Mathf.Min(ThisData.Trans_x, 1 - (transform.position.x % 1));
-                   // ThisData.Movement.x = 0;
+                    ThisData.Trans_x = 0;
                 }
             }
             //left
             else
             {
-                adj = world.GetBlock(transform.position + Vector3.left);
+                adj = world.GetBlock(transform.position + new Vector3(-HalfWidth - 1, 0, 0));
                 if (adj != null && adj.IsSolid(eDirection.left))
                 {
-                    ThisData.Trans_x = Mathf.Min(ThisData.Trans_x, 1 - (transform.position.x % 1));
-                    //ThisData.Movement.x = 0;
+                    //ThisData.Trans_x = Mathf.Min(ThisData.Trans_x, 1 - (transform.position.x % 1));
+                    ThisData.Trans_x = 0;
                 }
             }
 
             //forward
             if (ThisData.Trans_z > 0)
             {
-                adj = world.GetBlock(transform.position + Vector3.forward);
+                adj = world.GetBlock(transform.position + new Vector3(0, 0, HalfWidth + 1));
                 if (adj != null && adj.IsSolid(eDirection.backward))
                 {
                     ThisData.Trans_z = 0;
@@ -55,7 +60,7 @@ namespace Assets.Scripts.CharacterSpace
             //backward
             else
             {
-                adj = world.GetBlock(transform.position + Vector3.back);
+                adj = world.GetBlock(transform.position + new Vector3(0, 0, -HalfWidth - 1));
                 if (adj != null && adj.IsSolid(eDirection.forward))
                 {
                     ThisData.Trans_z = 0;

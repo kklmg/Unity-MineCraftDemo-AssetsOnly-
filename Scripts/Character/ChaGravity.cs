@@ -11,12 +11,14 @@ namespace Assets.Scripts.CharacterSpace
     {
         [SerializeField]
         private float m_Gravity = 9.8f;
+        [SerializeField]
         private float m_DropSpeed = 0;
+        [SerializeField]
+        private float m_Ground;
 
         private Character m_refCha;
         private Communicator m_Communicator;
         private World m_refWorld;
-        private Block m_Ground;
 
 
         public float Gravity { get { return m_Gravity; } }
@@ -30,31 +32,38 @@ namespace Assets.Scripts.CharacterSpace
         }
         private bool CheckGround(IEvent _event)
         {
-            E_Cha_Moved EMove = _event as E_Cha_Moved;
-            m_Ground = m_refWorld.GetBlock(transform.position + Vector3.down);
-
+            E_Cha_Moved EMove = _event as E_Cha_Moved;         
+            m_Ground = m_refWorld.GetGroundHeight(transform.position);
             return true;
         }
 
         private void Awake()
         {
-            m_refCha = GetComponent<Character>();           
+            m_refCha = GetComponent<Character>();
+            m_Communicator = GetComponent<Communicator>();
         }
         private void Start()
         {
-            m_refWorld = Locator<World>.GetService();
-            m_Communicator = GetComponent<Communicator>();
+            m_refWorld = Locator<World>.GetService();          
             m_Communicator.SubsribeEvent(E_Cha_Jump.ID, TriggerJump);
             m_Communicator.SubsribeEvent(E_Cha_Moved.ID, CheckGround);
+
+            m_Ground = m_refWorld.GetGroundHeight(transform.position);
         }
         private void Update()
         {
-            Block bottom = m_refWorld.GetBlock(transform.position + Vector3.down);
+            //Block bottom = m_refWorld.GetBlock(transform.position + Vector3.down);
 
-            if (bottom == null || !bottom.IsSolid(eDirection.up) || m_DropSpeed>0.0f)
+            //if (bottom == null || !bottom.IsSolid(eDirection.up) || m_DropSpeed>0.0f)
+            if (transform.position.y- m_refCha.BodyHeight > m_Ground || m_DropSpeed > 0.0f)
             {
                 m_DropSpeed -= m_Gravity * Time.deltaTime;
                 transform.Translate(new Vector3(0, m_DropSpeed, 0));
+                if (transform.position.y < m_Ground)
+                {
+                    transform.position = new Vector3(
+                        transform.position.x, m_Ground + m_refCha.BodyHeight, transform.position.z);
+                };
             }
             else m_DropSpeed = 0;       
         }

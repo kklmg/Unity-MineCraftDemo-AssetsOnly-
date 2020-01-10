@@ -16,6 +16,12 @@ public class Character : MonoBehaviour
     private Transform m_Camera;
     [SerializeField]
     private Vector3Int m_PlayerSlot;
+
+    [SerializeField]
+    private float m_BodyWidth = 1;
+    [SerializeField]
+    private float m_BodyHeight = 2;
+
     [SerializeField]
     private float m_WalkSpeed = 1;
     [SerializeField]
@@ -24,6 +30,8 @@ public class Character : MonoBehaviour
     private float m_JumpForce = 0.5f;
 
 
+    public float BodyWidth { get { return m_BodyWidth; } }
+    public float BodyHeight { get { return m_BodyHeight; } }
     public Transform Camera { get { return m_Camera; } }
     public float WalkSpeed { get { return m_WalkSpeed; } }
     public float RunSpeed { get { return m_RunSpeed; } }

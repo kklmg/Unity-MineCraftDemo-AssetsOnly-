@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MyNoise.Perlin
+namespace Assets.Scripts.Noise
 {
     //delegate fade function
     public delegate float del_FadeFunction(float t);
@@ -23,37 +23,9 @@ namespace MyNoise.Perlin
         }
     }
 
-    //delegate of hash funcionn
-    public delegate int del_HashFunction(int key);
-
-    //defined hash functions
-    public static class HashFunction
-    {
-        public static int MyHash(int key)
-        {
-            const uint BIT_NOISE1 = 0x53567A4D;
-            const uint BIT_NOISE2 = 0x46E71DA4;
-            const uint BIT_NOISE3 = 0x83f12d39;
-
-            uint mangled = (uint)key;
-            mangled *= BIT_NOISE1;
-            mangled ^= (mangled >> 8);
-            mangled += BIT_NOISE2;
-            mangled ^= (mangled << 8);
-            mangled *= BIT_NOISE3;
-            mangled ^= (mangled >> 8);
-
-            return (int)mangled;
-        }
-    }
 
 
-    public interface INoiseMaker
-    {
-        float GetNoise_2D(Vector2 point);
 
-        float GetNoise_3D(Vector3 point);
-    }
     /// <summary>
     /// class perlin noise maker
     /// </summary>
@@ -61,32 +33,32 @@ namespace MyNoise.Perlin
     {
         //Fileld
         const float NOISE_OFFSET = 0.001f;
+        private HashMaker m_HashMaker;                    //Hash Maker
 
         //Delegate----------------------------------------------------------------
         private del_FadeFunction m_delFadeFunction;       //Fade Function
-        private del_HashFunction m_delHashFunction;       //Hash Function
-
+      
         //Property----------------------------------------------------------------
         public del_FadeFunction FadeFun {set { m_delFadeFunction = value; } }
-        public del_HashFunction HashFun { set { m_delHashFunction = value; } }
 
 
         //Constructor----------------------------------------------------------------
-        public PerlinNoiseMaker()
+        public PerlinNoiseMaker(uint _seed)
         {
             //set default fade function
             m_delFadeFunction = new del_FadeFunction(FadeFunction.Perlin_v1);
-            //set defatul hash function
-            m_delHashFunction = new del_HashFunction(HashFunction.MyHash);
+
+            //Init Hash Maker
+            m_HashMaker = new HashMaker(_seed);
         }
 
 
         //Public Function---------------------------------------------------------------
         /// <summary>
-        /// get a perlin noise 
+        /// get a 2D perlin noise 
         /// </summary>
-        /// <param name="point">2 dimensiol input</param>
-        /// <returns>outout range(0,1)</returns>
+        /// <param name="point">Arbitraty Vector2</param>
+        /// <returns> Noise (float value between -1 and 1) </returns>
         public float GetNoise_2D(Vector2 point)
         {
             //for avoid integer input
@@ -149,6 +121,7 @@ namespace MyNoise.Perlin
        
         }
 
+        /// <returns> Noise (float value between 0 and 1) </returns>
         public float GetNoise_2D_abs(Vector2 point)
         {
             return (GetNoise_2D(point) + 1) / 2;
@@ -158,30 +131,28 @@ namespace MyNoise.Perlin
         {
             return GetNoise_2D(new Vector2(point.x * frequency, point.y * frequency)) * amplitude;
         }
-
         public float GetNoise_2D_abs(Vector2 point, float frequency, float amplitude)
         {
             return ((GetNoise_2D(new Vector2(point.x * frequency, point.y * frequency))+1)/2) * amplitude;
         }
-
         public float GetOctaveNoise_2D(Vector2 point,float frequency,float amplitude,int octaves=8)
         {
             float res = 0;
-            float maxValue = 0;  // Used for normalizing result to 0.0 - 1.0
-
-
+            float maxValue = 0;  // sum of all amplitude (possible max amplitude)
+            float scale = amplitude;
             for (int i = 0; i < octaves; i++)
             {
                 res += GetNoise_2D(point,frequency,amplitude);
 
-                maxValue += amplitude;//
+                maxValue += amplitude;
 
                 amplitude /= 2;
                 frequency *= 2;
             }
 
-            return res / maxValue;
+            return res / maxValue*scale;
         }
+      
 
         public float GetNoise_3D(Vector3 point) { return 0; }//XXXXXXXXXXXXXXXXXXXXXX
 
@@ -189,16 +160,16 @@ namespace MyNoise.Perlin
         //Private Function----------------------------------------------------------------
         private int Hash_2D(Vector2 vertex)
         {
-            return m_delHashFunction(((int)(vertex.x) << 8) + (int)(vertex.y));
+            return m_HashMaker.GetHash(((int)(vertex.x) << 8) + (int)(vertex.y));
 
             //return m_delHashFunction((int)vertex.x) + m_delHashFunction((int)vertex.y);
         }
 
         private int Hash_3D(Vector3 vertex)
         {
-            return m_delHashFunction((int)vertex.x) / 3 
-                +  m_delHashFunction((int)vertex.y) / 3
-                +  m_delHashFunction((int)vertex.z) / 3;
+            return m_HashMaker.GetHash((int)vertex.x) / 3
+                    + m_HashMaker.GetHash((int)vertex.y) / 3
+                    + m_HashMaker.GetHash((int)vertex.z) / 3;
         }
 
         //get weight (product of random gradient and the vector)

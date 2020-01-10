@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using MyNoise.Perlin;
-using Assets.Scripts.Pattern;
-using UnityEditor;
+using Assets.Scripts.Noise;
 
-namespace Assets.Scripts.Noise
+namespace Tester
 {
     class NoiseTester : MonoBehaviour
     {
@@ -29,7 +23,7 @@ namespace Assets.Scripts.Noise
 
         private void Awake()
         {
-            m_NoiseMaker = new PerlinNoiseMaker();
+            m_NoiseMaker = new PerlinNoiseMaker(9876543);
             result1 = new List<float>();
             result2 = new List<float>();
         }
@@ -37,8 +31,8 @@ namespace Assets.Scripts.Noise
         private void Start()
         {
             m_MeshRenderer = gameObject.GetComponent<MeshRenderer>();
-            
 
+            Debug.Log("are you kidding me?");
             //getTexture();
             test_1D();
             //test_2D();
@@ -46,19 +40,21 @@ namespace Assets.Scripts.Noise
 
         void test_1D()
         {
-            for (float x = -10.0f; x < 10f; x += 0.1f)
+            for (float x = 10.0f; x < 20f; x += 0.1f)
             {
                 //float y1 = Mathf.PerlinNoise(x + 0.01f, 0.9f);
                 //float y2 = Mathf.PerlinNoise(x + 0.001f, 0.2f);
 
-                float y1 = m_NoiseMaker.GetNoise_2D(new Vector2(x+0.01f, 0.1f));
+                float y1 = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x+0.01f, 0.1f),0.8f,20,8)*20;
+                //float y2 = m_NoiseMaker.GetNoise_2D(new Vector2(x + 0.01f, 0.1f), 0.8f, 20);
                 //float y1 = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x, 0.9f), 1.0f, 128.0f, 4);
                 //float y2 = m_NoiseMaker.GetNoise_2D(new Vector2(x, 0.2f));
 
                 result1.Add(y1);
                 //result2.Add(y2);
 
-                Instantiate(targetprefab, new Vector3(x*10, y1*50, 1.0f),Quaternion.Euler(0,180,0));
+                Instantiate(targetprefab, new Vector3(x*10, y1*10, 1.0f),Quaternion.Euler(0,180,0));
+                //Instantiate(targetprefab, new Vector3(x * 10, y2 * 10, 5.0f), Quaternion.Euler(0, 180, 0));
             }
 
         }

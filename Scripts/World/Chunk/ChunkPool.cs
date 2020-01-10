@@ -19,9 +19,6 @@ namespace Assets.Scripts.WorldComponent
         private Dictionary<Vector2Int, Chunk> m_DicChunks = new Dictionary<Vector2Int, Chunk>();
 
         [SerializeField]
-        private uint m_WorldSeed;
-
-        [SerializeField]
         private int m_MaxCount = 10;
         private World m_refWorld;
 
@@ -57,7 +54,8 @@ namespace Assets.Scripts.WorldComponent
                 Go.transform.transform.position = m_refWorld.SlotToCoord(new Vector3Int(slot_x, 0, slot_z));
 
                 _Chunk = Go.AddComponent<Chunk>();
-                _Chunk.Init(slot_x, slot_z, this.transform, m_refWorld.Biomes[0]);
+                _Chunk.Init(slot_x, slot_z, this.transform,
+                    m_refWorld.Biomes[(int)(m_refWorld.Seed % m_refWorld.Biomes.Count)]);// rand biome
 
                 //put to pool
                 m_DicChunks.Add(new Vector2Int(slot_x, slot_z), _Chunk);

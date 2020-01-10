@@ -99,9 +99,12 @@ namespace Assets.Scripts.CharacterSpace
             thisData.Character.transform.Translate(
                 new Vector3(thisData.Move.Trans_x, thisData.Move.Trans_y, thisData.Move.Trans_z));
 
-            //notify orther system
+            //set event
             m_ECha_move.Cha = thisData.Character;
-            Locator<IEventPublisher>.GetService().Publish(m_ECha_move);    
+
+            //notify orther system
+            Locator<IEventPublisher>.GetService().Publish(m_ECha_move);
+            thisData.Communicator.PublishEvent(m_ECha_move);
 
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;

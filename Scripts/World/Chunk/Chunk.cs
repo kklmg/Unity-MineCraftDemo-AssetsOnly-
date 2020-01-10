@@ -27,43 +27,53 @@ namespace Assets.Scripts.WorldComponent
         //[SerializeField]
         private Section[] m_arrSections;  //Sections
 
-        public Section GetSection(int h)
+        public Section GetSection(int Height)
         {
-            h = h % m_refWorld.Chunk_Height;
+            Height = Height % m_refWorld.Chunk_Height;
             
-            if (h < 0 || h > m_refWorld.Chunk_Height) return null;
-            return m_arrSections[h];
+            if (Height < 0 || Height > m_refWorld.Chunk_Height) return null;
+            return m_arrSections[Height];
         }
-        //public float GetGroundHeight(int x,int y,int z)
-        //{
-        //    while (y>-1)
-        //    {
-        //        int Height = y % m_refWorld.Chunk_Height;
-        //        int SHeight = y % m_refWorld.Section_Height;
-        //        Section cur = GetSection(Height);
-        //        if (cur == null)
-        //        {
-        //            y -= m_refWorld.Chunk_Height;
-        //            continue;
-        //        }
+        public bool GetGroundHeight(int blkx,int blkz, int CurY,out float GroundY)
+        {
+            CurY -= 1;
 
-        //        if (SHeight>-1)
-        //        {
-        //            block.x;
+            int SecID;
+            int blky;
+            Section CurSec;
+            Block CurBlock;
 
-        //            if(cur.GetBlock().IsSolid(eDirection.up))
+            while (CurY > -1)
+            {
+                //Get Currect Section
+                SecID = CurY / m_refWorld.Chunk_Height;
+                CurSec = m_arrSections[SecID];
+             
+                //Block Height
+                blky = CurY % m_refWorld.Chunk_Height;
 
-        //        }
-        //        m_arrSections[]
-        //    }
-        //    return m_arrHeightMap[x, z];
-        //}
+                if (CurSec == null)
+                {
+                    CurY -= blky+1;
+                    continue;
+                }
 
-        //public float GetBlock(int y)
-        //{
-        //    return m_arrHeightMap[x, z];
-        //}
+                while (blky > -1)
+                {
+                    CurBlock = CurSec.GetBlock(blkx, blky, blkz);
 
+                    if (CurBlock!=null && CurBlock.IsSolid(eDirection.up))
+                    {
+                        GroundY = (blky + 1) + SecID * m_refWorld.Chunk_Height;
+                        return true;
+                    }
+                    blky -= 1;
+                    CurY -= 1;
+                }
+            }
+            GroundY = default(float);
+            return false;
+        }
 
         //property
         //------------------------------------------------------------------------
@@ -91,9 +101,10 @@ namespace Assets.Scripts.WorldComponent
             m_Parent = parent;
             m_refBiome = RefBiome;
 
+            //create Height map
             m_arrHeightMap = m_refBiome.GenerateHeightMap
                 (m_Coord_x, m_Coord_z, m_refWorld.Section_Width, m_refWorld.Section_Height,
-                out m_MaxHeight,out m_MinHeight);
+                m_refWorld.NoiseMaker,out m_MaxHeight,out m_MinHeight);
 
             CreateAllSections();
         }
