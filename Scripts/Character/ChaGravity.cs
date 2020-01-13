@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Assets.Scripts.EventManager;
-using Assets.Scripts.WorldComponent;
+using Assets.Scripts.NWorld;
 using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.CharacterSpace

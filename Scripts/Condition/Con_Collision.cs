@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Assets.Scripts.WorldComponent;
+using Assets.Scripts.NWorld;
 using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts.Condition
@@ -20,7 +20,7 @@ namespace Assets.Scripts.Condition
         {
             Block target = MonoSingleton<World>.Instance.GetBlock(m_trans.position + Vector3.left);
             if (target == null) return false;
-            return target.IsSolid(eDirection.right);
+            return target.IsSolid(Direction.RIGHT);
         }
     }
     public class Con_Blocked_Right : Con_Transform
@@ -30,7 +30,7 @@ namespace Assets.Scripts.Condition
         {
             Block target = MonoSingleton<World>.Instance.GetBlock(m_trans.position + Vector3.right);
             if (target == null) return false;
-            return target.IsSolid(eDirection.left);
+            return target.IsSolid(Direction.LEFT);
         }
     }
     public class Con_Blocked_Front : Con_Transform
@@ -40,7 +40,7 @@ namespace Assets.Scripts.Condition
         {
             Block target = MonoSingleton<World>.Instance.GetBlock(m_trans.position + Vector3.forward);
             if (target == null) return false;
-            return target.IsSolid(eDirection.backward);
+            return target.IsSolid(Direction.BACKWARD);
         }
     }
     public class Con_Blocked_Back : Con_Transform
@@ -50,7 +50,7 @@ namespace Assets.Scripts.Condition
         {
             Block target = MonoSingleton<World>.Instance.GetBlock(m_trans.position + Vector3.back);
             if (target == null) return false;
-            return target.IsSolid(eDirection.forward);
+            return target.IsSolid(Direction.FORWARD);
         }
     }
     public class Con_Blocked_Up : Con_Transform
@@ -60,7 +60,7 @@ namespace Assets.Scripts.Condition
         {
             Block target = MonoSingleton<World>.Instance.GetBlock(m_trans.position + Vector3.up);
             if (target == null) return false;
-            return target.IsSolid(eDirection.down);
+            return target.IsSolid(Direction.DOWN);
         }
     }
     public class Con_Blocked_Down : Con_Transform
@@ -70,7 +70,7 @@ namespace Assets.Scripts.Condition
         {
             Block target = MonoSingleton<World>.Instance.GetBlock(m_trans.position + Vector3.down);
             if (target == null) return false;
-            return target.IsSolid(eDirection.up);
+            return target.IsSolid(Direction.UP);
         }
     }
 }

@@ -2,7 +2,7 @@
 using Assets.Scripts.InputHandler;
 using Assets.Scripts.EventManager;
 using Assets.Scripts.Pattern;
-using Assets.Scripts.WorldComponent;
+using Assets.Scripts.NWorld;
 
 using UnityEngine;
 
@@ -34,9 +34,9 @@ namespace Assets.Scripts.CharacterSpace
                 && Mathf.Approximately(0.0f, m_fVer)) return false;
 
             //calculate movement
-            m_ThisData.Move.Trans_x = m_fHor * Time.deltaTime
+            m_ThisData.Move.Translation.x = m_fHor * Time.deltaTime
                 * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
-            m_ThisData.Move.Trans_z = m_fVer * Time.deltaTime
+            m_ThisData.Move.Translation.z = m_fVer * Time.deltaTime
             * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
 
 
@@ -62,7 +62,7 @@ namespace Assets.Scripts.CharacterSpace
             //not valid input
             if (Mathf.Approximately(0.0f, Cache_Rotate)) return false;
 
-            thisData.Move.Rotation_Y = Cache_Rotate;
+            thisData.Move.Rotation.y = Cache_Rotate;
 
             return true;
         }
@@ -76,7 +76,7 @@ namespace Assets.Scripts.CharacterSpace
             IController control = Locator<IController>.GetService();
 
             //get input
-            Cache_Rotate = control.Rotate_Z();
+            Cache_Rotate = control.Rotate_X();
 
             //not valid input
             if (Mathf.Approximately(0.0f, Cache_Rotate)) return false;
@@ -96,9 +96,8 @@ namespace Assets.Scripts.CharacterSpace
         protected override eRunningState Tick(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-            thisData.Character.transform.Translate(
-                new Vector3(thisData.Move.Trans_x, thisData.Move.Trans_y, thisData.Move.Trans_z));
-
+            thisData.Character.transform.Translate(thisData.Move.Translation);
+                
             //set event
             m_ECha_move.Cha = thisData.Character;
 
@@ -116,7 +115,7 @@ namespace Assets.Scripts.CharacterSpace
         {
             ChaBevData thisData = workData as ChaBevData;
 
-            thisData.Character.transform.Rotate(Vector3.up * thisData.Move.Rotation_Y);
+            thisData.Character.transform.Rotate(Vector3.up * thisData.Move.Rotation.y);
 
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;
@@ -130,7 +129,7 @@ namespace Assets.Scripts.CharacterSpace
             ChaBevData thisData = workData as ChaBevData;
 
             thisData.GetValue(KEY_CONTROL.CAMERA_UD, out Camera_UD);
-            thisData.Character.Camera.transform.Rotate(Vector3.right *-Camera_UD);
+            thisData.Character.TCamera.Rotate(Vector3.right *-Camera_UD);
 
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;
@@ -169,7 +168,7 @@ namespace Assets.Scripts.CharacterSpace
             IController control = Locator<IController>.GetService();
 
             Block adj = m_refWorld.GetBlock(thisData.Character.transform.position + Vector3.down);
-            return !(adj != null && adj.IsSolid(eDirection.up));
+            return !(adj != null && adj.IsSolid(Direction.UP));
         }
     }
 }

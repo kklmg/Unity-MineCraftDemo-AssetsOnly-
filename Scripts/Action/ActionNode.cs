@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Assets.Scripts.WorldComponent;
+using Assets.Scripts.NWorld;
 using Assets.Scripts.BehaviorTree;
 
 namespace Assets.Scripts.Action

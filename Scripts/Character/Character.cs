@@ -1,15 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Assets.Scripts.InputHandler;
-using Assets.Scripts.WorldComponent;
-using Assets.Scripts.Pattern;
-
+﻿using UnityEngine;
 
 //[RequireComponent(typeof(Camera))]
 public class Character : MonoBehaviour
 {
-    [SerializeField][Range(1,5)]
+    [SerializeField]
+    [Range(1, 5)]
     private byte m_ViewDistance;
 
     [SerializeField]
@@ -18,7 +13,7 @@ public class Character : MonoBehaviour
     private Vector3Int m_PlayerSlot;
 
     [SerializeField]
-    private float m_BodyWidth = 1;
+    private float m_BodyRadius = 1;
     [SerializeField]
     private float m_BodyHeight = 2;
 
@@ -30,9 +25,9 @@ public class Character : MonoBehaviour
     private float m_JumpForce = 0.5f;
 
 
-    public float BodyWidth { get { return m_BodyWidth; } }
+    public float BodyRadius { get { return m_BodyRadius; } }
     public float BodyHeight { get { return m_BodyHeight; } }
-    public Transform Camera { get { return m_Camera; } }
+    public Transform TCamera { get { return m_Camera; } }
     public float WalkSpeed { get { return m_WalkSpeed; } }
     public float RunSpeed { get { return m_RunSpeed; } }
     public float JumpForce { get { return m_JumpForce; } }
@@ -43,7 +38,7 @@ public class Character : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("Awake is called!");     
+        Debug.Log("Awake is called!");
     }
 
     // Start is called before the first frame update
@@ -56,6 +51,9 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Ray ray = Camera.main.ScreenPointToRay(new Vector2((float)Screen.width / 2f, (float)Screen.height / 2f));
+        Debug.DrawRay(transform.position, ray.direction * 50, Color.red);
+
         //m_PlayerSlot = m_refWorld.CoordToSectionSlot(transform.position);
     }
 }

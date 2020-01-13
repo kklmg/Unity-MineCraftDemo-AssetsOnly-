@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Assets.Scripts.SMesh;
 
-namespace Assets.Scripts.WorldComponent
+namespace Assets.Scripts.NWorld
 {
     [CreateAssetMenu(menuName = "block")]
     public class Block : ScriptableObject
@@ -16,15 +16,15 @@ namespace Assets.Scripts.WorldComponent
         private Tile[] m_Tiles;
 
         //public Function----------------------------------
-        public MeshData GetMesh(eDirection dir)
+        public MeshData GetMesh(byte dir)
         {
-            return m_Tiles[(int)dir].Mesh;
+            return m_Tiles[dir].Mesh;
         }
        
        
-        public  bool IsSolid(eDirection dir)
+        public  bool IsSolid(byte dir)
         {
-            return m_Tiles[(int)dir].IsSolid;
+            return m_Tiles[dir].IsSolid;
         }
         public  bool isOverlap(Block blk)
         {
@@ -41,12 +41,12 @@ namespace Assets.Scripts.WorldComponent
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <param name="texRef"></param>
-        public void ExtractMesh(eDirection dir, MeshData receiver, int x, int y, int z,TextureSheet texRef)
+        public void ExtractMesh(byte dir, MeshData receiver, int x, int y, int z,TextureSheet texRef)
         {
-            if (m_Tiles[(int)dir].Mesh == null) return;
+            if (m_Tiles[dir].Mesh == null) return;
 
             //make clone
-            MeshData mesh = m_Tiles[(int)dir].Mesh.Clone();
+            MeshData mesh = m_Tiles[dir].Mesh.Clone();
             
             //set postion
             mesh.Translate(Vector3.right, x);
@@ -54,7 +54,7 @@ namespace Assets.Scripts.WorldComponent
             mesh.Translate(Vector3.forward, z);
 
             //set texture
-            Frame fr = texRef.GetCoord(m_Tiles[(int)dir].TexID);
+            Frame fr = texRef.GetCoord(m_Tiles[dir].TexID);
             mesh.SetUV_quad(fr);
 
             //save mesh data

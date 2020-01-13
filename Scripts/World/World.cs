@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-using Assets.Scripts.Pattern;
 using Assets.Scripts.Noise;
 
-namespace Assets.Scripts.WorldComponent
+namespace Assets.Scripts.NWorld
 {
     public interface IWorld
     {
@@ -71,21 +69,28 @@ namespace Assets.Scripts.WorldComponent
 
         //Public Function
         //--------------------------------------------------------------------
-        public Vector3Int CoordToSlot(Vector3 pos)
-            {
-                return new Vector3Int(
-                    (int)pos.x / m_Section_Width,
-                    (int)pos.y / m_Section_Height,
-                    (int)pos.z / m_Section_Depth);
-            }
-        public Vector3 SlotToCoord(Vector3Int pos)
+        public Vector3Int CoordToSlot(Vector3 Coord)
+        {
+            return new Vector3Int(
+                (int)Coord.x / m_Section_Width,
+                (int)Coord.y / m_Section_Height,
+                (int)Coord.z / m_Section_Depth);
+        }
+        public Vector3 SlotToCoord(Vector3Int Slot)
         {
             return new Vector3(
-                (int)pos.x * m_Section_Width,
-                (int)pos.y * m_Section_Height,
-                (int)pos.z * m_Section_Depth);
+                (float)Slot.x * m_Section_Width,
+                (float)Slot.y * m_Section_Height,
+                (float)Slot.z * m_Section_Depth);
         }
+        public Bounds GetBound(Vector3 Coord)
+        {
+            Bounds Temp = new Bounds();
+            Vector3 vt = new Vector3((int)Coord.x, (int)Coord.y, (int)Coord.z);
 
+            Temp.SetMinMax(vt, vt + Vector3.one);
+            return Temp;    
+        }
         public Chunk GetChunk(Vector3 Coord)
         {
             Vector3Int Slot = CoordToSlot(Coord);
@@ -95,7 +100,6 @@ namespace Assets.Scripts.WorldComponent
         {
             return m_refPool.GetChunk(new Vector2Int(Slot.x, Slot.z));
         }
-
         public Section GetSection(Vector3 Coord)
         {
             Vector3Int Slot = CoordToSlot(Coord);
@@ -127,6 +131,8 @@ namespace Assets.Scripts.WorldComponent
                 (int)Coord.y % m_Section_Height,
                 (int)Coord.z % m_Section_Depth);
         }
+        
+
         public Block GetBlock_Ray(Ray ray)
         {
             Vector3 check;
@@ -143,6 +149,21 @@ namespace Assets.Scripts.WorldComponent
 
             return block;
         }
+        public Bounds GetBlockBound_Ray(Ray ray)
+        {
+            Vector3 check;
+            Block block;
+            int distance = 10;
+            do
+            {
+                check = ray.origin + ray.direction;
+                block = GetBlock(check);
+                --distance;
+            }
+            while (block != null && distance > 0);
+
+            return new Bounds(check,Vector3.one);
+        }
 
         public float GetGroundHeight(Vector3 Coord)
         {
@@ -156,63 +177,6 @@ namespace Assets.Scripts.WorldComponent
                 return res;
             else return float.MinValue;
         }
-
-        public class PlayerSelection
-        {
-            public Camera m_Camrea;
-        }
-
-        public class PosData
-        {
-            World m_refWorld = null;
-            Vector3Int m_Slot = Vector3Int.zero;
-            Chunk m_Chunk = null;
-            Section m_Section = null;
-            Vector3Int m_SlotInSection = Vector3Int.zero;
-            Block m_Block = null;
-
-            public PosData(Vector3 Coord)
-            {
-                m_refWorld = Locator<World>.GetService();
-                Update(Coord);
-            }
-            void Update(Vector3 Coord)
-            {
-                if (m_refWorld == null)
-                {
-                    m_Slot = Vector3Int.zero;
-                    m_Chunk = null;
-                    m_Section = null;
-                    m_Block = null;
-                    return;
-                }
-                //update slot
-                m_Slot = m_refWorld.CoordToSlot(Coord);
-                m_SlotInSection = new Vector3Int(
-                    (int)Coord.x % m_refWorld.Section_Width,
-                    (int)Coord.y % m_refWorld.Section_Height,
-                    (int)Coord.z % m_refWorld.Section_Depth);
-
-                //update chunk
-                m_Chunk = m_refWorld.m_refPool.GetChunk(new Vector2Int(m_Slot.x, m_Slot.z));
-                if (m_Chunk == null)
-                {
-                    m_Section = null;
-                    m_Block = null;
-                    return;
-                }
-
-                //update section
-                m_Section = m_Chunk.GetSection(m_Slot.y);
-                if (m_Section == null)
-                {
-                    m_Block = null;
-                    return;
-                }
-                //update block
-                m_Section.GetBlock(m_SlotInSection.x, m_SlotInSection.y, m_SlotInSection.z);
-            }
-        }
-
+        
     }
 }

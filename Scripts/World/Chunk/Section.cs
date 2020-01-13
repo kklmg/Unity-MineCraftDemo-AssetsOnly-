@@ -3,7 +3,7 @@ using UnityEngine;
 using Assets.Scripts.SMesh;
 
 
-namespace Assets.Scripts.WorldComponent
+namespace Assets.Scripts.NWorld
 {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
@@ -104,7 +104,14 @@ namespace Assets.Scripts.WorldComponent
                 isDirtry = false;
             }
         }
-
+        private void OnBecameInvisible()
+        {
+            //gameObject.SetActive(false);
+        }
+        private void OnBecameVisible()
+        {
+            //gameObject.SetActive(true);
+        }
 
         //function---------------------------------------------------
         public void GenerateSection(LayerData LayerData, int[,] HeightMap,int abs_y)
@@ -136,7 +143,7 @@ namespace Assets.Scripts.WorldComponent
             //if (isDirtry == false) return;
             m_MeshData.clear();
             m_MeshFilter.mesh.Clear();
-            Block cur, adj;
+            Block Curblk;
 
             int width = m_refWorld.Section_Width;
             int height = m_refWorld.Section_Height;
@@ -149,68 +156,38 @@ namespace Assets.Scripts.WorldComponent
                 {
                     for (z = 0; z < depth; z++)
                     {
-                        cur = GetBlock(x, y, z);
-
-                        if (cur == null) continue;
-
-                        //check above block
-                        adj = GetBlock(x, y + 1, z);
-
-                        if (adj == null || adj.IsSolid(eDirection.down) == false)
-                        {
-                            cur.ExtractMesh(eDirection.up, m_MeshData, x, y, z, m_refTexs);
-                        }
-
-                        //check below block
-                        adj = GetBlock(x, y - 1, z);
-                        if (adj == null || adj.IsSolid(eDirection.up) == false)
-                        {
-                            cur.ExtractMesh(eDirection.down, m_MeshData, x, y, z, m_refTexs);
-                        }
-
-                        //check left block
-                        adj = GetBlock(x - 1, y, z);
-                        if (adj == null || adj.IsSolid(eDirection.right) == false)
-                        {
-                            cur.ExtractMesh(eDirection.left, m_MeshData, x, y, z, m_refTexs);
-                        }
-
-                        //check right block
-                        adj = GetBlock(x + 1, y, z);
-                        if (adj == null || adj.IsSolid(eDirection.left) == false)
-                        {
-                            cur.ExtractMesh(eDirection.right, m_MeshData, x, y, z, m_refTexs);
-                        }
-
-                        //check forward block
-                        adj = GetBlock(x, y, z + 1);
-                        if (adj == null || adj.IsSolid(eDirection.backward) == false)
-                        {
-                            cur.ExtractMesh(eDirection.forward, m_MeshData, x, y, z, m_refTexs);
-                        }
-
-                        //check backward block
-                        adj = GetBlock(x, y, z - 1);
-                        if (adj == null || adj.IsSolid(eDirection.forward) == false)
-                        {
-                            cur.ExtractMesh(eDirection.backward, m_MeshData, x, y, z, m_refTexs);
-                        }
+                        Curblk = GetBlock(x, y, z);
+                        if (Curblk == null) continue;
+                        //check top block
+                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.UP);
+                        ////check bottom block
+                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.DOWN);
+                        ////check left block
+                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.LEFT);
+                        ////check right block
+                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.RIGHT);
+                        ////check forward block
+                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.FORWARD);
+                        ////check backward block
+                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.BACKWARD);
                     }
                 }
             }
             m_MeshData.ToMeshFilter(m_MeshFilter);
         }
 
-        private void OnBecameInvisible()
+        private void _GetNonDuplicateMesh(Block Curblk,int x,int y,int z,byte dir)
         {
-            //gameObject.SetActive(false);
-        }
-        private void OnBecameVisible()
-        {
-            //gameObject.SetActive(true);
+            Vector3Int vt3dir = Direction.Vector(dir);
+            Block adj = GetBlock(x + vt3dir.x, y + vt3dir.y, z + vt3dir.z);
+            if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
+            {
+                Curblk.ExtractMesh(dir, m_MeshData, x, y, z, m_refTexs);
+            }
         }
 
-        bool BlockInThisSection(int x, int y, int z,out Vector3Int offset)
+
+        bool IsBlockInThisSection(int x, int y, int z,out Vector3Int offset)
         {
             if (x < 0)
             {
@@ -246,13 +223,12 @@ namespace Assets.Scripts.WorldComponent
             offset = Vector3Int.zero;
             return true;
         }
-
         public Block GetBlock(int x, int y, int z)
         {
             Vector3Int offset;
 
             //Case: Target block in this Section
-            if (BlockInThisSection(x, y, z, out offset))
+            if (IsBlockInThisSection(x, y, z, out offset))
             {               
                 return m_refBlocks[m_arrBlockID[x, y, z]];
             }
@@ -272,9 +248,14 @@ namespace Assets.Scripts.WorldComponent
             }
         }
 
-        void updateOneBlock(int x, int y, int z)
+        public byte GetBlockID(Vector3Int pos)
         {
-
+            return m_arrBlockID[pos.x, pos.y, pos.z];
+        }
+        public void SetBlock(Vector3Int pos, byte blkID)
+        {
+            m_arrBlockID[pos.x,pos.y,pos.z] = blkID;
+            isDirtry = true;
         }
 
     }

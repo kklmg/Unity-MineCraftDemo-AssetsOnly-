@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Assets.Scripts.WorldComponent;
+using Assets.Scripts.NWorld;
 using Assets.Scripts.Pattern;
 
 namespace Assets.Scripts
@@ -8,48 +8,75 @@ namespace Assets.Scripts
     class PositionData : MonoBehaviour
     {
         //Field
-        //-------------------------------------------------------------------------------
-        //cache components
-        private World m_refWorld;
-        private Transform m_TransSelf;
+        //-------------------------------------------------------------------------------      
+        public World m_refWorld = null;
+        public Transform m_Trans = null;
 
-        [SerializeField]
-        private Vector3Int m_WorldPos;
-        [SerializeField]
-        private Section m_CurSection;
-        [SerializeField]
-        private Vector3Int m_CurSectionSlot;
-        [SerializeField]
-        private Vector3Int m_CurBlockSlot;
+        public Vector3Int m_SecSlot;
+        public Chunk m_Chunk = null;
+        public Section m_Section = null;
+        public Vector3Int m_BlkSlot;
+        public Block m_Block = null;
+        public Bounds m_bound;
 
         //property
         //-------------------------------------------------------------------------------
-        public Section CurSection { get { return m_CurSection; } }
+        public Section CurSection { get { return m_Section; } }
         [SerializeField]
-        public Vector3Int CurSectionSlot { get { return m_CurSectionSlot; } }
+        public Vector3Int SectionSlot { get { return m_SecSlot; } }
         [SerializeField]
-        public Vector3Int CurBlockSlot { get { return m_CurBlockSlot; } }
+        public Vector3Int BlockSlot { get { return m_BlkSlot; } }
 
         private void Awake()
         {
-            m_TransSelf = this.transform;
+            m_Trans = this.transform;
             m_refWorld = Locator<World>.GetService();
         }
+
         private void FixedUpdate()
         {
-            m_WorldPos = new Vector3Int(
-                (int)m_TransSelf.position.x, 
-                (int)m_TransSelf.position.y, 
-                (int)m_TransSelf.position.z );
+            m_bound = m_refWorld.GetBound(m_Trans.position);
 
-            m_CurSectionSlot = m_refWorld.CoordToSlot(m_WorldPos);
-            m_CurSection = m_refWorld.GetSection(m_CurSectionSlot);
+            //get section position in world
+            m_SecSlot = m_refWorld.CoordToSlot(m_Trans.position);
+            m_BlkSlot = new Vector3Int(
+                (int)m_Trans.position.x % m_refWorld.Section_Width,
+                (int)m_Trans.position.y % m_refWorld.Section_Height,
+                (int)m_Trans.position.z % m_refWorld.Section_Depth);
 
-            m_CurBlockSlot = new Vector3Int(
-                m_WorldPos.x % m_refWorld.Section_Width,
-                m_WorldPos.y % m_refWorld.Section_Height,
-                m_WorldPos.z % m_refWorld.Section_Depth);
+            //get current chunk
+            m_Chunk = m_refWorld.GetChunk(m_SecSlot);
+            if (m_Chunk == null)
+            {
+                m_Section = null;
+                m_Block = null;
+                return;
+            }
+
+            //update section
+            m_Section = m_Chunk.GetSection(m_SecSlot.y);
+            if (m_Section == null)
+            {
+                m_Block = null;
+                return;
+            }
+            //update block
+            m_Section.GetBlock(m_BlkSlot.x, m_BlkSlot.y, m_BlkSlot.z);
+
+
+            
         }
-
+        void OnGUI()
+        {
+            GUI.Label(new Rect(0 + 10, 0 + 10, 100, 20), m_Trans.position.ToString());
+            GUI.Label(new Rect(0 + 10, 0 + 30, 100, 20), m_bound.min.ToString());
+            GUI.Label(new Rect(0 + 10, 0 + 50, 100, 20), m_bound.max.ToString());
+        }
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawSphere(m_Trans.position, 0.2f);
+            //Gizmos.DrawCube(m_bound.center, new Vector3(1,1,1));           
+        }
     }
+
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts.WorldComponent
+namespace Assets.Scripts.NWorld
 {
     public class Chunk : MonoBehaviour
     {
@@ -62,7 +62,7 @@ namespace Assets.Scripts.WorldComponent
                 {
                     CurBlock = CurSec.GetBlock(blkx, blky, blkz);
 
-                    if (CurBlock!=null && CurBlock.IsSolid(eDirection.up))
+                    if (CurBlock!=null && CurBlock.IsSolid(Direction.UP))
                     {
                         GroundY = (blky + 1) + SecID * m_refWorld.Chunk_Height;
                         return true;
@@ -108,7 +108,6 @@ namespace Assets.Scripts.WorldComponent
 
             CreateAllSections();
         }
-
         //create instance of Section
         public void CreateSection(int slot_y)
         {
@@ -125,7 +124,6 @@ namespace Assets.Scripts.WorldComponent
             m_arrSections[slot_y].SectionSlot = new Vector3Int(m_WorldSlot_x, slot_y, m_WorldSlot_z);
             m_arrSections[slot_y].GenerateSection(m_refBiome.getLayerData(), m_arrHeightMap, slot_y * m_refWorld.Chunk_Height);
         }
-
         public void CreateAllSections()
         {
             for (int i = 0; i < m_refWorld.Chunk_Height; ++i)

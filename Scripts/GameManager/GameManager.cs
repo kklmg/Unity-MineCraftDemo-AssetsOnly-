@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Pattern;
-using Assets.Scripts.WorldComponent;
+using Assets.Scripts.NWorld;
 using Assets.Scripts.InputHandler;
 using Assets.Scripts.EventManager;
 

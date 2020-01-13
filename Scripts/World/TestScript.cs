@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Assets.Scripts.SMesh;
 
-namespace Assets.Scripts.WorldComponent
+namespace Assets.Scripts.NWorld
 {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]

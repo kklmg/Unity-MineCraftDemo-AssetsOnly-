@@ -7,12 +7,8 @@ namespace Assets.Scripts.CharacterSpace
 {
     public class ChaMove
     {
-        public float Trans_x;
-        public float Trans_y;
-        public float Trans_z;
-        public float Rotation_X;
-        public float Rotation_Y;
-        public float Rotation_Z;
+        public Vector3 Translation;
+        public Vector3 Rotation;
     }
     public class ChaBevData : BevData
     {

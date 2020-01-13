@@ -4,7 +4,7 @@ using Assets.Scripts.Pattern;
 namespace Assets.Scripts.BehaviorTree
 {
     //Base Behavior Node
-    //used template method pattern
+    //template method pattern
     //Template - Enter();
     //Template - Tick();
     //Template - Exit();

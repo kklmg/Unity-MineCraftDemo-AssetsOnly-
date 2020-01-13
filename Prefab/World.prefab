@@ -48,10 +48,10 @@ MonoBehaviour:
   m_Section_Height: 16
   m_Section_Depth: 16
   m_Chunk_Height: 16
-  m_Seed: 950215
+  m_Seed: 20200111
   m_Bimoes:
   - {fileID: 11400000, guid: a1414901358bc5b4f8984f667a907ebf, type: 2}
-  - {fileID: 11400000, guid: 29c9d6a0cd1d1ec41a11f7da412b4b47, type: 2}
+  - {fileID: 11400000, guid: 21e8c95619f7be44b9ba92e155f35e65, type: 2}
   m_listBlocks:
   - {fileID: 0}
   - {fileID: 11400000, guid: 6abe9cd660b50074d912f1170e4d88ec, type: 2}
@@ -72,4 +72,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_PreSlot: {x: 0, y: 0, z: 0}
-  m_MaxCount: 10
+  m_MaxCount: 12

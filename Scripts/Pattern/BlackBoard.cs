@@ -9,7 +9,6 @@ namespace Assets.Scripts.Pattern
     class BlackBoard
     {
         private Dictionary<string, object> m_Items;
-
         //
         public BlackBoard()
         {
