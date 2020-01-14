@@ -178,7 +178,7 @@ namespace Assets.Scripts.NWorld
 
         private void _GetNonDuplicateMesh(Block Curblk,int x,int y,int z,byte dir)
         {
-            Vector3Int vt3dir = Direction.Vector(dir);
+            Vector3Int vt3dir = Direction.DirToVectorInt(dir);
             Block adj = GetBlock(x + vt3dir.x, y + vt3dir.y, z + vt3dir.z);
             if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
             {

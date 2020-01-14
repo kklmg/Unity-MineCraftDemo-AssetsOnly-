@@ -15,7 +15,22 @@ public static class Direction
         return ((dir & 1) == 0) ? ++dir : --dir;
     }
 
-    public static Vector3Int Vector(byte dir)
+    public static Vector3 DirToVector(byte dir)
+    {
+        Debug.Assert(dir < 6);
+        switch (dir)
+        {
+            case UP: return Vector3.up;
+            case DOWN: return Vector3.down;
+            case LEFT: return Vector3.left;
+            case RIGHT: return Vector3.right;
+            case FORWARD: return new Vector3(0, 0, 1);
+            case BACKWARD: return new Vector3(0, 0, -1);
+            default: return Vector3.zero;
+        }
+
+    }
+    public static Vector3Int DirToVectorInt(byte dir)
     {
         Debug.Assert(dir < 6);
         switch (dir)
@@ -28,6 +43,17 @@ public static class Direction
             case BACKWARD: return new Vector3Int(0, 0, -1);
             default: return Vector3Int.zero;
         }
-
     }
+
+    //public static byte VectorToDir(Vector3 vt3) 
+    //{
+
+    //    if(vt3.x>0)
+        
+    //}
+    //public static byte VectorIntToDir(Vector3Int vt3)
+    //{
+
+    //}
+
 }

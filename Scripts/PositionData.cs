@@ -10,8 +10,6 @@ namespace Assets.Scripts
         //Field
         //-------------------------------------------------------------------------------      
         public World m_refWorld = null;
-        public Transform m_Trans = null;
-
         public Vector3Int m_SecSlot;
         public Chunk m_Chunk = null;
         public Section m_Section = null;
@@ -28,21 +26,20 @@ namespace Assets.Scripts
         public Vector3Int BlockSlot { get { return m_BlkSlot; } }
 
         private void Awake()
-        {
-            m_Trans = this.transform;
+        {        
             m_refWorld = Locator<World>.GetService();
         }
 
         private void FixedUpdate()
         {
-            m_bound = m_refWorld.GetBound(m_Trans.position);
+            m_bound = m_refWorld.GetBound(transform.position);
 
             //get section position in world
-            m_SecSlot = m_refWorld.CoordToSlot(m_Trans.position);
+            m_SecSlot = m_refWorld.CoordToSlot(transform.position);
             m_BlkSlot = new Vector3Int(
-                (int)m_Trans.position.x % m_refWorld.Section_Width,
-                (int)m_Trans.position.y % m_refWorld.Section_Height,
-                (int)m_Trans.position.z % m_refWorld.Section_Depth);
+                (int)transform.position.x % m_refWorld.Section_Width,
+                (int)transform.position.y % m_refWorld.Section_Height,
+                (int)transform.position.z % m_refWorld.Section_Depth);
 
             //get current chunk
             m_Chunk = m_refWorld.GetChunk(m_SecSlot);
@@ -68,13 +65,13 @@ namespace Assets.Scripts
         }
         void OnGUI()
         {
-            GUI.Label(new Rect(0 + 10, 0 + 10, 100, 20), m_Trans.position.ToString());
+            GUI.Label(new Rect(0 + 10, 0 + 10, 100, 20), transform.position.ToString());
             GUI.Label(new Rect(0 + 10, 0 + 30, 100, 20), m_bound.min.ToString());
             GUI.Label(new Rect(0 + 10, 0 + 50, 100, 20), m_bound.max.ToString());
         }
         private void OnDrawGizmos()
         {
-            Gizmos.DrawSphere(m_Trans.position, 0.2f);
+            Gizmos.DrawSphere(transform.position, 0.2f);
             //Gizmos.DrawCube(m_bound.center, new Vector3(1,1,1));           
         }
     }

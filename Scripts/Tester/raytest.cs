@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
+using Assets.Scripts.NWorld;
+using Assets.Scripts.Pattern;
+
 namespace Assets.Scripts.Tester
 {
     class raytest : MonoBehaviour
     {
         void Update()
         {
+
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

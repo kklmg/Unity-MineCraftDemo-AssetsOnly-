@@ -152,12 +152,10 @@ namespace Assets.Scripts.CharacterSpace
             return true;
         }
     }
-
     public class Cha_NotGrounded : BevConditionBase
     {
         private World m_refWorld;
         //private E_Cha_TryMove m_ECha_TryMove = new E_Cha_TryMove();
-
         protected override void VEnter(BevData workData)
         {
             m_refWorld = Locator<World>.GetService();

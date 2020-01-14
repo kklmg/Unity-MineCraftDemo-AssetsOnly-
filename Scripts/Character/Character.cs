@@ -4,8 +4,8 @@
 public class Character : MonoBehaviour
 {
     [SerializeField]
-    [Range(1, 5)]
-    private byte m_ViewDistance;
+    [Range(0, 5)]
+    private byte m_ViewDistance = 1;
 
     [SerializeField]
     private Transform m_Camera;

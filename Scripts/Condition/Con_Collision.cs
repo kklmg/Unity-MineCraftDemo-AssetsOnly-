@@ -11,8 +11,7 @@ namespace Assets.Scripts.Condition
         {
             m_trans = trans;
         }       
-    }
-  
+    }  
     public class Con_Blocked_left : Con_Transform
     {
         public Con_Blocked_left(Transform trans) : base(trans) { }

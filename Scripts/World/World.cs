@@ -2,6 +2,7 @@
 using UnityEngine;
 using Assets.Scripts.Noise;
 
+
 namespace Assets.Scripts.NWorld
 {
     public interface IWorld
@@ -45,6 +46,7 @@ namespace Assets.Scripts.NWorld
         private TextureSheet m_TextureSheet;
 
         private ChunkPool m_refPool;
+
         //Property
         //--------------------------------------------------------------------
         public ushort Section_Width { get { return m_Section_Width; } }
@@ -66,7 +68,18 @@ namespace Assets.Scripts.NWorld
             m_NoiseMaker = new PerlinNoiseMaker(m_Seed);
         }
 
+        private void Update()
+        {
+            
 
+            if (Input.GetMouseButtonDown(0))
+            {
+                BlockPosition a = PickBlock();
+                a.CurBlockID = 0;
+                Debug.Log("pick one");
+            }
+
+        }
         //Public Function
         //--------------------------------------------------------------------
         public Vector3Int CoordToSlot(Vector3 Coord)
@@ -121,7 +134,7 @@ namespace Assets.Scripts.NWorld
         public Block GetBlock(Vector3 Coord)
         {
             Vector3Int SectionSlot = CoordToSlot(Coord);
-
+            
             //Try get section
             Section section = GetSection(SectionSlot);
             if (section == null) return null;
@@ -131,23 +144,48 @@ namespace Assets.Scripts.NWorld
                 (int)Coord.y % m_Section_Height,
                 (int)Coord.z % m_Section_Depth);
         }
-        
-
-        public Block GetBlock_Ray(Ray ray)
+        public bool GetBlockPosition(Vector3 Coord,out BlockPosition blkpos)
         {
-            Vector3 check;
-            Block block;
-            int distance = 6;
+            Vector3Int SectionSlot = CoordToSlot(Coord);
 
+            //Try get section
+            Section section = GetSection(SectionSlot);
+            if (section == null)
+            {
+                blkpos = default(BlockPosition);
+                return false;
+            }
+            else
+            {
+                blkpos = new BlockPosition(null, new Vector3Int(
+                                (int)Coord.x % m_Section_Width,
+                                (int)Coord.y % m_Section_Height,
+                                (int)Coord.z % m_Section_Depth));
+                return true;
+            }
+        }
+
+        public BlockPosition PickBlock()
+        {
+            m_ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            BlockPosition blkpos;
+            int distance = 10;
+            Vector3 check = m_ray.origin;
+            Debug.Log(m_ray);
+            Debug.DrawRay(m_ray.origin, m_ray.direction);
+
+            //test
             do
             {
-                check = ray.origin + ray.direction;
-                block = GetBlock(check);
-                --distance;
+                check += m_ray.direction;
+                if (GetBlockPosition(check, out blkpos))return blkpos;
             }
-            while (block != null && distance > 0);
+            while (--distance > 10);
 
-            return block;
+            Debug.Log("failed");
+            //return new BlockPosition(null, Vector3Int.zero);
+            return blkpos;
         }
         public Bounds GetBlockBound_Ray(Ray ray)
         {
@@ -177,6 +215,13 @@ namespace Assets.Scripts.NWorld
                 return res;
             else return float.MinValue;
         }
-        
+
+
+
+
+        //test
+        public Transform picked;
+        public Ray m_ray;
+
     }
 }

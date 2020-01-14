@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Assets.Scripts.NWorld.Data;
+using Assets.Scripts.NWorld;
 using UnityEngine;
 
 public interface ICommand
@@ -46,17 +46,17 @@ public class ComChangeBlock : CommandBase
     {
         m_BlkPos = blkpos;
         m_PreChangeBlkID = blkID;
-        m_PreBlkID = m_BlkPos.CurBlock;
+        m_PreBlkID = m_BlkPos.CurBlockID;
         IsExecuted = false;
     }
 
     protected override void AExecute()
     {
-        m_BlkPos.CurBlock = m_PreChangeBlkID;
+        m_BlkPos.CurBlockID = m_PreChangeBlkID;
     }
     protected override void AUndo()
     {
-        m_BlkPos.CurBlock = m_PreBlkID;
+        m_BlkPos.CurBlockID = m_PreBlkID;
     }
 }
 
