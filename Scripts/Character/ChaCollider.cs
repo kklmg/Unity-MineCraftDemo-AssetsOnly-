@@ -50,7 +50,7 @@ namespace Assets.Scripts.CharacterSpace
             //b.position = _Back.center;
             //r.position = _right.center;
             //l.position = _left.center;
-            s.position = transform.position ;
+           // s.position = transform.position ;
 
         }
 

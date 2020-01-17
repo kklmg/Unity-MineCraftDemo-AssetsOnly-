@@ -45,15 +45,29 @@ public static class Direction
         }
     }
 
-    //public static byte VectorToDir(Vector3 vt3) 
-    //{
-
-    //    if(vt3.x>0)
-        
-    //}
-    //public static byte VectorIntToDir(Vector3Int vt3)
-    //{
-
-    //}
-
+    public static byte VectorToDir(Vector3 vt3)
+    {
+        if (vt3 == Vector3.up)
+            return Direction.UP;
+        else
+        if (vt3 == Vector3.down)
+            return Direction.DOWN;
+        else
+        if (vt3 == Vector3.left)
+            return Direction.LEFT;
+        else
+        if (vt3 == Vector3.right)
+            return Direction.RIGHT;
+        else
+        if (vt3 == Vector3.forward)
+            return Direction.FORWARD;
+        else
+        if (vt3 == Vector3.back)
+            return Direction.BACKWARD;
+        else
+        {
+            Debug.LogWarning("invalid Dir!!");
+            return byte.MaxValue;
+        }
+    }
 }

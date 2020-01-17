@@ -68,38 +68,38 @@ namespace Assets.Scripts.NWorld
             m_NoiseMaker = new PerlinNoiseMaker(m_Seed);
         }
 
-        private void Update()
-        {
-            
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                BlockPosition a = PickBlock();
-                a.CurBlockID = 0;
-                Debug.Log("pick one");
-            }
-
-        }
         //Public Function
         //--------------------------------------------------------------------
         public Vector3Int CoordToSlot(Vector3 Coord)
         {
             return new Vector3Int(
-                (int)Coord.x / m_Section_Width,
-                (int)Coord.y / m_Section_Height,
-                (int)Coord.z / m_Section_Depth);
+                Coord.x >= 0 ? (int)Coord.x / m_Section_Width : (int)(Coord.x) / m_Section_Width - 1,
+                Coord.y >= 0 ? (int)Coord.y / m_Section_Height : (int)(Coord.y) / m_Section_Height - 1,
+                Coord.z >= 0 ? (int)Coord.z / m_Section_Depth : (int)(Coord.z) / m_Section_Depth - 1);
         }
         public Vector3 SlotToCoord(Vector3Int Slot)
         {
             return new Vector3(
                 (float)Slot.x * m_Section_Width,
-                (float)Slot.y * m_Section_Height,
-                (float)Slot.z * m_Section_Depth);
+                (float)Slot.y * m_Section_Width,
+                (float)Slot.z * m_Section_Width);
+        }
+
+        public Vector3Int CoordToBlockSlot(Vector3 Coord)
+        {
+            return new Vector3Int(
+                (Coord.x >= 0 ? (int)Coord.x % m_Section_Width : (int)Coord.x % m_Section_Width + m_Section_Width - 1),
+                (Coord.y >= 0 ? (int)Coord.y % m_Section_Height : (int)Coord.y % m_Section_Height + m_Section_Height - 1),
+                (Coord.z >= 0 ? (int)Coord.z % m_Section_Depth : (int)Coord.z % m_Section_Depth + m_Section_Depth - 1)
+                );
         }
         public Bounds GetBound(Vector3 Coord)
         {
             Bounds Temp = new Bounds();
-            Vector3 vt = new Vector3((int)Coord.x, (int)Coord.y, (int)Coord.z);
+            Vector3 vt = new Vector3(
+                (Coord.x >= 0 ? (int)Coord.x : (int)Coord.x - 1),
+                (Coord.y >= 0 ? (int)Coord.y : (int)Coord.y - 1),
+                (Coord.z >= 0 ? (int)Coord.z : (int)Coord.z - 1));
 
             Temp.SetMinMax(vt, vt + Vector3.one);
             return Temp;    
@@ -139,89 +139,69 @@ namespace Assets.Scripts.NWorld
             Section section = GetSection(SectionSlot);
             if (section == null) return null;
 
-            return section.GetBlock(
-                (int)Coord.x % m_Section_Width,
-                (int)Coord.y % m_Section_Height,
-                (int)Coord.z % m_Section_Depth);
+            Vector3Int BlockSlot = CoordToBlockSlot(Coord);
+            return section.GetBlock(BlockSlot.x, BlockSlot.y, BlockSlot.z);
         }
-        public bool GetBlockPosition(Vector3 Coord,out BlockPosition blkpos)
+
+        public void GetBlockPos(Vector3 Coord, out BlockPosition blkpos)
         {
+            blkpos = default(BlockPosition);
+
+            Vector3Int SectionSlot = CoordToSlot(Coord);
+
+            //get section
+            Section section = GetSection(SectionSlot);
+
+            //convert world coord to block slot
+            Vector3Int blkslot = CoordToBlockSlot(Coord);
+
+            blkpos = new BlockPosition(section, blkslot, GetBound(Coord));
+        }
+        public bool TryGetBlockPos(Vector3 Coord, out BlockPosition blkpos)
+        {
+            blkpos = default(BlockPosition);
+
             Vector3Int SectionSlot = CoordToSlot(Coord);
 
             //Try get section
             Section section = GetSection(SectionSlot);
+
+            //no section is exists
             if (section == null)
             {
-                blkpos = default(BlockPosition);
                 return false;
             }
+            //section is exists
             else
             {
-                blkpos = new BlockPosition(null, new Vector3Int(
-                                (int)Coord.x % m_Section_Width,
-                                (int)Coord.y % m_Section_Height,
-                                (int)Coord.z % m_Section_Depth));
-                return true;
+                //convert world coord to block slot
+                Vector3Int blkslot = CoordToBlockSlot(Coord);
+
+                //case: no block is placed
+                if (section.GetBlock(blkslot.x, blkslot.y, blkslot.z) == null)
+                {
+                    return false;
+                }
+                //case: a block is placed
+                else
+                {
+                    blkpos = new BlockPosition(section, blkslot,GetBound(Coord));
+                    return true;
+                }
             }
-        }
-
-        public BlockPosition PickBlock()
-        {
-            m_ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            BlockPosition blkpos;
-            int distance = 10;
-            Vector3 check = m_ray.origin;
-            Debug.Log(m_ray);
-            Debug.DrawRay(m_ray.origin, m_ray.direction);
-
-            //test
-            do
-            {
-                check += m_ray.direction;
-                if (GetBlockPosition(check, out blkpos))return blkpos;
-            }
-            while (--distance > 10);
-
-            Debug.Log("failed");
-            //return new BlockPosition(null, Vector3Int.zero);
-            return blkpos;
-        }
-        public Bounds GetBlockBound_Ray(Ray ray)
-        {
-            Vector3 check;
-            Block block;
-            int distance = 10;
-            do
-            {
-                check = ray.origin + ray.direction;
-                block = GetBlock(check);
-                --distance;
-            }
-            while (block != null && distance > 0);
-
-            return new Bounds(check,Vector3.one);
         }
 
         public float GetGroundHeight(Vector3 Coord)
         {
             Chunk chk = GetChunk(Coord);
-            if (chk == null) return float.MinValue;
+            if (chk == null|| Coord.y<0) return float.MinValue;
+
+            Vector3Int blkslot = CoordToBlockSlot(Coord);
+
             float res;
-            if (chk.GetGroundHeight(
-                (int)Coord.x % m_Section_Width,
-                (int)Coord.z % m_Section_Depth,
-                (int)Coord.y, out res))
+            if (chk.GetGroundHeight(blkslot.x, blkslot.z,(int)Coord.y, out res))
                 return res;
             else return float.MinValue;
         }
-
-
-
-
-        //test
-        public Transform picked;
-        public Ray m_ray;
-
     }
 }
