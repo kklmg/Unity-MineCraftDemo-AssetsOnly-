@@ -8,5 +8,7 @@ namespace Assets.Scripts.n
 {
     class Player
     {
+        
+
     }
 }

@@ -2,7 +2,7 @@
 using Assets.Scripts.Pattern;
 using Assets.Scripts.NWorld;
 using Assets.Scripts.InputHandler;
-using Assets.Scripts.EventManager;
+using Assets.Scripts.NEvent;
 
 namespace Assets.Scripts.GameManager
 {

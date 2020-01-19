@@ -1,8 +1,8 @@
 ﻿using Assets.Scripts.BehaviorTree;
 using Assets.Scripts.Pattern;
 using Assets.Scripts.InputHandler;
-using Assets.Scripts.EventManager;
-using Assets.Scripts.CharacterSpace;
+using Assets.Scripts.NEvent;
+using Assets.Scripts.NCharacter;
 using UnityEngine;
 
 

@@ -3,58 +3,43 @@ using UnityEngine;
 
 namespace Assets.Scripts.Pattern
 {
-    public class MyObserver<TData> where TData : new()
+    public class MyObserver<T>
     {
         //Field
         //---------------------------------------------------------------
         //UnSubscriber
-        private Unsubscriber<TData> m_UnSubscriber;
+        private Unsubscriber<T> m_UnSubscriber;
         //Data
-        private TData m_Data;
+        private T m_Obj;
 
         //Property
         //---------------------------------------------------------------
-        public bool IsDirty{ set; get; }      
-        public TData Data { get { return m_Data; } }
+        public bool IsActive{ set; get; }      
+        public T Obj { get { return m_Obj; } }
 
         //public Function
         //---------------------------------------------------------------
-        public void Update(TData _data)
+        public void Update(T _Obj)
         {
-            m_Data = _data;
-            IsDirty = true;
+            m_Obj = _Obj;
         }
 
-        //Subscribe Subject
-        public void Subscribe(MySubject<TData> _subject)
-        {
-            Unsubscribe();
-            _subject.Subscribe(this);
-        }
-
-        //Unsubscribe Subject
-        public void Unsubscribe()
-        {
-            m_UnSubscriber.Unsubscribe();
-        }
     }
 
 
-    //class Subject Base
-
-    public class MySubject<TData> where TData : new()
+    public class MySubject<T> where T : new()
     {
         //Field 
         [SerializeField]
-        private TData m_Data = new TData();
+        private T m_Obj = new T();
 
         //Observers
-        private List<MyObserver<TData>> m_listObservers;
+        private List<MyObserver<T>> m_listObservers;
 
         //update Subject and notify to all Observers
-        public void Update(TData _data)
+        public void Update(T _data)
         {
-            m_Data = _data;
+            m_Obj = _data;
             __notify();
         }
 
@@ -63,26 +48,25 @@ namespace Assets.Scripts.Pattern
         {
             foreach (var observer in m_listObservers)
             {
-                observer.Update(m_Data);              
+                observer.Update(m_Obj);              
             }
         }
 
         //Add Observer
-        public Unsubscriber<TData> Subscribe(MyObserver<TData> _Observer)
+        public Unsubscriber<T> Subscribe(MyObserver<T> _Observer)
         {
             m_listObservers.Add(_Observer);
-            return new Unsubscriber<TData>(m_listObservers, _Observer);
+            return new Unsubscriber<T>(m_listObservers, _Observer);
         }
     }
 
-
     //Class Unsubscriber
-    public class Unsubscriber<TData> where TData : new()
+    public class Unsubscriber<T>
     {
-        private List<MyObserver<TData>> m_listObeservers;
-        private MyObserver<TData> m_Observer;
+        private List<MyObserver<T>> m_listObeservers;
+        private MyObserver<T> m_Observer;
 
-        public Unsubscriber(List<MyObserver<TData>> observers, MyObserver<TData> observer)
+        public Unsubscriber(List<MyObserver<T>> observers, MyObserver<T> observer)
         {
             this.m_listObeservers = observers;
             this.m_Observer = observer;
