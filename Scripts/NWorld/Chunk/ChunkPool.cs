@@ -3,7 +3,7 @@ using UnityEngine;
 
 using Assets.Scripts.NEvent;
 using Assets.Scripts.NEvent.Impl;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.NWorld
 {
@@ -32,9 +32,9 @@ namespace Assets.Scripts.NWorld
         private void Start()
         {
             Spawn(new ChunkInWorld(0,0,m_refWorld));
-            Spawn(new ChunkInWorld(0, -1, m_refWorld));
-            Spawn(new ChunkInWorld(-1, 0, m_refWorld));
-            Spawn(new ChunkInWorld(-1, -1, m_refWorld));
+            //Spawn(new ChunkInWorld(0, -1, m_refWorld));
+            //Spawn(new ChunkInWorld(-1, 0, m_refWorld));
+            //Spawn(new ChunkInWorld(-1, -1, m_refWorld));
 
             Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Change.ID, HandleChunkEvent);
             Locator<IEventSubscriber>.GetService().Subscribe(E_Cha_Moved.ID, SpawnChunk_NearPlayer);
@@ -57,7 +57,7 @@ namespace Assets.Scripts.NWorld
 
                 _Chunk = Go.AddComponent<Chunk>();
                 _Chunk.Init(slot, this.transform,
-                    m_refWorld.Biomes[(int)(m_refWorld.Seed % m_refWorld.Biomes.Count)],m_refWorld);// rand biome
+                    m_refWorld.Biomes[(int)(m_refWorld.Seed % m_refWorld.Biomes.Count)]);// rand biome
 
                 //put to pool
                 m_DicChunks.Add(slot.Value, _Chunk);

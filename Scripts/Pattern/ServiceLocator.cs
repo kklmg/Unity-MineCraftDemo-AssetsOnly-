@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Assets.Scripts.NObserver;
 
-namespace Assets.Scripts.Pattern
+namespace Assets.Scripts.NServiceLocator
 {
     public static class Locator<T>
     {
@@ -28,6 +25,6 @@ namespace Assets.Scripts.Pattern
             }
         }
 
-        static private List<MyObserver<T>> m_Observers;  //Observers
+        static private List<MyObserver<T>> m_Observers= new List<MyObserver<T>>();  //Observers
     }
 }

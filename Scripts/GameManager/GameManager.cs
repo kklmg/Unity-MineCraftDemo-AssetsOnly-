@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using Assets.Scripts.Pattern;
+
 using Assets.Scripts.NWorld;
 using Assets.Scripts.InputHandler;
-using Assets.Scripts.NEvent;
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.GameManager
 {
@@ -12,18 +12,12 @@ namespace Assets.Scripts.GameManager
         private void Awake()
         {
             InitWorrld();
-            Debug.Log("tell me why?");
             InitController();
         }
         private void InitWorrld()
         {
             GameObject newWorld = Instantiate(m_WorldPrefab);
-            Debug.Log(newWorld.GetComponent<World>() + "world");
-
-
-            Locator<World>.ProvideService(newWorld.GetComponent<World>());
-
-            Debug.Log(Locator<IWorld>.GetService()+"service");
+            Locator<IWorld>.ProvideService(newWorld.GetComponent<World>());
         }
         private bool InitController()
         {

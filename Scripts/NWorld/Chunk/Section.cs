@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.SMesh;
-
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.NWorld
 {
@@ -15,60 +15,50 @@ namespace Assets.Scripts.NWorld
         [SerializeField]
         private MeshData m_MeshData;
 
-        private Chunk m_refChunk;
-        private World m_refWorld;
-        private List<Block> m_refBlocks;
-        private TextureSheet m_refTexs;
+        //private Chunk m_refChunk;
+        private IWorld m_refWorld;
 
         [SerializeField]
-        private SectionInWorld m_SecionSlot;
+        private SectionInWorld m_SecInWorld;
 
         [SerializeField]
-        private byte[,,] m_arrBlockID;
+        private byte[,,] m_arrBlockID= new byte[16, 16, 16];
 
         //unity component
         private MeshFilter m_MeshFilter;
         private MeshRenderer m_MeshRenderer;
         private MeshCollider m_Collider;
-       
+
+        //Temp Data
+        private BlockInSection m_Cache_BlockInSec;
+
         //property--------------------------------------
         public bool isDirtry { get; set; }
 
-        public SectionInWorld SectionSlot { get { return m_SecionSlot; } set { m_SecionSlot = value; } }
+        public SectionInWorld SectionInWorld { get { return m_SecInWorld; } set { m_SecInWorld = value; } }
 
         //unity function-----------------------------------------
         private void Awake()
         {
-            //Debug.Log("Section_start");
+            m_refWorld = Locator<IWorld>.GetService();
 
             //cache unity component
             m_MeshFilter = gameObject.GetComponent<MeshFilter>();
             m_MeshRenderer = gameObject.GetComponent<MeshRenderer>();
             m_Collider = gameObject.GetComponent<MeshCollider>();
 
-            //cache World reference
-            m_refChunk = GetComponentInParent<Chunk>();
-            m_refWorld = m_refChunk.WorldReference;
-            m_refBlocks = m_refChunk.WorldReference.BlockList;
-
-            m_refTexs = m_refChunk.WorldReference.TexSheet;
-
+            //Set Material 
             m_MeshRenderer.materials = new Material[1];
             m_MeshRenderer.materials[0] = new Material(Shader.Find("Unlit/Texture"));
             if (m_MeshRenderer.materials[0] == null)
             {
                 Debug.Log("Can't find Shader");
             }
-            m_MeshRenderer.materials[0].mainTexture = m_refTexs.TexSheet;
+            m_MeshRenderer.materials[0].mainTexture = m_refWorld.TexSheet.Tex;
 
             //make instance of mesh data 
             m_MeshData = ScriptableObject.CreateInstance<MeshData>();
             m_MeshData.Reset();
-
-            //generate world
-            //
-
-
         }
         private void Start()
         {
@@ -81,24 +71,24 @@ namespace Assets.Scripts.NWorld
                 UpdateMesh();
 
                 //update adjacent Sections
-                Section adjSection;
+                Section adjSection;     
                 //up
-                adjSection = m_refWorld.GetSection(m_SecionSlot + Vector3Int.up);
+                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.up), m_refWorld);
                 if (adjSection != null) adjSection.UpdateMesh();
                 //down
-                adjSection = m_refWorld.GetSection(m_SecionSlot + Vector3Int.down);
+                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.down), m_refWorld);
                 if (adjSection != null) adjSection.UpdateMesh();
                 //left
-                adjSection = m_refWorld.GetSection(m_SecionSlot + Vector3Int.left);
+                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.left), m_refWorld);
                 if (adjSection != null) adjSection.UpdateMesh();
                 //right
-                adjSection = m_refWorld.GetSection(m_SecionSlot + Vector3Int.right);
+                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.right), m_refWorld);
                 if (adjSection != null) adjSection.UpdateMesh();
                 //front
-                adjSection = m_refWorld.GetSection(m_SecionSlot + new Vector3Int(0, 0, 1));
+                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(new Vector3Int(0, 0, 1)), m_refWorld);
                 if (adjSection != null) adjSection.UpdateMesh();
                 //back
-                adjSection = m_refWorld.GetSection(m_SecionSlot + new Vector3Int(0, 0, -1));
+                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(new Vector3Int(0, 0, -1)), m_refWorld);
                 if (adjSection != null) adjSection.UpdateMesh();
 
                 isDirtry = false;
@@ -174,7 +164,7 @@ namespace Assets.Scripts.NWorld
                 {
                     for (z = 0; z < depth; z++)
                     {
-                        Curblk = GetBlock(x, y, z);
+                        Curblk = GetBlock(new BlockInSection(x,y,z,m_refWorld));
                         if (Curblk == null) continue;
                         //check top block
                         _GetNonDuplicateMesh(Curblk, x, y, z, Direction.UP);
@@ -192,90 +182,60 @@ namespace Assets.Scripts.NWorld
                 }
             }
             m_MeshData.ToMeshFilter(m_MeshFilter);
-        }
+            Debug.Log("vertex "+ m_MeshData._Vertices.Count);
 
+        }
         private void _GetNonDuplicateMesh(Block Curblk,int x,int y,int z,byte dir)
         {
             Vector3Int vt3dir = Direction.DirToVectorInt(dir);
-            Block adj = GetBlock(x + vt3dir.x, y + vt3dir.y, z + vt3dir.z);
-            if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
-            {
-                Curblk.ExtractMesh(dir, m_MeshData, x, y, z, m_refTexs);
-            }
-        }
+            m_Cache_BlockInSec = new BlockInSection(x, y, z, m_refWorld);
 
+            //Debug.Log("block in sec first:" + m_Cache_BlockInSec.Value);
+            Vector3Int SectionOffset;
+            m_Cache_BlockInSec.Move(vt3dir, m_refWorld, out SectionOffset);
 
-        bool IsBlockInThisSection(int x, int y, int z,out Vector3Int offset)
-        {
-            if (x < 0)
+            Debug.Log("sec offset :" + SectionOffset);
+            //Debug.Log("block in sec then :" + m_Cache_BlockInSec.Value);
+            //Block is located in This Section
+            if (SectionOffset == Vector3Int.zero)
             {
-                offset = Vector3Int.left;
-                return false;
-            }
-            if (x >= m_refWorld.Section_Width)
-            {
-                offset = Vector3Int.right;
-                return false;
-            }
-            if (y < 0)
-            {
-                offset = Vector3Int.down;
-                return false;
-            }
-            if (y >= m_refWorld.Section_Height)
-            {
-                offset = Vector3Int.up;
-                return false;
-            }
-            if (z < 0)
-            {
-                offset = new Vector3Int(0, 0, -1);
-                return false;
-            }
-            if (z >= m_refWorld.Section_Depth)
-            {
-                offset = new Vector3Int(0, 0, 1);
-                return false;
-            }
+                Block adj = GetBlock(m_Cache_BlockInSec);
 
-            offset = Vector3Int.zero;
-            return true;
-        }
-        public Block GetBlock(int x, int y, int z)
-        {
-            Vector3Int offset;
-
-            //Case: Target block in this Section
-            if (IsBlockInThisSection(x, y, z, out offset))
-            {               
-                return m_refBlocks[m_arrBlockID[x, y, z]];
+                if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
+                {
+                    Debug.Log("extract this");
+                    Curblk.ExtractMesh(dir, m_MeshData, x, y, z, m_refWorld.TexSheet);
+                }
             }
-            //Case: Target block out of this Section
+            //Block is not located in This Section
             else
-            {
-                //Get adjacent Section
-                Section adjSection = m_refWorld.GetSection(m_SecionSlot + offset);
+            {            
+                //Search the section which this block located
+                Section section = GWorldSearcher.GetSection(m_SecInWorld.Offset(SectionOffset), m_refWorld);
+                if (section == null) return;
 
-                if (adjSection == null) return null;
+                Block adj = GetBlock(m_Cache_BlockInSec);
 
-                int relative_x = (m_refWorld.Section_Width + offset.x + x) % m_refWorld.Section_Width;
-                int relative_y = (m_refWorld.Section_Height + offset.y + y) % m_refWorld.Section_Height;
-                int relative_z = (m_refWorld.Section_Depth + offset.z + z) % m_refWorld.Section_Depth;
-
-                return adjSection.GetBlock(relative_x, relative_y, relative_z);
+                if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
+                {
+                    Debug.Log("extract other");
+                    Curblk.ExtractMesh(dir, m_MeshData, x, y, z, m_refWorld.TexSheet);
+                }
             }
         }
 
-        public byte GetBlockID(Vector3Int pos)
+        public Block GetBlock(BlockInSection blkInSec)
         {
-            return m_arrBlockID[pos.x, pos.y, pos.z];
+            return m_refWorld.BlockTypes[m_arrBlockID[blkInSec.x, blkInSec.y, blkInSec.z]];
         }
-        public void SetBlock(Vector3Int pos, byte blkID)
+        public byte GetBlockID(BlockInSection blkInSec)
         {
-            m_arrBlockID[pos.x,pos.y,pos.z] = blkID;
-            isDirtry = true;
+            return m_arrBlockID[blkInSec.x, blkInSec.y, blkInSec.z];
         }
-
+        public void SetBlock(BlockInSection blkInSec, byte blkID)
+        {
+            m_arrBlockID[blkInSec.x, blkInSec.y, blkInSec.z] = blkID;
+        }
     }
 
 }

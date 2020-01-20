@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using Assets.Scripts.NWorld;
-using Assets.Scripts.Pattern;
 using Assets.Scripts.NEvent;
 using Assets.Scripts.NEvent.Impl;
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.NUser
 {
@@ -16,10 +16,10 @@ namespace Assets.Scripts.NUser
 
         //Cache
         //----------------------------------
-        private World m_refWorld;
+        private IWorld m_refWorld;
         private Ray m_Ray;
-        private BlockPosition m_Picked;
-        private BlockPosition m_Placed;
+        private BlockLocation m_Picked;
+        private BlockLocation m_Placed;
         private Vector3 m_Checking;
         private Collider m_Check_bound;
 
@@ -28,13 +28,15 @@ namespace Assets.Scripts.NUser
 
         private void Awake()
         {
+            m_refWorld = Locator<IWorld>.GetService();
+
             m_Check_bound = go_PickFrame.GetComponent<BoxCollider>();
             Debug.Log(m_Check_bound);
             //Debug.LogAssertion(m_Check_bound != null);
         }
         private void Start()
         {
-            m_refWorld = Locator<World>.GetService();
+            
         }
         private void FixedUpdate()
         {
@@ -80,7 +82,9 @@ namespace Assets.Scripts.NUser
             {
                 m_Checking += m_Ray.direction;
 
-                if (m_refWorld.TryGetBlockPos(m_Checking, out m_Picked))
+                m_Picked.SetLocation(m_Checking, m_refWorld);
+
+                if (m_Picked.IsValid())
                 {
                     go_PickFrame.SetActive(true);
                     go_PickFrame.transform.position = m_Picked.Bound.center;
@@ -102,8 +106,7 @@ namespace Assets.Scripts.NUser
                 {
                     go_placeFrame.SetActive(true);
                     go_placeFrame.transform.position = m_Placed.Bound.center;
-                    m_Placed = m_refWorld.GetBlockPos(m_Checking + m_offset);
-
+                    m_Placed.SetLocation(m_Checking + m_offset,m_refWorld);    
                     return true;
                 }
             }

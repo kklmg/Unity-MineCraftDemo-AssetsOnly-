@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Scripts.Pattern
+namespace Assets.Scripts.NObserver
 {
     public class MyObserver<T>
     {

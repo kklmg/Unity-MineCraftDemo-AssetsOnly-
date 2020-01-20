@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Assets.Scripts.BehaviorTree;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.InputHandler
 {

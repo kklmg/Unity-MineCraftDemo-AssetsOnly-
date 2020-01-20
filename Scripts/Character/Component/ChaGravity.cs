@@ -3,7 +3,7 @@ using Assets.Scripts.NEvent;
 using Assets.Scripts.NEvent.Impl;
 
 using Assets.Scripts.NWorld;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.NCharacter
 {
@@ -20,7 +20,7 @@ namespace Assets.Scripts.NCharacter
 
         private Character m_refCha;
         private Communicator m_Communicator;
-        private World m_refWorld;
+        private IWorld m_refWorld;
 
 
         public float Gravity { get { return m_Gravity; } }
@@ -35,7 +35,7 @@ namespace Assets.Scripts.NCharacter
         private bool CheckGround(IEvent _event)
         {
             E_Cha_Moved EMove = _event as E_Cha_Moved;         
-            m_Ground = m_refWorld.GetGroundHeight(transform.position);
+            m_Ground = GWorldSearcher.GetGroundHeight(transform.position,m_refWorld);
             return true;
         }
 
@@ -46,11 +46,11 @@ namespace Assets.Scripts.NCharacter
         }
         private void Start()
         {
-            m_refWorld = Locator<World>.GetService();          
+            m_refWorld = Locator<IWorld>.GetService();          
             m_Communicator.SubsribeEvent(E_Cha_Jump.ID, TriggerJump);
             m_Communicator.SubsribeEvent(E_Cha_Moved.ID, CheckGround);
 
-            m_Ground = m_refWorld.GetGroundHeight(transform.position);
+            m_Ground = GWorldSearcher.GetGroundHeight(transform.position,m_refWorld);
         }
         private void Update()
         {

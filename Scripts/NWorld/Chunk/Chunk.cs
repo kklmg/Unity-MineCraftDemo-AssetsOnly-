@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.NWorld
 {
@@ -14,7 +15,7 @@ namespace Assets.Scripts.NWorld
         private int m_MaxHeight;
         private int m_MinHeight;
         private Transform m_Parent;
-        private World m_refWorld;
+        private IWorld m_refWorld;
         private Biome m_refBiome;
 
         [SerializeField]
@@ -75,7 +76,7 @@ namespace Assets.Scripts.NWorld
 
                 while (blky > -1)
                 {
-                    CurBlock = CurSec.GetBlock(blkx, blky, blkz);
+                    CurBlock = CurSec.GetBlock(new BlockInSection(blkx, blky, blkz, m_refWorld));
 
                     if (CurBlock!=null && CurBlock.IsSolid(Direction.UP))
                     {
@@ -90,9 +91,6 @@ namespace Assets.Scripts.NWorld
             return false;
         }
 
-        //property
-        //------------------------------------------------------------------------
-        public World WorldReference { get { return m_refWorld; } }
 
 
         //Unity Funciton
@@ -103,10 +101,15 @@ namespace Assets.Scripts.NWorld
             m_arrSections = new Section[m_refWorld.Chunk_Height];
         }
 
-        public void Init(ChunkInWorld chunkpos, Transform parent, Biome refBiome,IWorld _world)
+        private void Start()
+        {
+            m_refWorld = Locator<IWorld>.GetService();
+        }
+
+        public void Init(ChunkInWorld chunkpos, Transform parent, Biome refBiome)
         {
             m_ChunkinWorld = chunkpos;
-            m_Coord = chunkpos.ToCoord2DInt(_world);
+            m_Coord = chunkpos.ToCoord2DInt(m_refWorld);
 
             m_Parent = parent;
             m_refBiome = refBiome;
@@ -129,7 +132,7 @@ namespace Assets.Scripts.NWorld
             NewGo.transform.position = new Vector3(m_Coord.x, slot_y * m_refWorld.Chunk_Height, m_Coord.y);
 
             m_arrSections[slot_y] = NewGo.AddComponent<Section>();
-            m_arrSections[slot_y].SectionSlot =
+            m_arrSections[slot_y].SectionInWorld =
                 new SectionInWorld(m_ChunkinWorld.Value.x, slot_y, m_ChunkinWorld.Value.y);
             m_arrSections[slot_y].GenerateBlankSection();
         }
@@ -151,7 +154,7 @@ namespace Assets.Scripts.NWorld
             NewGo.transform.position = new Vector3(m_Coord.x, slot_y * m_refWorld.Chunk_Height, m_Coord.y);
 
             m_arrSections[slot_y] = NewGo.AddComponent<Section>();
-            m_arrSections[slot_y].SectionSlot =
+            m_arrSections[slot_y].SectionInWorld =
                 new SectionInWorld(m_ChunkinWorld.Value.x, slot_y, m_ChunkinWorld.Value.y);
 
             //Init blocks in Section

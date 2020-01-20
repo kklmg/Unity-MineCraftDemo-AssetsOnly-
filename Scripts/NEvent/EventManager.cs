@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.NServiceLocator;
 
 namespace Assets.Scripts.NEvent
 {

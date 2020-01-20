@@ -43,7 +43,7 @@ namespace Assets.Scripts.NWorld
         //property---------------------------------------------------
         public int MaxRow { get { return m_nMaxRow; } }
         public int MaxColumn { get { return m_nMaxColumn; } }
-        public Texture2D TexSheet { get { return m_Texture; } }
+        public Texture2D Tex { get { return m_Texture; } }
 
 
         //function-----------------------------------------------------

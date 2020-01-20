@@ -49,3 +49,68 @@
             //m_arrTiles[5] = m_arrTiles[2].Clone();
             //m_arrTiles[5].pyMesh.Translate(Vector3.back, 1);
         }
+
+
+
+
+
+		        bool IsBlockInThisSection(int x, int y, int z,out Vector3Int offset)
+        {
+            if (x < 0)
+            {
+                offset = Vector3Int.left;
+                return false;
+            }
+            if (x >= m_refWorld.Section_Width)
+            {
+                offset = Vector3Int.right;
+                return false;
+            }
+            if (y < 0)
+            {
+                offset = Vector3Int.down;
+                return false;
+            }
+            if (y >= m_refWorld.Section_Height)
+            {
+                offset = Vector3Int.up;
+                return false;
+            }
+            if (z < 0)
+            {
+                offset = new Vector3Int(0, 0, -1);
+                return false;
+            }
+            if (z >= m_refWorld.Section_Depth)
+            {
+                offset = new Vector3Int(0, 0, 1);
+                return false;
+            }
+
+            offset = Vector3Int.zero;
+            return true;
+        }
+
+		
+            //Vector3Int offset;
+
+            //blkInSec.
+            ////Case: Target block in this Section
+            //if (IsBlockInThisSection(x, y, z, out offset))
+            //{               
+            //    return m_refBlocks[m_arrBlockID[x, y, z]];
+            //}
+            ////Case: Target block out of this Section
+            //else
+            //{
+            //    //Get adjacent Section
+            //    Section adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(offset), m_refWorld);
+
+            //    if (adjSection == null) return null;
+
+            //    int relative_x = (m_refWorld.Section_Width + offset.x + x) % m_refWorld.Section_Width;
+            //    int relative_y = (m_refWorld.Section_Height + offset.y + y) % m_refWorld.Section_Height;
+            //    int relative_z = (m_refWorld.Section_Depth + offset.z + z) % m_refWorld.Section_Depth;
+
+            //    return adjSection.GetBlock(relative_x, relative_y, relative_z);
+            //}

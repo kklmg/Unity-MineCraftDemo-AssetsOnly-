@@ -1,9 +1,9 @@
 ﻿using Assets.Scripts.BehaviorTree;
 using Assets.Scripts.InputHandler;
 using Assets.Scripts.NEvent;
-using Assets.Scripts.Pattern;
 using Assets.Scripts.NWorld;
 using Assets.Scripts.NEvent.Impl;
+using Assets.Scripts.NServiceLocator;
 
 using UnityEngine;
 
@@ -155,18 +155,19 @@ namespace Assets.Scripts.NCharacter
     }
     public class Cha_NotGrounded : BevConditionBase
     {
-        private World m_refWorld;
+        private IWorld m_refWorld;
         //private E_Cha_TryMove m_ECha_TryMove = new E_Cha_TryMove();
         protected override void VEnter(BevData workData)
         {
-            m_refWorld = Locator<World>.GetService();
+            m_refWorld = Locator<IWorld>.GetService();
         }
         public override bool Check(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
             IController control = Locator<IController>.GetService();
 
-            Block adj = m_refWorld.GetBlock(thisData.Character.transform.position + Vector3.down);
+            
+            Block adj = GWorldSearcher.GetBlock(thisData.Character.transform.position + Vector3.down,m_refWorld);
             return !(adj != null && adj.IsSolid(Direction.UP));
         }
     }

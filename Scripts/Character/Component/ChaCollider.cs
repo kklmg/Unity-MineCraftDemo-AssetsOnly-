@@ -1,10 +1,8 @@
-﻿using System;
-
-using Assets.Scripts.Pattern;
+﻿using Assets.Scripts.NServiceLocator;
 using Assets.Scripts.NWorld;
-
 using Assets.Scripts.NEvent;
 using Assets.Scripts.NEvent.Impl;
+
 using UnityEngine;
 
 namespace Assets.Scripts.NCharacter
@@ -12,7 +10,7 @@ namespace Assets.Scripts.NCharacter
     [RequireComponent(typeof(Communicator))]
     class ChaCollider : MonoBehaviour
     {
-        private World m_refWorld;
+        private IWorld m_refWorld;
         private Character m_refCha;
 
         //Temp Cache
@@ -36,7 +34,7 @@ namespace Assets.Scripts.NCharacter
         {
             GetComponent<Communicator>().SubsribeEvent(E_Cha_TryMove.ID, Handle);
             m_refCha = GetComponent<Character>();
-            m_refWorld = Locator<World>.GetService();
+            m_refWorld = Locator<IWorld>.GetService();
 
             m_BodyBound.center = transform.position;
         }
@@ -219,7 +217,7 @@ namespace Assets.Scripts.NCharacter
         {
             for (int i = 0; i < m_BodyHeight; ++i)
             {
-                m_CacheBlock = m_refWorld.GetBlock(transform.position + new Vector3(0, i, m_BodyWidth + trans_z));
+                m_CacheBlock = GWorldSearcher.GetBlock(transform.position + new Vector3(0, i, m_BodyWidth + trans_z),m_refWorld);
                 if (m_CacheBlock != null && m_CacheBlock.IsSolid(Direction.BACKWARD)) return true;
             }
             return false;
@@ -228,7 +226,7 @@ namespace Assets.Scripts.NCharacter
         {
             for (int i = 0; i < m_BodyHeight; ++i)
             {
-                m_CacheBlock = m_refWorld.GetBlock(transform.position + new Vector3(0, i, -m_BodyWidth+ trans_z));
+                m_CacheBlock = GWorldSearcher.GetBlock(transform.position + new Vector3(0, i, -m_BodyWidth+ trans_z), m_refWorld);
                 if (m_CacheBlock != null && m_CacheBlock.IsSolid(Direction.FORWARD)) return true;
             }
             return false;
@@ -237,7 +235,7 @@ namespace Assets.Scripts.NCharacter
         {
             for (int i = 0; i < m_BodyHeight; ++i)
             {
-                m_CacheBlock = m_refWorld.GetBlock(transform.position + new Vector3(-m_BodyWidth + trans_x, i,0));
+                m_CacheBlock = GWorldSearcher.GetBlock(transform.position + new Vector3(-m_BodyWidth + trans_x, i,0), m_refWorld);
                 if (m_CacheBlock != null && m_CacheBlock.IsSolid(Direction.RIGHT)) return true;
             }
             return false;
@@ -246,7 +244,7 @@ namespace Assets.Scripts.NCharacter
         {
             for (int i = 0; i < m_BodyHeight; ++i)
             {
-                m_CacheBlock = m_refWorld.GetBlock(transform.position + new Vector3(m_BodyWidth + trans_x, i,0));
+                m_CacheBlock = GWorldSearcher.GetBlock(transform.position + new Vector3(m_BodyWidth + trans_x, i,0), m_refWorld);
                 if (m_CacheBlock != null && m_CacheBlock.IsSolid(Direction.LEFT)) return true;
             }
             return false;
