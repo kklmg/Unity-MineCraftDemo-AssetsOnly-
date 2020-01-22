@@ -21,7 +21,7 @@ namespace Assets.Scripts.NCharacter
         private Character m_refCha;
         private Communicator m_Communicator;
         private IWorld m_refWorld;
-
+        
 
         public float Gravity { get { return m_Gravity; } }
        
@@ -38,7 +38,7 @@ namespace Assets.Scripts.NCharacter
             m_Ground = GWorldSearcher.GetGroundHeight(transform.position,m_refWorld);
             return true;
         }
-
+        
         private void Awake()
         {
             m_refCha = GetComponent<Character>();

@@ -31,10 +31,10 @@ namespace Assets.Scripts.NWorld
         }
         private void Start()
         {
-            Spawn(new ChunkInWorld(0,0,m_refWorld));
-            //Spawn(new ChunkInWorld(0, -1, m_refWorld));
-            //Spawn(new ChunkInWorld(-1, 0, m_refWorld));
-            //Spawn(new ChunkInWorld(-1, -1, m_refWorld));
+            Spawn(new ChunkInWorld(new Vector2Int(0, 0), m_refWorld));
+            Spawn(new ChunkInWorld(new Vector2Int(0, -1), m_refWorld));
+            Spawn(new ChunkInWorld(new Vector2Int(-1, 0), m_refWorld));
+            Spawn(new ChunkInWorld(new Vector2Int(-1, -1), m_refWorld));
 
             Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Change.ID, HandleChunkEvent);
             Locator<IEventSubscriber>.GetService().Subscribe(E_Cha_Moved.ID, SpawnChunk_NearPlayer);
@@ -86,7 +86,7 @@ namespace Assets.Scripts.NWorld
             {
                 for (bottom = CurSlot.Value.y - PlayerView; bottom < CurSlot.Value.y + PlayerView; ++bottom)
                 {
-                    Spawn(new ChunkInWorld(left, bottom,m_refWorld));
+                    Spawn(new ChunkInWorld(new Vector2Int(left, bottom),m_refWorld));
                 }
             }
             m_PreSlot = CurSlot;

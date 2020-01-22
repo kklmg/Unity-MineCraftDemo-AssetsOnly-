@@ -147,7 +147,7 @@ namespace Assets.Scripts.NWorld
         }
 
         public void UpdateMesh()
-        {
+        {         
             //if (isDirtry == false) return;
             m_MeshData.clear();
             m_MeshFilter.mesh.Clear();
@@ -164,62 +164,61 @@ namespace Assets.Scripts.NWorld
                 {
                     for (z = 0; z < depth; z++)
                     {
-                        Curblk = GetBlock(new BlockInSection(x,y,z,m_refWorld));
+                        m_Cache_BlockInSec = new BlockInSection(x, y, z, m_refWorld);
+                        Curblk = GetBlock(m_Cache_BlockInSec);
+                        
                         if (Curblk == null) continue;
+
                         //check top block
-                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.UP);
-                        ////check bottom block
-                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.DOWN);
-                        ////check left block
-                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.LEFT);
-                        ////check right block
-                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.RIGHT);
-                        ////check forward block
-                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.FORWARD);
-                        ////check backward block
-                        _GetNonDuplicateMesh(Curblk, x, y, z, Direction.BACKWARD);
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.UP);
+                        //check bottom block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.DOWN);
+                        //check left block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.LEFT);
+                        //check right block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.RIGHT);
+                        //check forward block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.FORWARD);
+                        //check backward block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.BACKWARD);
                     }
                 }
             }
             m_MeshData.ToMeshFilter(m_MeshFilter);
-            Debug.Log("vertex "+ m_MeshData._Vertices.Count);
+            Debug.Log("Mesh updata called");
 
         }
-        private void _GetNonDuplicateMesh(Block Curblk,int x,int y,int z,byte dir)
+        private void _GetNonDuplicateMesh(ref BlockInSection Curlocation,Block blkType,byte dir)
         {
-            Vector3Int vt3dir = Direction.DirToVectorInt(dir);
-            m_Cache_BlockInSec = new BlockInSection(x, y, z, m_refWorld);
-
-            //Debug.Log("block in sec first:" + m_Cache_BlockInSec.Value);
             Vector3Int SectionOffset;
-            m_Cache_BlockInSec.Move(vt3dir, m_refWorld, out SectionOffset);
+            BlockInSection AdjLocation = Curlocation.Offset(Direction.DirToVectorInt(dir), m_refWorld, out SectionOffset);
 
-            Debug.Log("sec offset :" + SectionOffset);
-            //Debug.Log("block in sec then :" + m_Cache_BlockInSec.Value);
-            //Block is located in This Section
             if (SectionOffset == Vector3Int.zero)
             {
-                Block adj = GetBlock(m_Cache_BlockInSec);
+                Block adj = GetBlock(AdjLocation);
 
                 if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
                 {
-                    Debug.Log("extract this");
-                    Curblk.ExtractMesh(dir, m_MeshData, x, y, z, m_refWorld.TexSheet);
+                    blkType.ExtractMesh(dir, m_MeshData,ref Curlocation, m_refWorld.TexSheet);
                 }
             }
             //Block is not located in This Section
             else
-            {            
+            {
                 //Search the section which this block located
-                Section section = GWorldSearcher.GetSection(m_SecInWorld.Offset(SectionOffset), m_refWorld);
-                if (section == null) return;
-
-                Block adj = GetBlock(m_Cache_BlockInSec);
-
-                if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
+                Section adjsection = GWorldSearcher.GetSection(m_SecInWorld.Offset(SectionOffset), m_refWorld);
+                if (adjsection == null)
                 {
-                    Debug.Log("extract other");
-                    Curblk.ExtractMesh(dir, m_MeshData, x, y, z, m_refWorld.TexSheet);
+                    blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+                }
+                else
+                {
+                    Block adj = adjsection.GetBlock(AdjLocation);
+
+                    if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
+                    {              
+                        blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+                    }
                 }
             }
         }
@@ -235,7 +234,8 @@ namespace Assets.Scripts.NWorld
         public void SetBlock(BlockInSection blkInSec, byte blkID)
         {
             m_arrBlockID[blkInSec.x, blkInSec.y, blkInSec.z] = blkID;
+            isDirtry = true;
+            Debug.Log("block set called");
         }
     }
-
 }

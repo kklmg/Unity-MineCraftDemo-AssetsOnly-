@@ -41,7 +41,7 @@ namespace Assets.Scripts.NWorld
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <param name="texRef"></param>
-        public void ExtractMesh(byte dir, MeshData receiver, int x, int y, int z,TextureSheet texRef)
+        public void ExtractMesh(byte dir, MeshData receiver,ref BlockInSection blkInSec,TextureSheet texRef)
         {
             if (m_Tiles[dir].Mesh == null) return;
 
@@ -49,9 +49,9 @@ namespace Assets.Scripts.NWorld
             MeshData mesh = m_Tiles[dir].Mesh.Clone();
             
             //set postion
-            mesh.Translate(Vector3.right, x);
-            mesh.Translate(Vector3.up, y);
-            mesh.Translate(Vector3.forward, z);
+            mesh.Translate(Vector3.right, blkInSec.x);
+            mesh.Translate(Vector3.up, blkInSec.y);
+            mesh.Translate(Vector3.forward, blkInSec.z);
 
             //set texture
             Frame fr = texRef.GetCoord(m_Tiles[dir].TexID);
@@ -60,7 +60,6 @@ namespace Assets.Scripts.NWorld
             //save mesh data
             receiver.add(mesh);
         }
-
 
         public void ExtractMeshAll(MeshData receiver, int x, int y, int z, TextureSheet texRef)
         {

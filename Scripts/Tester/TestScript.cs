@@ -26,6 +26,21 @@ namespace Assets.Scripts.NWorld
         }
     }
 
+    public static class GTest
+    {
+        static int m_RunCount = 5;
+        public static int RunCount { set { m_RunCount = value; } get { return --m_RunCount; } }
+        public static bool isExecuted { get; set; }
+        static int m_Count;
+        static public void DoCount(int c)
+        {
+            m_Count += c;
+        }
+        static public int GetCount()
+        {
+            return m_Count;
+        }
+    }
 
     class TestScript: MonoBehaviour
     {
@@ -39,12 +54,11 @@ namespace Assets.Scripts.NWorld
         {
         }
         private void Start()
-        { }
+        {
+        }
 
         private void Update()
-        {
-
-            
+        {           
         }
 
     }

@@ -11,6 +11,7 @@ namespace Assets.Scripts.NUser
         public GameObject go_placeFrame;
         public GameObject go_PickFrame;
 
+
         [SerializeField]
         private int m_HandLength;
 
@@ -18,8 +19,12 @@ namespace Assets.Scripts.NUser
         //----------------------------------
         private IWorld m_refWorld;
         private Ray m_Ray;
+
+        [SerializeField]
         private BlockLocation m_Picked;
+        [SerializeField]
         private BlockLocation m_Placed;
+
         private Vector3 m_Checking;
         private Collider m_Check_bound;
 
@@ -29,10 +34,7 @@ namespace Assets.Scripts.NUser
         private void Awake()
         {
             m_refWorld = Locator<IWorld>.GetService();
-
             m_Check_bound = go_PickFrame.GetComponent<BoxCollider>();
-            Debug.Log(m_Check_bound);
-            //Debug.LogAssertion(m_Check_bound != null);
         }
         private void Start()
         {
@@ -40,7 +42,8 @@ namespace Assets.Scripts.NUser
         }
         private void FixedUpdate()
         {
-            ChangeBlock();
+            //ChangeBlock();
+            PlaceBlock();
         }
 
         private void ChangeBlock() 
@@ -51,7 +54,8 @@ namespace Assets.Scripts.NUser
                 if (Input.GetMouseButtonDown(0))
                 {
                     //!!!!!!!!!!!!!!!!!!!!!!!!!
-                    Locator<IEventPublisher>.GetService().Publish(new E_Block_Change(ref m_Picked,0));
+                    m_Picked.CurBlockID = 3;
+                   //Locator<IEventPublisher>.GetService().Publish(new E_Block_Change(ref m_Picked,0));
                 }
             }
         } 
@@ -63,7 +67,7 @@ namespace Assets.Scripts.NUser
                 //click
                 if (Input.GetMouseButtonDown(0))
                 {
-                    m_Placed.CurBlockID = 1;
+                    m_Placed.CurBlockID = 3;
                     Debug.Log("pick suceed!");
                 }
             }
@@ -81,9 +85,8 @@ namespace Assets.Scripts.NUser
             do
             {
                 m_Checking += m_Ray.direction;
-
-                m_Picked.SetLocation(m_Checking, m_refWorld);
-
+                
+                m_Picked.Set(m_Checking, m_refWorld);
                 if (m_Picked.IsValid())
                 {
                     go_PickFrame.SetActive(true);
@@ -104,9 +107,11 @@ namespace Assets.Scripts.NUser
             {
                 if (CheckHitSide(m_Ray))
                 {
+                    m_Placed.Set(m_Checking + m_offset, m_refWorld);
+
                     go_placeFrame.SetActive(true);
                     go_placeFrame.transform.position = m_Placed.Bound.center;
-                    m_Placed.SetLocation(m_Checking + m_offset,m_refWorld);    
+                  
                     return true;
                 }
             }
@@ -117,15 +122,34 @@ namespace Assets.Scripts.NUser
 
         bool CheckHitSide(Ray _ray)
         {
-            m_offset = default(Vector3);
             RaycastHit rayhit;
             if (m_Check_bound.Raycast(_ray, out rayhit, m_HandLength))
             {
+                if (rayhit.normal == Vector3.zero) return false;
+
                 //Debug.Log("hit offset: " + m_offset);
                 m_offset = rayhit.normal;
                 return true;
             }
             return false;
         }
+
+        void AABB_RAY(Bounds bound, Ray ray)
+        {
+            // target = ray_origin + ray_dir * T
+
+            // intersect plane x min
+
+            // (0,xmin,0) =  ray_origin + ray_dir * T
+            // => T = ((0,xmin,0)-ray_origin )/ ray dir;
+            // => intersected point = rayorigin + ray_dir * T;
+
+
+
+
+
+        }
+
+
     }
 }

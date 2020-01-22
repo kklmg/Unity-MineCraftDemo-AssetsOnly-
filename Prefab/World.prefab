@@ -51,12 +51,10 @@ MonoBehaviour:
   m_Seed: 20200111
   m_Bimoes:
   - {fileID: 11400000, guid: a1414901358bc5b4f8984f667a907ebf, type: 2}
-  - {fileID: 11400000, guid: 21e8c95619f7be44b9ba92e155f35e65, type: 2}
   m_BlockTypes:
   - {fileID: 0}
   - {fileID: 11400000, guid: 6abe9cd660b50074d912f1170e4d88ec, type: 2}
   - {fileID: 11400000, guid: c8103f1fb2358bc4386ef28271c3b446, type: 2}
-  - {fileID: 11400000, guid: 81150d93e64d7fe4aa605101c5234049, type: 2}
   - {fileID: 11400000, guid: 335f0f1c14e235d4c813ad2f20ea3a21, type: 2}
   - {fileID: 11400000, guid: 22377c9e0f528b24c91c472a754f7ae0, type: 2}
   m_TextureSheet: {fileID: 11400000, guid: eeb3dd502a7c11a4789db0872810ce75, type: 2}

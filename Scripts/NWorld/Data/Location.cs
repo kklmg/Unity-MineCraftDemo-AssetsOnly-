@@ -2,6 +2,7 @@
 
 namespace Assets.Scripts.NWorld
 {
+    [System.Serializable]
     public struct ChunkInWorld
     {
         //Constructor
@@ -10,23 +11,16 @@ namespace Assets.Scripts.NWorld
         {
             m_Value = new Vector2Int(
                 Coord.x >= 0 ?
-                    (int)Coord.x / _world.Section_Width
-                    : (int)(Coord.x) / _world.Section_Width - 1,
-                Coord.y >= 0 ?
-                    (int)Coord.y / _world.Section_Depth
-                    : (int)(Coord.y) / _world.Section_Depth - 1);
+                    (int)(Coord.x / _world.Section_Width)
+                    : (int)(Coord.x / _world.Section_Width) - 1,
+                Coord.z >= 0 ?
+                    (int)(Coord.z / _world.Section_Depth)
+                    : (int)(Coord.z / _world.Section_Depth) - 1);
         }
-        public ChunkInWorld(int x, int y, IWorld _world)
+        public ChunkInWorld(Vector2Int slot, IWorld _world)
         {
-            m_Value = new Vector2Int(
-                x >= 0 ?
-                    x / _world.Section_Width
-                    : x / _world.Section_Width - 1,
-                y >= 0 ?
-                    y / _world.Section_Depth
-                    : y / _world.Section_Depth - 1);
+            m_Value = slot;
         }
-
 
         //Convert functions
         //-------------------------------------------------------------------------
@@ -57,16 +51,19 @@ namespace Assets.Scripts.NWorld
                 m_Value.y * _world.Section_Depth);
         }
 
-
         //Property 
         //----------------------------------------------------------------------------------
+       
         public Vector2Int Value { set { m_Value = value; } get { return m_Value; } }
         public int x { get { return m_Value.x; } }
         public int y { get { return m_Value.y; } }
         //Field
         //----------------------------------------------------------------------------------
+        [SerializeField]
         private Vector2Int m_Value;
     }
+
+    [System.Serializable]
     public struct SectionInWorld
     {
         //Constructor
@@ -75,14 +72,14 @@ namespace Assets.Scripts.NWorld
         {
             m_Value = new Vector3Int(
                 Coord.x >= 0 ?
-                    (int)Coord.x / _world.Section_Width
-                    : (int)(Coord.x) / _world.Section_Width - 1,
+                    (int)(Coord.x / _world.Section_Width)
+                    : (int)(Coord.x / _world.Section_Width) - 1,
                 Coord.y >= 0 ?
-                    (int)Coord.y / _world.Section_Height
-                    : (int)(Coord.y) / _world.Section_Height - 1,
+                    (int)(Coord.y / _world.Section_Height)
+                    : (int)(Coord.y / _world.Section_Height) - 1,
                 Coord.z >= 0 ?
-                    (int)Coord.z / _world.Section_Depth
-                    : (int)(Coord.z) / _world.Section_Depth - 1);
+                    (int)(Coord.z / _world.Section_Depth)
+                    : (int)(Coord.z / _world.Section_Depth) - 1);
         }
         public SectionInWorld(int x, int y, int z)
         {
@@ -105,7 +102,7 @@ namespace Assets.Scripts.NWorld
         }
         public ChunkInWorld ToChunkInWorld(IWorld _world)
         {
-            return new ChunkInWorld(m_Value.x, m_Value.z, _world);
+            return new ChunkInWorld(new Vector2Int(m_Value.x,m_Value.z), _world);
         }
         public SectionInChunk ToSectionInChunk()
         {
@@ -124,16 +121,20 @@ namespace Assets.Scripts.NWorld
         }
 
 
-        //Property Value
+        //Property
         //----------------------------------------------------------------------------------
         public Vector3Int Value { set { m_Value = value; } get { return m_Value; } }
         public int x { get { return m_Value.x; } }
         public int y { get { return m_Value.y; } }
         public int z { get { return m_Value.z; } }
+
         //Field
         //----------------------------------------------------------------------------------
+        [SerializeField]
         public Vector3Int m_Value;
     }
+
+    [System.Serializable]
     public struct SectionInChunk
     {
         //Constructor
@@ -147,12 +148,16 @@ namespace Assets.Scripts.NWorld
             m_Value = Slot;
         }
 
-        //Property Value
+        //Property
         //----------------------------------------------------------------------------------
         public int Value { set { m_Value = value; } get { return m_Value; } }
 
+        //Field
+        [SerializeField]
         private int m_Value;
     }
+
+    [System.Serializable]
     public struct BlockInSection
     {
         //Constructor
@@ -160,15 +165,15 @@ namespace Assets.Scripts.NWorld
         public BlockInSection(Vector3 Coord, IWorld _world)
         {
             m_Value = new Vector3Int(
-            (Coord.x >= 0 ?
-                (int)Coord.x % _world.Section_Width
-                : (int)Coord.x % _world.Section_Width + _world.Section_Width - 1),
-            (Coord.y >= 0 ?
-                (int)Coord.y % _world.Section_Height
-                : (int)Coord.y % _world.Section_Height + _world.Section_Height - 1),
-            (Coord.z >= 0 ?
-                (int)Coord.z % _world.Section_Depth
-                : (int)Coord.z % _world.Section_Depth + _world.Section_Depth - 1)
+            Coord.x >= 0 ?
+                (int)(Coord.x % _world.Section_Width)
+                : (int)(Coord.x % _world.Section_Width) + _world.Section_Width - 1,
+            Coord.y >= 0 ?
+                (int)(Coord.y % _world.Section_Height)
+                : (int)(Coord.y % _world.Section_Height) + _world.Section_Height - 1,
+            Coord.z >= 0 ?
+                (int)(Coord.z % _world.Section_Depth)
+                : (int)(Coord.z % _world.Section_Depth) + _world.Section_Depth - 1
             );
         }
         public BlockInSection(Vector3Int slot, IWorld _world)
@@ -185,6 +190,7 @@ namespace Assets.Scripts.NWorld
                 : slot.z % _world.Section_Depth + _world.Section_Depth - 1)
             );
         }
+
         public BlockInSection(int x, int y, int z, IWorld _world)
         {
             m_Value = new Vector3Int(
@@ -208,50 +214,58 @@ namespace Assets.Scripts.NWorld
             return false;
         }
 
-        public Vector3Int Offset(Vector3Int blkOffset, IWorld _world, out Vector3Int SecOffset)
+        public BlockInSection Offset(Vector3Int blkOffset, IWorld _world, out Vector3Int SecOffset)
+        {
+            Vector3Int dest = m_Value + blkOffset;
+
+            _MapToValidRange(ref dest,_world,out SecOffset);
+
+
+            return new BlockInSection(dest, _world);
+        }
+
+        public void Move(Vector3Int blkOffset, IWorld _world, out Vector3Int SecOffset)
+        {
+            m_Value += blkOffset;
+            _MapToValidRange(ref m_Value, _world, out SecOffset);
+        }
+
+        //Private 
+        private void _MapToValidRange(ref Vector3Int _value, IWorld _world, out Vector3Int SecOffset)
         {
             SecOffset = Vector3Int.zero;
 
-            Vector3Int dest = m_Value + blkOffset;
-            //Value += offset;
-
-            if (dest.x > _world.Section_Width)
+            if (_value.x >= _world.Section_Width)
             {
-                SecOffset.x /= _world.Section_Width;
-                dest.x %= _world.Section_Width;
+                SecOffset.x = _value.x / _world.Section_Width;
+                _value.x %= _world.Section_Width;
             }
-            if (dest.y > _world.Section_Height)
+            if (_value.y >= _world.Section_Height)
             {
-                SecOffset.y /= _world.Section_Height;
-                dest.y %= _world.Section_Height;
+                SecOffset.y = _value.y / _world.Section_Height;
+                _value.y %= _world.Section_Height;
             }
-            if (dest.z > _world.Section_Depth)
+            if (_value.z >= _world.Section_Depth)
             {
-                SecOffset.z /= _world.Section_Depth;
-                dest.z %= _world.Section_Depth;
+                SecOffset.z = _value.z / _world.Section_Depth;
+                _value.z %= _world.Section_Depth;
             }
 
-            if (dest.x < 0)
+            if (_value.x < 0)
             {
-                SecOffset.x = SecOffset.x / _world.Section_Width - 1;
-                dest.x = dest.x % _world.Section_Width + _world.Section_Width - 1;
+                SecOffset.x = _value.x / _world.Section_Width - 1;
+                _value.x = _value.x % _world.Section_Width + _world.Section_Width - 1;
             }
-            if (dest.y < 0)
+            if (_value.y < 0)
             {
-                SecOffset.y = SecOffset.y / _world.Section_Height - 1;
-                dest.y = dest.y % _world.Section_Height + _world.Section_Height - 1;
+                SecOffset.y = _value.y / _world.Section_Height - 1;
+                _value.y = _value.y % _world.Section_Height + _world.Section_Height - 1;
             }
-            if (dest.z < 0)
+            if (_value.z < 0)
             {
-                SecOffset.z = SecOffset.z / _world.Section_Depth - 1;
-                dest.z = dest.z % _world.Section_Depth + _world.Section_Depth - 1;
+                SecOffset.z = _value.z / _world.Section_Depth - 1;
+                _value.z = _value.z % _world.Section_Depth + _world.Section_Depth - 1;
             }
-
-            return Value;
-        }
-        public void Move(Vector3Int blkOffset, IWorld _world, out Vector3Int SecOffset)
-        {
-            m_Value = Offset(blkOffset, _world, out SecOffset);
         }
 
         //Property Value
@@ -262,26 +276,35 @@ namespace Assets.Scripts.NWorld
         public int z { get { return m_Value.z; } }
         //Field
         //----------------------------------------------------------------------------------
+        [SerializeField]
         private Vector3Int m_Value;
     }
 
-
+    [System.Serializable]
     public struct BlockLocation
     {
-        private ChunkInWorld m_ChunkInWorld;
+        [SerializeField]
+        private ChunkInWorld m_ChunkInWorld; 
+        [SerializeField]
         private SectionInWorld m_SecInWorld;
-        private BlockInSection m_BlkInSection;
+        [SerializeField]
+        private BlockInSection m_BlkInSection;      
 
-        private Chunk m_Chunk;
-        private Section m_Section;
-        private Block m_Block;
-
-        private Bounds m_Bound;
+        [SerializeField]
+        private Chunk m_Chunk;      //The Chunk Where block located in
+        [SerializeField]
+        private Section m_Section;  //The Section Where block located in
+        [SerializeField]
+        private Block m_Block;      //blockType
+        [SerializeField]
+        private Bounds m_Bound;     //Bound of Block used in handle collision
 
         public Bounds Bound { get { return m_Bound; } }
 
-        public void SetLocation(Vector3 Coord, IWorld _World)
+        public void Set(Vector3 Coord, IWorld _World)
         {
+            m_Bound = _World.GetBound(Coord);
+
             //Get Chunk Location
             m_ChunkInWorld = new ChunkInWorld(Coord, _World);
             m_Chunk = _World.Pool.GetChunk(new ChunkInWorld(Coord, _World));
@@ -296,10 +319,8 @@ namespace Assets.Scripts.NWorld
             m_BlkInSection = new BlockInSection(Coord, _World);
             m_Block = m_Section.GetBlock(m_BlkInSection);
             if (m_Block == null) return;
-
-            m_Bound = _World.GetBound(Coord);
         }
-
+    
         public void Reset()
         {
             m_Chunk = null;
@@ -320,6 +341,7 @@ namespace Assets.Scripts.NWorld
                     m_Section.SetBlock(m_BlkInSection, value);
             }
         }
+
         public Block CurBlockRef
         {
             get
