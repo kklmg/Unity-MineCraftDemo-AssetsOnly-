@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.NCharacter;
 
-namespace Assets.Scripts.NEvent.Impl
+namespace Assets.Scripts.NEvent
 {
     public class E_Cha_TryMove : EventBase<E_Cha_TryMove>
     {

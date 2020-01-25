@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using Assets.Scripts.SMesh;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.NMesh;
+using Assets.Scripts.NPattern;
 
 namespace Assets.Scripts.NWorld
 {

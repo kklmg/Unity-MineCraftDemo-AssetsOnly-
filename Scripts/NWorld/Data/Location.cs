@@ -299,7 +299,26 @@ namespace Assets.Scripts.NWorld
         [SerializeField]
         private Bounds m_Bound;     //Bound of Block used in handle collision
 
-        public Bounds Bound { get { return m_Bound; } }
+        //properties
+        public ChunkInWorld ChunkInWorld { private set { m_ChunkInWorld = value;  } get { return m_ChunkInWorld; } }
+        public SectionInWorld SecInWorld {private set { m_SecInWorld = value;  } get { return m_SecInWorld; } }
+        public BlockInSection BlkInSec { private set { m_BlkInSection = value; } get { return m_BlkInSection; } }
+        public Bounds Bound { private set { m_Bound = value; } get { return m_Bound; } }
+
+        public void Update(IWorld _World)
+        {
+            //Get Chunk
+            m_Chunk = _World.Pool.GetChunk(m_ChunkInWorld);
+            if (m_Chunk == null) { m_Section = null; m_Block = null; }
+
+            //Get Section 
+            m_Section = m_Chunk.GetSection(m_SecInWorld.ToSectionInChunk());
+            if (m_Section == null) { m_Block = null; }
+
+            //Get Block
+            m_Block = m_Section.GetBlock(m_BlkInSection);
+
+        }
 
         public void Set(Vector3 Coord, IWorld _World)
         {
@@ -307,20 +326,38 @@ namespace Assets.Scripts.NWorld
 
             //Get Chunk Location
             m_ChunkInWorld = new ChunkInWorld(Coord, _World);
-            m_Chunk = _World.Pool.GetChunk(new ChunkInWorld(Coord, _World));
-            if (m_Chunk == null) return;
-
             //Get Section Location
             m_SecInWorld = new SectionInWorld(Coord, _World);
-            m_Section = m_Chunk.GetSection(m_SecInWorld.ToSectionInChunk());
-            if (m_Section == null) return;
-
             //Get Block Location
             m_BlkInSection = new BlockInSection(Coord, _World);
+
+            //Get Chunk
+            m_Chunk = _World.Pool.GetChunk(m_ChunkInWorld);
+            if (m_Chunk == null) { m_Section = null; m_Block = null; return; }
+
+            //Get Section 
+            m_Section = m_Chunk.GetSection(m_SecInWorld.ToSectionInChunk());
+            if (m_Section == null) { m_Block = null; ; return; }
+
+            //Get Block
             m_Block = m_Section.GetBlock(m_BlkInSection);
-            if (m_Block == null) return;
         }
-    
+
+        public BlockLocation Offset_Blk(Vector3Int offset,IWorld _world)
+        {
+            BlockLocation NewBlockLoc = default;
+   
+            NewBlockLoc.BlkInSec = m_BlkInSection.Offset(offset, _world, out Vector3Int SecOffset);
+            NewBlockLoc.SecInWorld = m_SecInWorld.Offset(SecOffset);
+            NewBlockLoc.Bound = new Bounds(m_Bound.center + offset,Vector3.one);
+            NewBlockLoc.ChunkInWorld = NewBlockLoc.SecInWorld.ToChunkInWorld(_world);
+
+            NewBlockLoc.Update(_world);
+
+            return NewBlockLoc;
+        }
+
+
         public void Reset()
         {
             m_Chunk = null;

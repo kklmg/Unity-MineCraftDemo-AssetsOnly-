@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Noise;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.NPattern;
 
 namespace Assets.Scripts.NWorld
 {

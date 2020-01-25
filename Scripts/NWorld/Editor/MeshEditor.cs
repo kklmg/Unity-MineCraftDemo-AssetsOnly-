@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEditor;
-using Assets.Scripts.SMesh;
+using Assets.Scripts.NMesh;
 
 
 namespace Assets.Scripts.NWorld

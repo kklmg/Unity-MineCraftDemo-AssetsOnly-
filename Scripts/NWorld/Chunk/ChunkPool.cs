@@ -2,8 +2,8 @@
 using UnityEngine;
 
 using Assets.Scripts.NEvent;
-using Assets.Scripts.NEvent.Impl;
-using Assets.Scripts.NServiceLocator;
+using Assets.Scripts.NCommand;
+using Assets.Scripts.NGlobal.ServiceLocator;
 
 namespace Assets.Scripts.NWorld
 {
@@ -19,14 +19,21 @@ namespace Assets.Scripts.NWorld
         private Dictionary<Vector2Int, Chunk> m_DicChunks = new Dictionary<Vector2Int, Chunk>();
 
         [SerializeField]
+        private LinkedList<Com_ChangeBlock> m_BlockChanges = new LinkedList<Com_ChangeBlock>();
+
+        [SerializeField]
+        [Range(2,50)]
+        private int m_SaveChangeCount = 20;
+        [SerializeField]
         private int m_MaxCount = 10;
-        private World m_refWorld;
+
+        private IWorld m_refWorld;
 
         //Unity Function
         //---------------------------------------------------------------------------
         private void Awake()
         {
-            m_refWorld = GetComponent<World>();
+            m_refWorld = GetComponent<IWorld>();
             //m_DicChunks = new Dictionary<Vector2Int, Chunk>();
         }
         private void Start()
@@ -36,7 +43,8 @@ namespace Assets.Scripts.NWorld
             Spawn(new ChunkInWorld(new Vector2Int(-1, 0), m_refWorld));
             Spawn(new ChunkInWorld(new Vector2Int(-1, -1), m_refWorld));
 
-            Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Change.ID, HandleChunkEvent);
+            Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Change.ID, Handle_BlockChange);
+            Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Recover.ID, Handle_BlockRecover);
             Locator<IEventSubscriber>.GetService().Subscribe(E_Cha_Moved.ID, SpawnChunk_NearPlayer);
         }
 
@@ -93,12 +101,37 @@ namespace Assets.Scripts.NWorld
             return true;
         }
 
-        public bool HandleChunkEvent(IEvent _event)
+        public bool Handle_BlockChange(IEvent _event)
         {
-            E_Block_Change command = (_event as E_Block_Change);
-            command.Change.Execute();
+            E_Block_Change temp = (_event as E_Block_Change);
 
+            //Execute change request
+            temp.Request.Execute();
+
+            //save changes 
+            m_BlockChanges.AddLast(temp.Request);
+
+            //if changes space is full,drop the first change
+            while (m_BlockChanges.Count >= m_SaveChangeCount)
+            {
+                m_BlockChanges.RemoveFirst();
+            }
+            Debug.Log("block has Changed!, cache size: "+ m_BlockChanges.Count);
             return true;
+        }
+
+        public bool Handle_BlockRecover(IEvent _event)
+        {
+            if (m_BlockChanges.Count > 0)
+            {
+                m_BlockChanges.Last.Value.Undo();
+                m_BlockChanges.RemoveLast();
+
+                Debug.Log("block has Recovered!, cache size: " + m_BlockChanges.Count);
+                return true;
+            }
+
+            else return false;
         }
 
         public Chunk GetChunk(ChunkInWorld slot)
@@ -109,6 +142,5 @@ namespace Assets.Scripts.NWorld
                 return _Chunk;
             return null;
         }
-
     }
 }

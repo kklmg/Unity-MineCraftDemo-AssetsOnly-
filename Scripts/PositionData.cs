@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Assets.Scripts.NWorld;
-using Assets.Scripts.NServiceLocator;
+using Assets.Scripts.NGlobal.ServiceLocator;
 
 namespace Assets.Scripts
 {

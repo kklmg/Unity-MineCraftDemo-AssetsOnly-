@@ -1,5 +1,6 @@
 ﻿
 
+
 namespace Assets.Scripts.NEvent
 {
     public interface IEventPublisher

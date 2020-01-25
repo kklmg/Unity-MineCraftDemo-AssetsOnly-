@@ -1,7 +1,7 @@
-﻿using Assets.Scripts.NCommand.Base;
+﻿using Assets.Scripts.NCommand;
 using Assets.Scripts.NWorld;
 
-namespace Assets.Scripts.NCommand.Impl
+namespace Assets.Scripts.NCommand
 {
     public class Com_ChangeBlock : ICommand
     {

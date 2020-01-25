@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Assets.Scripts.NWorld;
-using Assets.Scripts.Pattern;
+using Assets.Scripts.NPattern;
 
 namespace Assets.Scripts.Tester
 {

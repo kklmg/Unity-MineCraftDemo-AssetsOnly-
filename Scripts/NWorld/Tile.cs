@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 
-using Assets.Scripts.SMesh;
+using Assets.Scripts.NMesh;
 
 namespace Assets.Scripts.NWorld
 {

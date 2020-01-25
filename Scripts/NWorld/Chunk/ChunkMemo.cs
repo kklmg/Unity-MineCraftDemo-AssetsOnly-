@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.NCommand.Impl;
+using Assets.Scripts.NCommand;
 
 namespace Assets.Scripts.NWorld
 {

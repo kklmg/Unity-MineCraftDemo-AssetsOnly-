@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using Assets.Scripts.SMesh;
-using Assets.Scripts.NServiceLocator;
+﻿using UnityEngine;
+using Assets.Scripts.NMesh;
+using Assets.Scripts.NGlobal.ServiceLocator;
+using Assets.Scripts.NGlobal.WorldSearcher;
 
 namespace Assets.Scripts.NWorld
 {
@@ -149,7 +149,7 @@ namespace Assets.Scripts.NWorld
         public void UpdateMesh()
         {         
             //if (isDirtry == false) return;
-            m_MeshData.clear();
+            m_MeshData.Clear();
             m_MeshFilter.mesh.Clear();
             Block Curblk;
 

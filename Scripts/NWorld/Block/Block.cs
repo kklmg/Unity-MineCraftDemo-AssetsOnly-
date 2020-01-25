@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using Assets.Scripts.SMesh;
+﻿using UnityEngine;
+using Assets.Scripts.NMesh;
 
 namespace Assets.Scripts.NWorld
 {
@@ -58,7 +53,7 @@ namespace Assets.Scripts.NWorld
             mesh.SetUV_quad(fr);
 
             //save mesh data
-            receiver.add(mesh);
+            receiver.Add(mesh);
         }
 
         public void ExtractMeshAll(MeshData receiver, int x, int y, int z, TextureSheet texRef)
@@ -79,7 +74,7 @@ namespace Assets.Scripts.NWorld
                 Frame fr = texRef.GetCoord(t.TexID);
                 mesh.SetUV_quad(fr);
 
-                receiver.add(mesh);
+                receiver.Add(mesh);
             }
         }
 
