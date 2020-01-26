@@ -33,10 +33,15 @@ namespace Assets.Scripts.NUser
 
         private void Awake()
         {
+           
+        }
+        private void Start()
+        {
             m_refWorld = Locator<IWorld>.GetService();
             m_refControl = Locator<IController>.GetService();
             m_refEventPublisher = Locator<IEventPublisher>.GetService();
         }
+
 
         private void Update()
         {

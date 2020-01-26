@@ -10,7 +10,7 @@ namespace Assets.Scripts.NCharacter
             BevSequence seq = new BevSequence();
 
             Control_Cha_Move control = new Control_Cha_Move();
-            Cha_Move move = new Cha_Move();
+            Cha_ApplyMove move = new Cha_ApplyMove();
 
             seq.AddChild(control);
             seq.AddChild(move);
@@ -35,8 +35,7 @@ namespace Assets.Scripts.NCharacter
             return repeat;
         }
         public BevNodeBase Camera_Control()
-        {
-            
+        {    
             BevSequence seq = new BevSequence();
 
             Control_Camera_UpDown control = new Control_Camera_UpDown();

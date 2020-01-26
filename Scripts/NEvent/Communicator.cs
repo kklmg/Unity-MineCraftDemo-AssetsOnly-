@@ -29,5 +29,11 @@ namespace Assets.Scripts.NEvent
         {
             m_Subscriber.Subscribe(EventID, handler);
         }
+        public void SubsribeEvent_Decorate(Guid EventID, Del_DecorateEvent decorator)
+        {
+            m_Subscriber.Subscribe_Deccorate(EventID, decorator);
+        }
+
+
     }
 }

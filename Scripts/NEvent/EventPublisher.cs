@@ -23,6 +23,7 @@ namespace Assets.Scripts.NEvent
         {
             m_refEventCenter.GetEvent(_event);
         }
+
         public void PublishAndHandle(IEvent _event)
         {
             m_refEventCenter.Handle(_event);

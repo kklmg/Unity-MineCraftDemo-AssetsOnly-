@@ -320,6 +320,29 @@ namespace Assets.Scripts.NWorld
 
         }
 
+        public BlockLocation(Vector3 Coord, IWorld _World)
+        {
+            m_Bound = _World.GetBound(Coord);
+
+            //Get Chunk Location
+            m_ChunkInWorld = new ChunkInWorld(Coord, _World);
+            //Get Section Location
+            m_SecInWorld = new SectionInWorld(Coord, _World);
+            //Get Block Location
+            m_BlkInSection = new BlockInSection(Coord, _World);
+
+            //Get Chunk
+            m_Chunk = _World.Pool.GetChunk(m_ChunkInWorld);
+            if (m_Chunk == null) { m_Section = null; m_Block = null; return; }
+
+            //Get Section 
+            m_Section = m_Chunk.GetSection(m_SecInWorld.ToSectionInChunk());
+            if (m_Section == null) { m_Block = null; ; return; }
+
+            //Get Block
+            m_Block = m_Section.GetBlock(m_BlkInSection);
+        }
+
         public void Set(Vector3 Coord, IWorld _World)
         {
             m_Bound = _World.GetBound(Coord);
@@ -393,5 +416,10 @@ namespace Assets.Scripts.NWorld
             if (m_Chunk == null || m_Section == null || m_Block == null) return false;
             else return true;
         }
+        public bool IsBlockExists()
+        {
+            return m_Block != null;
+        }
+
     }
 }

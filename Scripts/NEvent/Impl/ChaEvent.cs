@@ -1,15 +1,28 @@
 ﻿using Assets.Scripts.NCharacter;
+using UnityEngine;
 
 namespace Assets.Scripts.NEvent
 {
-    public class E_Cha_TryMove : EventBase<E_Cha_TryMove>
+    //The Character want to move
+    public class E_Cha_MoveRequest : EventBase<E_Cha_MoveRequest>
     {
-        public ChaMove Move_Data { get; }
-        public E_Cha_TryMove(ChaMove data)
+        public Vector3 Translation { get; set; }
+        public E_Cha_MoveRequest(Vector3 value)
         {
-            Move_Data = data;
+            Translation = value;
         }
     }
+
+    //The Character want to rotate
+    public class E_Cha_RotateRequest : EventBase<E_Cha_RotateRequest>
+    {
+        public Vector3 Rotation { get; }
+        public E_Cha_RotateRequest(Vector3 value)
+        {
+            Rotation = value;
+        }
+    }
+
 
     public class E_Cha_Spawned : EventBase<E_Cha_Spawned>
     {

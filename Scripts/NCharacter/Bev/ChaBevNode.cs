@@ -13,38 +13,34 @@ namespace Assets.Scripts.NCharacter
     {
         private float m_fHor;
         private float m_fVer;
-        private ChaBevData m_ThisData;
-        E_Cha_TryMove m_ETryMove;
+        private ChaBevData m_ThisData;      
+        private IController m_Controller;
 
         protected override void VEnter(BevData workData)
-        {  
+        {
             m_ThisData = workData as ChaBevData;
-            m_ETryMove = new E_Cha_TryMove(m_ThisData.Move);
-        }  
+            m_Controller = Locator<IController>.GetService();
+        }
 
         public override bool Check(BevData workData)
         {
-            IController control = Locator<IController>.GetService();
-
             //get input
-            m_fHor = control.Horizontal();
-            m_fVer = control.Vertical();
+            m_fHor = m_Controller.Horizontal();
+            m_fVer = m_Controller.Vertical();
 
             //not valid input
             if (Mathf.Approximately(0.0f, m_fHor)
                 && Mathf.Approximately(0.0f, m_fVer)) return false;
 
             //calculate movement
-            m_ThisData.Move.Translation.x = m_fHor * Time.deltaTime
+            m_ThisData.Translation.x = m_fHor * Time.fixedDeltaTime
                 * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
-            m_ThisData.Move.Translation.z = m_fVer * Time.deltaTime
+
+            m_ThisData.Translation.z = m_fVer * Time.fixedDeltaTime
             * (m_ThisData.isWalking ? m_ThisData.Character.WalkSpeed : m_ThisData.Character.RunSpeed);
 
-
-            //notify to global event center
-            Locator<IEventPublisher>.GetService().PublishAndHandle(m_ETryMove);
-            //notify to other component
-            m_ThisData.Communicator.PublishEvent(m_ETryMove);
+            //compute direction
+            m_ThisData.Translation = m_ThisData.Character.transform.rotation * m_ThisData.Translation;
 
             return true;
         }
@@ -63,11 +59,12 @@ namespace Assets.Scripts.NCharacter
             //not valid input
             if (Mathf.Approximately(0.0f, Cache_Rotate)) return false;
 
-            thisData.Move.Rotation.y = Cache_Rotate;
+            thisData.Rotation.y = Cache_Rotate;
 
             return true;
         }
     }
+
     class Control_Camera_UpDown : BevConditionBase
     {
         private float Cache_Rotate;
@@ -87,41 +84,45 @@ namespace Assets.Scripts.NCharacter
 
             return true;
         }
-
-
     }
-    public class Cha_Move : BevLeaf
+
+    public class Cha_ApplyMove : BevLeaf
     {
-        Vector3 Cache_Velocity;
-        E_Cha_Moved m_ECha_move = new E_Cha_Moved();
+        E_Cha_MoveRequest m_EMoveRequest = new E_Cha_MoveRequest(Vector3.zero);
         protected override eRunningState Tick(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-            thisData.Character.transform.Translate(thisData.Move.Translation);
-                
-            //set event
-            m_ECha_move.Cha = thisData.Character;
 
-            //notify orther system
-            Locator<IEventPublisher>.GetService().Publish(m_ECha_move);
-            thisData.Communicator.PublishEvent(m_ECha_move);
+            //set move request event
+            m_EMoveRequest.Translation = thisData.Translation;
 
+            //notify orther component
+            thisData.Communicator.PublishEvent(m_EMoveRequest);
+           
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;
         }
     }
+
+    public class Player_move
+    {
+
+
+    }
+
     public class Cha_Rotate : BevLeaf
     {
         protected override eRunningState Tick(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
 
-            thisData.Character.transform.Rotate(Vector3.up * thisData.Move.Rotation.y);
+            thisData.Character.transform.Rotate(Vector3.up * thisData.Rotation.y);
 
             m_enRunningState = eRunningState.Suceed;
             return m_enRunningState;
         }
     }
+
     public class CameraUpDown : BevLeaf
     {
         float Camera_UD;
@@ -136,6 +137,7 @@ namespace Assets.Scripts.NCharacter
             return m_enRunningState;
         }
     }
+
     public class Cha_Jump : BevConditionBase
     { 
         public override bool Check(BevData workData)
@@ -153,6 +155,7 @@ namespace Assets.Scripts.NCharacter
             return true;
         }
     }
+
     public class Cha_NotGrounded : BevConditionBase
     {
         private IWorld m_refWorld;
