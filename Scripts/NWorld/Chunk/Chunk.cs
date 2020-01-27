@@ -116,7 +116,7 @@ namespace Assets.Scripts.NWorld
 
             //create Height map
             m_arrHeightMap = m_refBiome.GenerateHeightMap
-                (m_ChunkinWorld.Value, m_refWorld.Section_Width, m_refWorld.Section_Height,
+                (m_Coord, m_refWorld.Section_Width, m_refWorld.Section_Height,
                 m_refWorld.NoiseMaker,out m_MaxHeight,out m_MinHeight);
 
             //Create Sections

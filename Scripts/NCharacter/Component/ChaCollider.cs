@@ -132,13 +132,34 @@ namespace Assets.Scripts.NCharacter
             return false;
         }
 
-        //private bool Down(float trans_y, out Vector3 intersect)
-        //{
+        private bool Down(float trans_y, out Vector3 intersect)
+        {
+            intersect = Vector3.zero;
+            BlockLocation Loc =
+                new BlockLocation(transform.position + new Vector3(0, trans_y, 0), m_refWorld);
 
-        //}
-        //private bool Up(float trans_y, out Vector3 intersect)
-        //{
-        //}
+            if (Loc.IsBlockExists() && Loc.CurBlockRef.IsSolid(Direction.UP))
+            {
+                intersect.y = Loc.Bound.max.z - (transform.position.y + trans_y);
+                Debug.Log("Down intersection" + intersect);
+                return true;
+            }
+            return false;
+        }
+        private bool Up(float trans_y, out Vector3 intersect)
+        {
+            intersect = Vector3.zero;
+            BlockLocation Loc =
+                new BlockLocation(transform.position + new Vector3(0, trans_y + m_BodyHeight, 0), m_refWorld);
+
+            if (Loc.IsBlockExists() && Loc.CurBlockRef.IsSolid(Direction.UP))
+            {
+                intersect.y = Loc.Bound.min.z - (transform.position.y + trans_y + m_BodyHeight);
+                Debug.Log("Up intersection" + intersect);
+                return true;
+            }
+            return false;
+        }
     }
 
 }

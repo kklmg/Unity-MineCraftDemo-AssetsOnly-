@@ -15,4 +15,7 @@ namespace Assets.Scripts.NEvent
     class E_Block_Recover : EventBase<E_Block_Recover>
     {
     }
+
+
+
 }

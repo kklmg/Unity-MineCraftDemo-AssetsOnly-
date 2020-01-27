@@ -13,9 +13,6 @@ namespace Assets.Scripts.NWorld
         //Field
         //---------------------------------------------------------------------------
         [SerializeField]
-        private ChunkInWorld m_PreSlot;
-
-        [SerializeField]
         private Dictionary<Vector2Int, Chunk> m_DicChunks = new Dictionary<Vector2Int, Chunk>();
 
         [SerializeField]
@@ -23,7 +20,8 @@ namespace Assets.Scripts.NWorld
 
         [SerializeField]
         [Range(2,50)]
-        private int m_SaveChangeCount = 20;
+        private int m_SaveChangeCount = 20; //Block Changes Stroage
+
         [SerializeField]
         private int m_MaxCount = 10;
 
@@ -34,7 +32,6 @@ namespace Assets.Scripts.NWorld
         private void Awake()
         {
             m_refWorld = GetComponent<IWorld>();
-            //m_DicChunks = new Dictionary<Vector2Int, Chunk>();
         }
         private void Start()
         {
@@ -45,7 +42,7 @@ namespace Assets.Scripts.NWorld
 
             Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Change.ID, Handle_BlockChange);
             Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Recover.ID, Handle_BlockRecover);
-            Locator<IEventSubscriber>.GetService().Subscribe(E_Cha_Moved.ID, SpawnChunk_NearPlayer);
+            Locator<IEventSubscriber>.GetService().Subscribe(E_Player_LeaveChunk.ID, SpawnChunk_NearPlayer);
         }
 
         //public Function
@@ -71,33 +68,36 @@ namespace Assets.Scripts.NWorld
                 m_DicChunks.Add(slot.Value, _Chunk);
             }
             //Case: No Enough Space in Pool
+            //else if()
+            //{
+
+
+
+            //}
+
             else return;
         }
         public bool SpawnChunk_NearPlayer(IEvent _event)
         {
             //Interpret Event
-            Character Cha = (_event as E_Cha_Moved).Cha;
-
-            //get the chunk position Character located 
-            ChunkInWorld CurSlot = new ChunkInWorld(Cha.transform.position,m_refWorld);
-
-            //case: the chunk position Character located has not changed
-            if (m_PreSlot.Value == CurSlot.Value) return false;
-
-            byte PlayerView = Cha.ViewDistance;
+            E_Player_LeaveChunk ChunkChange = (_event as E_Player_LeaveChunk);            
 
             //spawn the chunks in character view
-            Spawn(CurSlot);
+            int left = ChunkChange.ChunkInWorld.x - ChunkChange.playerView;
+            int top = ChunkChange.ChunkInWorld.y - ChunkChange.playerView;
+            int right = ChunkChange.ChunkInWorld.x + ChunkChange.playerView;
+            int bottom = ChunkChange.ChunkInWorld.y + ChunkChange.playerView;
 
-            int left, bottom;
-            for (left = CurSlot.Value.x - PlayerView; left < CurSlot.Value.x + PlayerView; ++left)
+
+
+            int i, j;
+            for (i = left; i < right; ++i)
             {
-                for (bottom = CurSlot.Value.y - PlayerView; bottom < CurSlot.Value.y + PlayerView; ++bottom)
+                for (j = top; j < bottom; ++j)
                 {
-                    Spawn(new ChunkInWorld(new Vector2Int(left, bottom),m_refWorld));
+                    Spawn(new ChunkInWorld(new Vector2Int(i, j), m_refWorld));
                 }
             }
-            m_PreSlot = CurSlot;
             return true;
         }
 

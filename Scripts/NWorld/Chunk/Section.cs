@@ -69,28 +69,6 @@ namespace Assets.Scripts.NWorld
             if (isDirtry == true)
             {
                 UpdateMesh();
-
-                //update adjacent Sections
-                Section adjSection;     
-                //up
-                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.up), m_refWorld);
-                if (adjSection != null) adjSection.UpdateMesh();
-                //down
-                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.down), m_refWorld);
-                if (adjSection != null) adjSection.UpdateMesh();
-                //left
-                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.left), m_refWorld);
-                if (adjSection != null) adjSection.UpdateMesh();
-                //right
-                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.right), m_refWorld);
-                if (adjSection != null) adjSection.UpdateMesh();
-                //front
-                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(new Vector3Int(0, 0, 1)), m_refWorld);
-                if (adjSection != null) adjSection.UpdateMesh();
-                //back
-                adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(new Vector3Int(0, 0, -1)), m_refWorld);
-                if (adjSection != null) adjSection.UpdateMesh();
-
                 isDirtry = false;
             }
         }
@@ -188,7 +166,7 @@ namespace Assets.Scripts.NWorld
             Debug.Log("Mesh updata called");
 
         }
-        private void _GetNonDuplicateMesh(ref BlockInSection Curlocation,Block blkType,byte dir)
+        private void _GetNonDuplicateMesh(ref BlockInSection Curlocation, Block blkType, byte dir)
         {
             Vector3Int SectionOffset;
             BlockInSection AdjLocation = Curlocation.Offset(Direction.DirToVectorInt(dir), m_refWorld, out SectionOffset);
@@ -199,27 +177,13 @@ namespace Assets.Scripts.NWorld
 
                 if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
                 {
-                    blkType.ExtractMesh(dir, m_MeshData,ref Curlocation, m_refWorld.TexSheet);
+                    blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
                 }
             }
             //Block is not located in This Section
             else
             {
-                //Search the section which this block located
-                Section adjsection = GWorldSearcher.GetSection(m_SecInWorld.Offset(SectionOffset), m_refWorld);
-                if (adjsection == null)
-                {
-                    blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
-                }
-                else
-                {
-                    Block adj = adjsection.GetBlock(AdjLocation);
-
-                    if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
-                    {              
-                        blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
-                    }
-                }
+                blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
             }
         }
 
@@ -239,3 +203,77 @@ namespace Assets.Scripts.NWorld
         }
     }
 }
+
+
+
+//Back Up Function 
+//(cull conjuct face applied)
+
+//private void _GetNonDuplicateMesh(ref BlockInSection Curlocation, Block blkType, byte dir)
+//{
+//    Vector3Int SectionOffset;
+//    BlockInSection AdjLocation = Curlocation.Offset(Direction.DirToVectorInt(dir), m_refWorld, out SectionOffset);
+
+//    if (SectionOffset == Vector3Int.zero)
+//    {
+//        Block adj = GetBlock(AdjLocation);
+
+//        if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
+//        {
+//            blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+//        }
+//    }
+//    //Block is not located in This Section
+//    else
+//    {
+//        blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+
+//        //Search the section which this block located
+//        Section adjsection = GWorldSearcher.GetSection(m_SecInWorld.Offset(SectionOffset), m_refWorld);
+//        if (adjsection == null)
+//        {
+//            blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+//        }
+//        else
+//        {
+//            Block adj = adjsection.GetBlock(AdjLocation);
+
+//            if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
+//            {
+//                blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+//            }
+//        }
+//    }
+//}
+
+
+//private void Update()
+//{
+//    if (isDirtry == true)
+//    {
+//        UpdateMesh();
+
+//        //update adjacent Sections
+//        Section adjSection;
+//        //up
+//        adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.up), m_refWorld);
+//        if (adjSection != null) adjSection.UpdateMesh();
+//        //down
+//        adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.down), m_refWorld);
+//        if (adjSection != null) adjSection.UpdateMesh();
+//        //left
+//        adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.left), m_refWorld);
+//        if (adjSection != null) adjSection.UpdateMesh();
+//        //right
+//        adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(Vector3Int.right), m_refWorld);
+//        if (adjSection != null) adjSection.UpdateMesh();
+//        //front
+//        adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(new Vector3Int(0, 0, 1)), m_refWorld);
+//        if (adjSection != null) adjSection.UpdateMesh();
+//        //back
+//        adjSection = GWorldSearcher.GetSection(m_SecInWorld.Offset(new Vector3Int(0, 0, -1)), m_refWorld);
+//        if (adjSection != null) adjSection.UpdateMesh();
+
+//        isDirtry = false;
+//    }
+//}

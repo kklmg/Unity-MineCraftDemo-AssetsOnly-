@@ -119,7 +119,7 @@ namespace Assets.Scripts.NUser
                 CheckLoc += _ray.direction* m_RayCheckInterval;
 
                 //Get Location Data
-                m_PickedLoc.Set(CheckLoc, m_refWorld);
+                m_PickedLoc.Update(CheckLoc, m_refWorld);
 
                 //Check if Block is Picked
                 if (m_PickedLoc.IsValid())
