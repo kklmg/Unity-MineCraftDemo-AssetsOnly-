@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UnityEngine;
 
-namespace Assets.Scripts.Noise
+namespace Assets.Scripts.NNoise
 {
-    public class HashMaker
+    public interface IHashMaker
+    {
+        int GetHash(int key);
+        int GetHash_2D(Vector2 key);
+        int GetHash_2D(Vector2Int key);
+        int GetHash_3D(Vector3 key);
+        int GetHash_3D(Vector3Int key);
+    }
+
+    public class HashMakerBase : IHashMaker
     {
         readonly uint BIT_NOISE1;
         readonly uint BIT_NOISE2;
@@ -15,7 +20,7 @@ namespace Assets.Scripts.Noise
         //cache
         private uint m_Cache_Uint;
 
-        public HashMaker(uint noise)
+        public HashMakerBase(uint noise)
         {
             BIT_NOISE1 = noise;
             BIT_NOISE2 = 0xcf87c3e6;
@@ -33,6 +38,26 @@ namespace Assets.Scripts.Noise
             m_Cache_Uint ^= (m_Cache_Uint >> 8);
 
             return (int)m_Cache_Uint;
+        }
+        public int GetHash_2D(Vector2 key)
+        {
+            return GetHash(((int)(key.x) << 8) + (int)(key.y));
+        }
+        public int GetHash_2D(Vector2Int key)
+        {
+            return GetHash((key.x << 8) + key.y);
+
+        }
+        public int GetHash_3D(Vector3 key)
+        {
+            return GetHash(
+                    ((int)(key.x) << 16)
+                      + ((int)(key.x) << 8)
+                         + (int)(key.z));
+        }
+        public int GetHash_3D(Vector3Int key)
+        {
+            return GetHash((key.x << 16) + (key.x << 8) + key.z);
         }
     }
 

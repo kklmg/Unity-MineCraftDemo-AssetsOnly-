@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Assets.Scripts.Noise
+namespace Assets.Scripts.NNoise
 {
     //delegate fade function
     public delegate float del_FadeFunction(float t);
@@ -25,7 +25,6 @@ namespace Assets.Scripts.Noise
 
 
 
-
     /// <summary>
     /// class perlin noise maker
     /// </summary>
@@ -33,7 +32,7 @@ namespace Assets.Scripts.Noise
     {
         //Fileld
         const float NOISE_OFFSET = 0.001f;
-        private HashMaker m_HashMaker;                    //Hash Maker
+        private IHashMaker m_HashMaker;                    //Hash Maker
 
         //Delegate----------------------------------------------------------------
         private del_FadeFunction m_delFadeFunction;       //Fade Function
@@ -49,8 +48,19 @@ namespace Assets.Scripts.Noise
             m_delFadeFunction = new del_FadeFunction(FadeFunction.Perlin_v1);
 
             //Init Hash Maker
-            m_HashMaker = new HashMaker(_seed);
+            m_HashMaker = new HashMakerBase(_seed);
         }
+
+        public PerlinNoiseMaker(IHashMaker hashMaker)
+        {
+            //set default fade function
+            m_delFadeFunction = new del_FadeFunction(FadeFunction.Perlin_v1);
+
+            //Init Hash Maker
+            m_HashMaker = hashMaker;
+        }
+
+
 
 
         //Public Function---------------------------------------------------------------
@@ -59,7 +69,7 @@ namespace Assets.Scripts.Noise
         /// </summary>
         /// <param name="point">Arbitraty Vector2</param>
         /// <returns> Noise (float value between -1 and 1) </returns>
-        public float GetNoise_2D(Vector2 point)
+        public float Make_2D(Vector2 point, bool GetPositiveRes = true)
         {
             //for avoid integer input
             point.x += NOISE_OFFSET;
@@ -96,53 +106,36 @@ namespace Assets.Scripts.Noise
                 new Vector2(p_int.x + 1, p_int.y),      //right_bottom
             };
 
-            //Debug.Log("verticies0 :" + verticies[0]);
-            //Debug.Log("verticies1 :" + verticies[1]);
-            //Debug.Log("verticies2 :" + verticies[2]);
-            //Debug.Log("verticies3 :" + verticies[3]);
 
             // weight : product of random gradient and vector(position -> lattice)
-            float weight_LT = Grad_2D(Hash_2D(verticies[0]), offset - new Vector2(0.0f, 1.0f));
-            float weight_RT = Grad_2D(Hash_2D(verticies[1]), offset - new Vector2(1.0f, 1.0f));
-            float weight_LB = Grad_2D(Hash_2D(verticies[2]), offset /*- new Vector2(0.0f, 0.0f)*/);
-            float weight_RB = Grad_2D(Hash_2D(verticies[3]), offset - new Vector2(1.0f, 0.0f));
-
-            //Debug.Log("wieght LT" + weight_LT.ToString("F16"));
-            //Debug.Log("wieght RT" + weight_RT.ToString("F16"));
-            //Debug.Log("wieght LB" + weight_LB.ToString("F16"));
-            //Debug.Log("wieght RB" + weight_RB.ToString("F16"));
+            float weight_LT = _Grad_2D(m_HashMaker.GetHash_2D(verticies[0]), offset - new Vector2(0.0f, 1.0f));
+            float weight_RT = _Grad_2D(m_HashMaker.GetHash_2D(verticies[1]), offset - new Vector2(1.0f, 1.0f));
+            float weight_LB = _Grad_2D(m_HashMaker.GetHash_2D(verticies[2]), offset /*- new Vector2(0.0f, 0.0f)*/);
+            float weight_RB = _Grad_2D(m_HashMaker.GetHash_2D(verticies[3]), offset - new Vector2(1.0f, 0.0f));
 
 
             //learp
-            float lerpAbove = FadeLerp(weight_LT, weight_RT, offset.x);
-            float lerpBottom = FadeLerp(weight_LB, weight_RB, offset.x);
+            float lerpAbove = _FadeLerp(weight_LT, weight_RT, offset.x);
+            float lerpBottom = _FadeLerp(weight_LB, weight_RB, offset.x);
 
-            return FadeLerp(lerpBottom, lerpAbove, offset.y);
-       
-        }
 
-        /// <returns> Noise (float value between 0 and 1) </returns>
-        public float GetNoise_2D_abs(Vector2 point)
-        {
-            return (GetNoise_2D(point) + 1) / 2;
+            return GetPositiveRes == true ?  
+                (_FadeLerp(lerpBottom, lerpAbove, offset.y)+1)/2.0f  //result Range: (0,1)
+                :_FadeLerp(lerpBottom, lerpAbove, offset.y);         //result Range: (-1,1)
         }
-
-        public float GetNoise_2D(Vector2 point, float frequency, float amplitude)
+        public float Make_2D(Vector2 point, float frequency, float amplitude, bool GetPositiveRes = true)
         {
-            return GetNoise_2D(new Vector2(point.x * frequency, point.y * frequency)) * amplitude;
+            return Make_2D(new Vector2(point.x * frequency, point.y * frequency), GetPositiveRes) * amplitude;
         }
-        public float GetNoise_2D_abs(Vector2 point, float frequency, float amplitude)
-        {
-            return ((GetNoise_2D(new Vector2(point.x * frequency, point.y * frequency))+1)/2) * amplitude;
-        }
-        public float GetOctaveNoise_2D(Vector2 point,float frequency,float amplitude,int octaves=8)
+        public float MakeOctave_2D(Vector2 point, float frequency, float amplitude, int octave = 8, bool GetPositiveRes = true)
         {
             float res = 0;
             float maxValue = 0;  // sum of all amplitude (possible max amplitude)
             float scale = amplitude;
-            for (int i = 0; i < octaves; i++)
+
+            for (int i = 0; i < octave; i++)
             {
-                res += GetNoise_2D(point,frequency,amplitude);
+                res += Make_2D(point,frequency,amplitude, GetPositiveRes);
 
                 maxValue += amplitude;
 
@@ -152,28 +145,16 @@ namespace Assets.Scripts.Noise
 
             return res / maxValue*scale;
         }
-      
 
-        public float GetNoise_3D(Vector3 point) { return 0; }//XXXXXXXXXXXXXXXXXXXXXX
+
+        //Have not Implemented!!!!!!!!!
+        public float Make_3D(Vector3 point, bool GetPositiveRes = true) { return 0; }
 
 
         //Private Function----------------------------------------------------------------
-        private int Hash_2D(Vector2 vertex)
-        {
-            return m_HashMaker.GetHash(((int)(vertex.x) << 8) + (int)(vertex.y));
-
-            //return m_delHashFunction((int)vertex.x) + m_delHashFunction((int)vertex.y);
-        }
-
-        private int Hash_3D(Vector3 vertex)
-        {
-            return m_HashMaker.GetHash((int)vertex.x) / 3
-                    + m_HashMaker.GetHash((int)vertex.y) / 3
-                    + m_HashMaker.GetHash((int)vertex.z) / 3;
-        }
 
         //get weight (product of random gradient and the vector)
-        private float Grad_2D(int hash, Vector2 p)
+        private float _Grad_2D(int hash, Vector2 p)
         {   
             switch (hash % 4)      //get fandom gradient
             {
@@ -185,7 +166,7 @@ namespace Assets.Scripts.Noise
             }
         }
 
-        private float Grad_3D(int hash, Vector3 p)
+        private float _Grad_3D(int hash, Vector3 p)
         {
             switch (hash & 0xF)    //get fandom gradient          
             {
@@ -209,7 +190,7 @@ namespace Assets.Scripts.Noise
             }        
         }
 
-        public float FadeLerp(float left, float right, float t)
+        private float _FadeLerp(float left, float right, float t)
         {
             //case: no fade function setted, use liner lerp 
             if (m_delFadeFunction == null)

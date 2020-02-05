@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8474156636983563399}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0821321, y: 26.569298, z: 9.008453}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -43,6 +43,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3801d4c493e7c894b9f7ecfd4ffe30fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  block_place: {fileID: 0}
-  block_Pick: {fileID: 0}
+  Go_Place: {fileID: 0}
+  Go_Pick: {fileID: 0}
   m_HandLength: 8
+  m_RayCheckInterval: 0.5
+  m_PickedLoc:
+    m_ChunkInWorld:
+      m_Value: {x: 0, y: 0}
+    m_SecInWorld:
+      m_Value: {x: 0, y: 0, z: 0}
+    m_BlkInSection:
+      m_Value: {x: 0, y: 0, z: 0}
+    m_BlkInWorld:
+      m_Value: {x: 0, y: 0, z: 0}
+      m_Bound:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    m_Chunk: {fileID: 0}
+    m_Section: {fileID: 0}
+    m_Block: {fileID: 0}
+  m_PlacedLoc:
+    m_ChunkInWorld:
+      m_Value: {x: 0, y: 0}
+    m_SecInWorld:
+      m_Value: {x: 0, y: 0, z: 0}
+    m_BlkInSection:
+      m_Value: {x: 0, y: 0, z: 0}
+    m_BlkInWorld:
+      m_Value: {x: 0, y: 0, z: 0}
+      m_Bound:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    m_Chunk: {fileID: 0}
+    m_Section: {fileID: 0}
+    m_Block: {fileID: 0}

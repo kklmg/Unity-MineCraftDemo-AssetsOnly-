@@ -15,7 +15,8 @@ namespace Assets.Scripts.NEvent
             m_Publisher = new EventPublisher(m_EventCenter);
             m_Subscriber = new EventSubscriber(m_EventCenter);
         }
-        private void Update()
+
+        private void LateUpdate()
         {
             m_EventCenter.HandleAll();
         }

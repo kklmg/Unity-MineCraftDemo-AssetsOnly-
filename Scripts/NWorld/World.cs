@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Assets.Scripts.Noise;
+using Assets.Scripts.NNoise;
 using Assets.Scripts.NPattern;
 
 namespace Assets.Scripts.NWorld
@@ -24,8 +24,6 @@ namespace Assets.Scripts.NWorld
         [SerializeField]
         private uint m_Seed = 0xffffffff;
 
-        private PerlinNoiseMaker m_NoiseMaker;
-
         //Biomes
         [SerializeField]
         private List<Biome> m_Bimoes;
@@ -37,8 +35,6 @@ namespace Assets.Scripts.NWorld
         [SerializeField]
         private TextureSheet m_TextureSheet;
 
-        private ChunkPool m_refPool;
-
         //Property
         //--------------------------------------------------------------------
         public ushort Section_Width { get { return m_Section_Width; } }
@@ -46,20 +42,26 @@ namespace Assets.Scripts.NWorld
         public ushort Section_Depth { get { return m_Section_Depth; } }
         public ushort Chunk_Height { get { return m_Chunk_Height; } }
         public uint Seed { get { return m_Seed; } }
-        public ChunkPool Pool { get { return m_refPool; } }
+        public ChunkPool Pool { get; private set; }
 
 
-        public PerlinNoiseMaker NoiseMaker { get { return m_NoiseMaker; } }
+        public INoiseMaker NoiseMaker { get; private set; }
+        public IHashMaker HashMaker { get; private set; }
+
         public List<Block> BlockTypes { get { return m_BlockTypes; } }
         public TextureSheet TexSheet { get { return m_TextureSheet; } }
-        public List<Biome> Biomes { get { return m_Bimoes; } }
+     
 
         //unity function
         //--------------------------------------------------------------------
         private void Awake()
         {
-            m_refPool = GetComponent<ChunkPool>();
-            m_NoiseMaker = new PerlinNoiseMaker(m_Seed);
+            Pool = GetComponent<ChunkPool>();
+
+            //Init Hash Maker
+            HashMaker = new HashMakerBase(m_Seed);
+            //Init Noise Maker
+            NoiseMaker = new PerlinNoiseMaker(HashMaker);
         }
 
         public Bounds GetBound(Vector3 Coord)
@@ -72,6 +74,11 @@ namespace Assets.Scripts.NWorld
 
             Temp.SetMinMax(vt, vt + Vector3.one);
             return Temp;
+        }
+
+        public Biome GetBiome(ChunkInWorld chunkInWorld)
+        {         
+            return m_Bimoes[HashMaker.GetHash_2D(chunkInWorld.Value) % m_Bimoes.Count];
         }
     }
 }

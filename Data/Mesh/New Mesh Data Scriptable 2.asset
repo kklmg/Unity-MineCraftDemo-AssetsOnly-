@@ -10,16 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: MESH_UP
+  m_Name: New Mesh Data Scriptable 2
   m_EditorClassIdentifier: Assembly-CSharp:Assets.Scripts.NMesh:MeshDataScriptable
   m_MeshDataImpl:
     _Vertices:
-    - {x: 0, y: 1, z: 0}
+    - {x: 0, y: 0, z: 1}
+    - {x: 0, y: 0, z: 0}
+    - {x: 1, y: 0, z: 0}
+    - {x: 1, y: 0, z: 1}
+    - {x: 0, y: 0, z: 1}
     - {x: 0, y: 1, z: 1}
-    - {x: 1, y: 1, z: 1}
-    - {x: 1, y: 1, z: 0}
-    _Indicies: 000000000100000002000000000000000200000003000000
+    - {x: 0, y: 1, z: 0}
+    - {x: 0, y: 0, z: 0}
+    _Indicies: 000000000100000002000000000000000200000003000000040000000500000006000000040000000600000007000000
     _Texture:
+    - {x: 0, y: 0}
+    - {x: 0, y: 1}
+    - {x: 1, y: 1}
+    - {x: 1, y: 0}
     - {x: 0, y: 0}
     - {x: 0, y: 1}
     - {x: 1, y: 1}

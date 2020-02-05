@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using Assets.Scripts.NGlobal.ServiceLocator;
+using Assets.Scripts.NGlobal.Singleton;
 using Assets.Scripts.NInput;
 
-namespace Assets.Scripts.NGameManager
+namespace Assets.Scripts.NGameMng
 {
-    class InputManager : MonoBehaviour
+    class InputMng : MonoSingleton<InputMng>
     {
         private void Awake()
         {

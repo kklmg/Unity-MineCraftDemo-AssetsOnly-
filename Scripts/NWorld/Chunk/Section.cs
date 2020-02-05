@@ -1,4 +1,8 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Threading;
+using System.Collections.Generic;
+
 using Assets.Scripts.NMesh;
 using Assets.Scripts.NGlobal.ServiceLocator;
 using Assets.Scripts.NGlobal.WorldSearcher;
@@ -13,7 +17,7 @@ namespace Assets.Scripts.NWorld
     {
         //Field----------------------------------------
         [SerializeField]
-        private MeshData m_MeshData;
+        private MeshDataDynamic m_MeshDynamic;
 
         //private Chunk m_refChunk;
         private IWorld m_refWorld;
@@ -23,6 +27,8 @@ namespace Assets.Scripts.NWorld
 
         [SerializeField]
         private byte[,,] m_arrBlockID= new byte[16, 16, 16];
+
+        private Thread m_MeshGenerateThread;
 
         //unity component
         private MeshFilter m_MeshFilter;
@@ -34,6 +40,7 @@ namespace Assets.Scripts.NWorld
 
         //property--------------------------------------
         public bool isDirtry { get; set; }
+        public bool IsMeshUpdated { private set; get; }
 
         public SectionInWorld SectionInWorld { get { return m_SecInWorld; } set { m_SecInWorld = value; } }
 
@@ -57,8 +64,8 @@ namespace Assets.Scripts.NWorld
             m_MeshRenderer.materials[0].mainTexture = m_refWorld.TexSheet.Tex;
 
             //make instance of mesh data 
-            m_MeshData = ScriptableObject.CreateInstance<MeshData>();
-            m_MeshData.Reset();
+            m_MeshDynamic = new MeshDataDynamic();
+            m_MeshDynamic.Reset();
         }
         private void Start()
         {
@@ -68,9 +75,33 @@ namespace Assets.Scripts.NWorld
         {
             if (isDirtry == true)
             {
-                UpdateMesh();
+                //way 1: normal
+                //GenerateMesh();
+
+                //way 2: coroutine
+                //StartCoroutine("GenerateMesh_Coro");
+
+                //way 3: new Thread
+                m_MeshRenderer.enabled = false;
+                if (m_MeshGenerateThread != null)
+                {
+                    m_MeshGenerateThread.Abort();
+                }
+
+                m_MeshGenerateThread = new Thread(GenerateMesh);
+                m_MeshGenerateThread.Start();
+
                 isDirtry = false;
             }
+            if (IsMeshUpdated)
+            {
+                m_MeshDynamic.ToMeshFilter(m_MeshFilter);
+                m_MeshRenderer.enabled = true;
+                IsMeshUpdated = false;
+            }
+
+
+
         }
         private void OnBecameInvisible()
         {
@@ -81,7 +112,7 @@ namespace Assets.Scripts.NWorld
             //gameObject.SetActive(true);
         }
 
-        //function---------------------------------------------------
+        //Public function---------------------------------------------------
         public void GenerateBlankSection()
         {
             ushort width = m_refWorld.Section_Width;
@@ -100,7 +131,7 @@ namespace Assets.Scripts.NWorld
                 }
             }
         }
-        public void GenerateSection_ByLayer(LayerData LayerData, int[,] HeightMap,int abs_y)
+        public void GenerateSection_ByLayer(LayerData LayerData, ChunkHeightMap HeightMap,int abs_y)
         {
             ushort width = m_refWorld.Section_Width;
             ushort height = m_refWorld.Section_Height;
@@ -124,11 +155,9 @@ namespace Assets.Scripts.NWorld
             isDirtry = true;
         }
 
-        public void UpdateMesh()
-        {         
+        public void GenerateMesh()
+        {
             //if (isDirtry == false) return;
-            m_MeshData.Clear();
-            m_MeshFilter.mesh.Clear();
             Block Curblk;
 
             int width = m_refWorld.Section_Width;
@@ -162,10 +191,60 @@ namespace Assets.Scripts.NWorld
                     }
                 }
             }
-            m_MeshData.ToMeshFilter(m_MeshFilter);
-            Debug.Log("Mesh updata called");
-
+            // m_MeshData.ToMeshFilter(m_MeshFilter);
+            //Debug.Log("Mesh updata called");
+            IsMeshUpdated = true;
         }
+
+        public IEnumerator GenerateMesh_Coro()
+        {
+            m_MeshDynamic.Clear();
+            m_MeshFilter.mesh.Clear();
+            Block Curblk;
+
+            int width = m_refWorld.Section_Width;
+            int height = m_refWorld.Section_Height;
+            int depth = m_refWorld.Section_Depth;
+
+            int x, y, z;
+            for (x = 0; x < width; x++)
+            {
+                for (y = 0; y < height; y++)
+                {
+                    for (z = 0; z < depth; z++)
+                    {
+                        m_Cache_BlockInSec = new BlockInSection(x, y, z, m_refWorld);
+                        Curblk = GetBlock(m_Cache_BlockInSec);
+
+                        if (Curblk == null) continue;
+
+                        //check top block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.UP);
+                        //check bottom block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.DOWN);
+                        //check left block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.LEFT);
+                        //check right block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.RIGHT);
+                        //check forward block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.FORWARD);
+                        //check backward block
+                        _GetNonDuplicateMesh(ref m_Cache_BlockInSec, Curblk, Direction.BACKWARD);
+                    }
+                   
+                }
+                yield return null;
+            }
+
+            m_MeshDynamic.ToMeshFilter(m_MeshFilter);
+        }
+
+        public void ClearMesh()
+        {
+            m_MeshDynamic.Clear();
+            m_MeshFilter.mesh.Clear();
+        }
+
         private void _GetNonDuplicateMesh(ref BlockInSection Curlocation, Block blkType, byte dir)
         {
             Vector3Int SectionOffset;
@@ -177,13 +256,13 @@ namespace Assets.Scripts.NWorld
 
                 if (adj == null || !adj.IsSolid(Direction.Opposite(dir)))
                 {
-                    blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+                    blkType.ExtractMesh(dir, m_MeshDynamic, ref Curlocation, m_refWorld.TexSheet);
                 }
             }
             //Block is not located in This Section
             else
             {
-                blkType.ExtractMesh(dir, m_MeshData, ref Curlocation, m_refWorld.TexSheet);
+                blkType.ExtractMesh(dir, m_MeshDynamic, ref Curlocation, m_refWorld.TexSheet);
             }
         }
 
@@ -201,6 +280,12 @@ namespace Assets.Scripts.NWorld
             isDirtry = true;
             Debug.Log("block set called");
         }
+
+        public void ThreadTest()
+        {
+            Debug.Log("thread running");
+        }
+
     }
 }
 

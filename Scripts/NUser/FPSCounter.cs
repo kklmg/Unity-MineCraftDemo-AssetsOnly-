@@ -7,7 +7,9 @@ namespace Assets.Scripts.NUser
         private const float updateTime = 1f;
         private float frames = 0f;
         private float time = 0f;
-        private string strFps;
+
+       
+        public string strFps;
 
         private void Update()
         {

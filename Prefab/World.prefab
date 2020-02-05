@@ -70,4 +70,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e89c7c6fc724a3439ac0c5311cb8c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxCount: 12
+  m_Prefab_Chunk: {fileID: 8934294959748640073, guid: 20bdbd2b2fe6534429e234d55d7765f1,
+    type: 3}
+  m_SaveChangeCount: 25
+  m_MaxCount: 25
+  t_timeelapsed: 0

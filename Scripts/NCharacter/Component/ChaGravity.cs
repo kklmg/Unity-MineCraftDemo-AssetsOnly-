@@ -54,10 +54,15 @@ namespace Assets.Scripts.NCharacter
         }
         private void Update()
         {
+            m_Ground = GWorldSearcher.GetGroundHeight(transform.position, m_refWorld);
             //Block bottom = m_refWorld.GetBlock(transform.position + Vector3.down);
 
+
+            m_DropSpeed -= m_Gravity * Time.deltaTime;
+
+
             //if (bottom == null || !bottom.IsSolid(eDirection.up) || m_DropSpeed>0.0f)
-            if (transform.position.y- m_refCha.BodyHeight > m_Ground || m_DropSpeed > 0.0f)
+            if (transform.position.y - m_refCha.BodyHeight > m_Ground || m_DropSpeed > 0.0f)
             {
                 m_DropSpeed -= m_Gravity * Time.deltaTime;
                 transform.Translate(new Vector3(0, m_DropSpeed, 0));

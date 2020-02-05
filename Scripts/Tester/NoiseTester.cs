@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Assets.Scripts.Noise;
+using Assets.Scripts.NNoise;
 
 namespace Tester
 {
@@ -45,7 +45,7 @@ namespace Tester
                 //float y1 = Mathf.PerlinNoise(x + 0.01f, 0.9f);
                 //float y2 = Mathf.PerlinNoise(x + 0.001f, 0.2f);
 
-                float y1 = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x+0.01f, 0.1f),0.8f,20,8)*20;
+                float y1 = m_NoiseMaker.MakeOctave_2D(new Vector2(x+0.01f, 0.1f),0.8f,20,8)*20;
                 //float y2 = m_NoiseMaker.GetNoise_2D(new Vector2(x + 0.01f, 0.1f), 0.8f, 20);
                 //float y1 = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x, 0.9f), 1.0f, 128.0f, 4);
                 //float y2 = m_NoiseMaker.GetNoise_2D(new Vector2(x, 0.2f));
@@ -101,7 +101,7 @@ namespace Tester
                 {
                     //float y = Mathf.PerlinNoise(x, z);
                     //float y = m_NoiseMaker.GetNoise_2D(new Vector2(x* m_Frequency, z));
-                    float y = m_NoiseMaker.GetOctaveNoise_2D(new Vector2(x ,z),m_Frequency,1.0f,6);
+                    float y = m_NoiseMaker.MakeOctave_2D(new Vector2(x ,z),m_Frequency,1.0f,6);
                     Instantiate(targetprefab, new Vector3(x * m_Frequency, y * m_Frequency, z * m_Frequency), Quaternion.identity);
                 }
 

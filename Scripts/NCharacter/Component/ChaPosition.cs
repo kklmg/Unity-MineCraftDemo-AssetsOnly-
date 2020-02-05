@@ -20,6 +20,7 @@ namespace Assets.Scripts.NCharacter
         private Vector3Int m_PreSecLoc;
 
         private E_Player_LeaveChunk m_Cache_EChunkChange;
+        private IEventPublisher m_EventPublisher;
 
         private void Awake()
         {               
@@ -28,6 +29,7 @@ namespace Assets.Scripts.NCharacter
         private void Start()
         {
             m_refWorld = Locator<IWorld>.GetService();
+            m_EventPublisher = Locator<IEventPublisher>.GetService();
 
             //Compute Current Location
             m_CurLoc = new BlockLocation(transform.position, m_refWorld);
@@ -38,8 +40,8 @@ namespace Assets.Scripts.NCharacter
             m_Cache_EChunkChange 
                 = new E_Player_LeaveChunk(Vector2Int.zero,GetComponent<Character>().ViewDistance,Vector2Int.zero);
         }
-
-        private void FixedUpdate()
+     
+        private void Update()
         {
             //Save Location Data in Previous Frame 
             m_PreChunkLoc = m_CurLoc.ChunkInWorld.Value;
@@ -55,13 +57,13 @@ namespace Assets.Scripts.NCharacter
                 m_Cache_EChunkChange.Offset = m_CurLoc.ChunkInWorld.Value - m_PreChunkLoc;
 
                 //Publish Event: player's Chunk location has Changed
-                Locator<IEventPublisher>.GetService().Publish(m_Cache_EChunkChange);
+                m_EventPublisher.Publish(m_Cache_EChunkChange);
 
-                Debug.Log("Chunk Location Changed");
+                //Debug.Log("Chunk Location Changed");
 
                 if (m_PreSecLoc != m_CurLoc.SecInWorld.Value)
                 {
-                    Debug.Log("Seciton Changed");
+                    //Debug.Log("Seciton Changed");
                 }
             }
         }

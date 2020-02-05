@@ -10,14 +10,14 @@ using Assets.Scripts.NMesh;
 
 namespace Assets.Scripts.NWorld
 {
-    [CustomEditor(typeof(MeshData))]
+    [CustomEditor(typeof(MeshDataScriptable))]
     class MeshEditor : Editor
     {
-        private MeshData meshinfo;
+        private MeshDataScriptable meshinfo;
 
         public void OnEnable()
         {
-            meshinfo = target as MeshData;
+            meshinfo = target as MeshDataScriptable;
         }
 
         public override void OnInspectorGUI()
@@ -28,32 +28,32 @@ namespace Assets.Scripts.NWorld
             if (GUILayout.Button("Face to -Z", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
-                meshinfo.AddQuad(new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0), new Vector3(1, 0, 0));
+                meshinfo.Data.AddQuad(new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0), new Vector3(1, 0, 0));
             }
             if (GUILayout.Button("Face to +Z", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
-                meshinfo.AddQuad(new Vector3(1, 0, 1), new Vector3(1, 1, 1), new Vector3(0, 1, 1), new Vector3(0, 0, 1));
+                meshinfo.Data.AddQuad(new Vector3(1, 0, 1), new Vector3(1, 1, 1), new Vector3(0, 1, 1), new Vector3(0, 0, 1));
             }
             if (GUILayout.Button("up", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
-                meshinfo.AddQuad(new Vector3(0, 1, 0), new Vector3(0, 1, 1), new Vector3(1, 1, 1), new Vector3(1, 1, 0));
+                meshinfo.Data.AddQuad(new Vector3(0, 1, 0), new Vector3(0, 1, 1), new Vector3(1, 1, 1), new Vector3(1, 1, 0));
             }
             if (GUILayout.Button("down", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
-                meshinfo.AddQuad(new Vector3(0, 0, 1), new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, 0, 1));
+                meshinfo.Data.AddQuad(new Vector3(0, 0, 1), new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, 0, 1));
             }
             if (GUILayout.Button("left", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
-                meshinfo.AddQuad(new Vector3(0, 0, 1), new Vector3(0, 1, 1), new Vector3(0, 1, 0), new Vector3(0, 0, 0));
+                meshinfo.Data.AddQuad(new Vector3(0, 0, 1), new Vector3(0, 1, 1), new Vector3(0, 1, 0), new Vector3(0, 0, 0));
             }
             if (GUILayout.Button("right", GUILayout.Width(200)))
             {
                 //meshinfo.Reset();
-                meshinfo.AddQuad(new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 0, 1));
+                meshinfo.Data.AddQuad(new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 0, 1));
             }
             
             GUILayout.Space(20);

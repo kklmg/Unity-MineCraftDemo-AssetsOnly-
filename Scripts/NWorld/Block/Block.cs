@@ -11,7 +11,7 @@ namespace Assets.Scripts.NWorld
         private Tile[] m_Tiles;
 
         //public Function----------------------------------
-        public MeshData GetMesh(byte dir)
+        public MeshDataScriptable GetMesh(byte dir)
         {
             return m_Tiles[dir].Mesh;
         }
@@ -36,12 +36,12 @@ namespace Assets.Scripts.NWorld
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <param name="texRef"></param>
-        public void ExtractMesh(byte dir, MeshData receiver,ref BlockInSection blkInSec,TextureSheet texRef)
+        public void ExtractMesh(byte dir, MeshDataDynamic receiver,ref BlockInSection blkInSec,TextureSheet texRef)
         {
             if (m_Tiles[dir].Mesh == null) return;
 
             //make clone
-            MeshData mesh = m_Tiles[dir].Mesh.Clone();
+            MeshDataDynamic mesh = m_Tiles[dir].Mesh.Data.Clone();
             
             //set postion
             mesh.Translate(Vector3.right, blkInSec.x);
@@ -56,14 +56,14 @@ namespace Assets.Scripts.NWorld
             receiver.Add(mesh);
         }
 
-        public void ExtractMeshAll(MeshData receiver, int x, int y, int z, TextureSheet texRef)
+        public void ExtractMeshAll(MeshDataDynamic receiver, int x, int y, int z, TextureSheet texRef)
         {
             foreach (Tile t in m_Tiles)
             {
                 if (t.Mesh == null) continue;
 
                 //make clone
-                MeshData mesh = t.Mesh.Clone();
+                MeshDataDynamic mesh = t.Mesh.Data.Clone();
 
                 //set postion
                 mesh.Translate(Vector3.right, x);

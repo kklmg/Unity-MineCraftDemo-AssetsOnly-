@@ -48,7 +48,7 @@ namespace Assets.Scripts.NWorld
 
         //public QuadMesh[] quads;
         public MeshFilter m_MeshFilter;
-        public MeshData m_MeshData;
+        //public MeshData m_MeshData;
 
         private void Awake()
         {

@@ -9,7 +9,7 @@ namespace Assets.Scripts.NWorld
     [Serializable]
     struct Tile
     {
-        public MeshData Mesh;
+        public MeshDataScriptable Mesh;
         public bool IsSolid;
         public int TexID;
     }

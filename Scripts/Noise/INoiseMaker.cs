@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts.Noise
+namespace Assets.Scripts.NNoise
 {
     public interface INoiseMaker
     {
-        float GetNoise_2D(Vector2 point);
-        float GetNoise_2D(Vector2 point, float frequency, float amplitude);
+        float Make_2D(Vector2 point, bool GetPositiveRes = true);
+        float Make_2D(Vector2 point, float frequency, float amplitude, bool GetPositiveRes = true);
+        float MakeOctave_2D(Vector2 point, float frequency, float amplitude, int octave = 8, bool GetPositiveRes = true);
 
-        float GetOctaveNoise_2D(Vector2 point, float frequency, float amplitude,int octave= 8);
-
-
-        float GetNoise_3D(Vector3 point);
+        float Make_3D(Vector3 point, bool GetPositiveRes = true);
     }
 }

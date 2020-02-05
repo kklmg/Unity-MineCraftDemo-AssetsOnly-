@@ -13,6 +13,17 @@ namespace Assets.Scripts.NEvent
         }
     }
 
+    public class E_Cha_Drop : EventBase<E_Cha_Drop>
+    {
+        public float DropSpeed { get; private set; }
+
+        public E_Cha_Drop(float value)
+        {
+            DropSpeed = value;
+        }
+    }
+
+
     //The Character want to rotate
     public class E_Cha_RotateRequest : EventBase<E_Cha_RotateRequest>
     {
