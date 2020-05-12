@@ -37,8 +37,6 @@ namespace Assets.Scripts.NEvent
 
     public class E_Cha_Spawned : EventBase<E_Cha_Spawned>
     {
-
-
     }
 
     public class E_Cha_Jump : EventBase<E_Cha_Jump>
@@ -64,6 +62,4 @@ namespace Assets.Scripts.NEvent
             Cha = cha;
         }
     }
-
-    // Locator<IEventPublisher>.GetService().Publish(this);
 }

@@ -27,9 +27,9 @@ namespace Assets.Scripts.NCharacter
             Vector3 trans = (_event as E_Cha_MoveRequest).Translation;
             transform.position += trans;
             
-            //transform.Translate(trans);
             return true;
         }
+
         bool HandleRotation(IEvent _event)
         {
             Vector3 rotation = (_event as E_Cha_RotateRequest).Rotation;

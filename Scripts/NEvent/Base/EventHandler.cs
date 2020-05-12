@@ -9,4 +9,5 @@ namespace Assets.Scripts.NEvent
     public delegate bool Del_HandleEvent(IEvent _event);
 
     public delegate IEvent Del_DecorateEvent(IEvent _event);
+    
 }

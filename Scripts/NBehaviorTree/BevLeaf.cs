@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 namespace Assets.Scripts.NBehaviorTree
 {
     //Behavior Action Interface
@@ -13,8 +12,6 @@ namespace Assets.Scripts.NBehaviorTree
     //Base leaf Node
     public abstract class BevLeaf : BevNodeBase
     {
-
-
     };
 
     public class BevAction : BevLeaf

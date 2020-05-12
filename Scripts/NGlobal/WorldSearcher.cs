@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+
+using Assets.Scripts.NData;
 using Assets.Scripts.NWorld;
 
 namespace Assets.Scripts.NGlobal.WorldSearcher
@@ -9,11 +11,11 @@ namespace Assets.Scripts.NGlobal.WorldSearcher
         //-----------------------------------------------------------------------
         static public Chunk GetChunk(Vector3 Coord, IWorld _World)
         {
-            return _World.Pool.GetChunk(new ChunkInWorld(Coord, _World));
+            return _World.Entity.GetChunk(new ChunkInWorld(Coord, _World));
         }
         static public Chunk GetChunk(ChunkInWorld chunkinworld, IWorld _World)
         {
-            return _World.Pool.GetChunk(chunkinworld);
+            return _World.Entity.GetChunk(chunkinworld);
         }
 
         //Search Section 
@@ -39,7 +41,7 @@ namespace Assets.Scripts.NGlobal.WorldSearcher
 
         //Search Block 
         //-----------------------------------------------------------------------
-        static public Block GetBlock(Vector3 Coord, IWorld _World)
+        static public IBlock GetBlock(Vector3 Coord, IWorld _World)
         {
             //Try get section
             Section section = GetSection(Coord, _World);
@@ -52,14 +54,13 @@ namespace Assets.Scripts.NGlobal.WorldSearcher
         static public float GetGroundHeight(Vector3 Coord, IWorld _World)
         {
             Chunk chk = GetChunk(new ChunkInWorld(), _World);
-            if (chk == null || Coord.y < 0) return float.MinValue;
+            if (chk == null || Coord.y < 0) return 0;
 
             BlockInSection BlkInSec = new BlockInSection(Coord, _World);
 
-            float res;
-            if (chk.GetGroundHeight(BlkInSec.x, BlkInSec.z, (int)Coord.y, out res))
-                return res;
-            else return float.MinValue;
+            var hmap = chk.GetHeightMap();
+
+            return hmap[BlkInSec.x, BlkInSec.z];
         }
     }
 }

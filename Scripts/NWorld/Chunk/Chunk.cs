@@ -1,6 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
+
+using UnityEngine;
+
 using Assets.Scripts.NGlobal.ServiceLocator;
-using System.Collections;
+using Assets.Scripts.NData;
 
 namespace Assets.Scripts.NWorld
 {
@@ -8,11 +13,12 @@ namespace Assets.Scripts.NWorld
     {
         //Field
         //------------------------------------------------------------------------
-        public GameObject m_Prefab_Section;
 
+        public GameObject m_Prefab_Section;
 
         [SerializeField]
         ChunkInWorld m_ChunkinWorld;
+
         [SerializeField]
         private Vector2Int m_Coord;
 
@@ -25,16 +31,17 @@ namespace Assets.Scripts.NWorld
         //[SerializeField]
         private Section[] m_arrSections;  //Sections
 
-        public Section GetSection(SectionInChunk slot, bool CreateBlank = false)
-        {
-            if (slot.Value < 0 || slot.Value > m_refWorld.Chunk_Height) return null;
 
-            if (m_arrSections[slot.Value] == null && CreateBlank)
-            {
-                CreateBlankSection(slot.Value);
-            }
+        //Public Function
+        //------------------------------------------------------------------------
+
+        public Section GetSection(SectionInChunk slot)
+        {
+            if (slot.Value < 0 || slot.Value >= m_refWorld.Chunk_Height) return null;
+
             return m_arrSections[slot.Value];
         }
+
         public bool TryGetSection(SectionInChunk slot, out Section Sec)
         {
             Sec = default(Section);
@@ -52,6 +59,23 @@ namespace Assets.Scripts.NWorld
             }
 
         }
+
+        public Section CreateBlankSection(SectionInChunk slot)
+        {
+            if (slot.Value < 0 || slot.Value >= m_refWorld.Chunk_Height) return null;
+
+            //make a Section instance
+            m_arrSections[slot.Value] =
+                Instantiate(m_Prefab_Section, transform).GetComponent<Section>();
+            //Init Section
+            m_arrSections[slot.Value].Init
+                (new SectionInWorld(m_ChunkinWorld.Value.x, slot.Value, m_ChunkinWorld.Value.y));
+
+            m_arrSections[slot.Value].GenerateBlankSection();
+
+            return m_arrSections[slot.Value];
+        }
+
         public bool GetGroundHeight(int blkx, int blkz, int CurY, out float GroundY)
         {
             CurY -= 1;
@@ -59,7 +83,7 @@ namespace Assets.Scripts.NWorld
             int SecID;
             int blky;
             Section CurSec;
-            Block CurBlock;
+            IBlock CurBlock;
 
             while (CurY > -1)
             {
@@ -80,7 +104,7 @@ namespace Assets.Scripts.NWorld
                 {
                     CurBlock = CurSec.GetBlock(new BlockInSection(blkx, blky, blkz, m_refWorld));
 
-                    if (CurBlock != null && CurBlock.IsSolid(Direction.UP))
+                    if (CurBlock != null && CurBlock.IsObstacle)
                     {
                         GroundY = (blky + 1) + SecID * m_refWorld.Chunk_Height;
                         return true;
@@ -93,64 +117,63 @@ namespace Assets.Scripts.NWorld
             return false;
         }
 
+        public ChunkHeightMap GetHeightMap()
+        {
+            return m_HeightMap;
+        }
+
+        public Biome GetBiome()
+        {
+            return m_refBiome;
+        }
+
 
 
         //Unity Funciton
         //------------------------------------------------------------------------------
+        public bool IsBlockDataGenerated = false;
         private void Awake()
         {
-            m_refWorld = transform.parent.GetComponent<World>();
-            m_arrSections = new Section[m_refWorld.Chunk_Height];
-
             m_refWorld = Locator<IWorld>.GetService();
+            m_arrSections = new Section[m_refWorld.Chunk_Height];
+          
             m_HeightMap = new ChunkHeightMap(m_refWorld);
         }
 
-        public void Init(ChunkInWorld chunkInWorld)
+        public void SetLocation(ChunkInWorld chunkInWorld)
         {
-            //Save Position Data
+            GSW.RestartTimer();
+            //Set Location
             m_ChunkinWorld = chunkInWorld;
+            transform.localPosition = m_ChunkinWorld.ToCoord3D(m_refWorld);
+
+            //Set Name
+            transform.name = "Chunk" + "[" + m_ChunkinWorld.Value.x + "]" + "[" + m_ChunkinWorld.Value.y + "]";
+
+            //Compute Unity Position
             m_Coord = chunkInWorld.ToCoord2DInt(m_refWorld);
 
             //Get Biome Data
             m_refBiome = m_refWorld.GetBiome(m_ChunkinWorld);
 
             //create Height map
-            m_HeightMap.Generate(m_Coord,m_refBiome,m_refWorld);
+            m_HeightMap.Generate(m_Coord, m_refBiome, m_refWorld);
 
             //Create Sections
-            CreateAllSections();
+            InitAllSections();
+
             //StartCoroutine("CreCreateAllSections_Corou");
         }
 
-        private void CreateBlankSection(int slot_y)
-        {
-            Debug.Assert(m_arrSections[slot_y] == null);
-
-            //make a Section instance
-            m_arrSections[slot_y] =
-                  Instantiate(m_Prefab_Section,
-                  new Vector3(m_Coord.x, slot_y * m_refWorld.Chunk_Height, m_Coord.y),
-                  Quaternion.identity, transform).GetComponent<Section>();
-
-            //set name
-            m_arrSections[slot_y].transform.name = "Section" + '[' + slot_y + ']';
-
-            //set Section
-            m_arrSections[slot_y].SectionInWorld =
-                new SectionInWorld(m_ChunkinWorld.Value.x, slot_y, m_ChunkinWorld.Value.y);
-            m_arrSections[slot_y].GenerateBlankSection();
-        }
-
         //create instance of Section
-        private void CreateSection(int slot_y)
+        private void InitSection(int slot_y)
         {
             int sec_minHeight = slot_y * m_refWorld.Chunk_Height;
 
             //case1: section lowest height > terrain tallest height
             //case2: section tallest height < terrain lowetst height
             if (sec_minHeight > m_HeightMap.MaxHeight 
-                || sec_minHeight + m_refWorld.Chunk_Height < m_HeightMap.MinHeight)
+                /*|| sec_minHeight + m_refWorld.Chunk_Height < m_HeightMap.MinHeight*/)
             {
                 if (m_arrSections[slot_y] != null)
                 {
@@ -168,28 +191,51 @@ namespace Assets.Scripts.NWorld
                     Instantiate(m_Prefab_Section, transform).GetComponent<Section>();
             }
 
-            //Clear Mesh
-            m_arrSections[slot_y].ClearMesh();
-
-            //set position
-            m_arrSections[slot_y].transform.localPosition = new Vector3(0, slot_y * m_refWorld.Chunk_Height, 0);
-
-            //set name
-            m_arrSections[slot_y].transform.name = "Section" + '[' + slot_y + ']';
-
-            //set Section
-            m_arrSections[slot_y].SectionInWorld =
-                new SectionInWorld(m_ChunkinWorld.Value.x, slot_y, m_ChunkinWorld.Value.y);
-
-            //Init blocks in Section
-            m_arrSections[slot_y].GenerateSection_ByLayer(m_refBiome.Layer, m_HeightMap, slot_y * m_refWorld.Chunk_Height);
+            //Init Section
+            m_arrSections[slot_y].Init(new SectionInWorld(m_ChunkinWorld.Value.x, slot_y, m_ChunkinWorld.Value.y));
         }
 
-        private void CreateAllSections()
+        private void InitAllSections()
         {
             for (int i = 0; i < m_refWorld.Chunk_Height; ++i)
             {
-                CreateSection(i);
+                InitSection(i);
+            }
+        }
+
+        public void GenerateBlocks()
+        {
+            for (int i = 0; i < m_refWorld.Chunk_Height; ++i)
+            {
+                if (m_arrSections[i] != null)
+                    m_arrSections[i].GenerateBlocks();
+            }
+            IsBlockDataGenerated = true;
+        }
+
+        public void GenerateBlocks_BackGround()
+        {
+            Thread thread = new Thread(new ThreadStart(GenerateBlocks));
+            thread.Priority = System.Threading.ThreadPriority.Lowest;
+            thread.Start();
+
+        }
+
+        public void BuildMesh()
+        {
+            for (int i = 0; i < m_refWorld.Chunk_Height; ++i)
+            {
+                if (m_arrSections[i] != null)
+                    m_arrSections[i].BuildMesh();
+            }
+        }
+
+        public void ClearMesh()
+        {
+            for (int i = 0; i < m_refWorld.Chunk_Height; ++i)
+            {
+                if (m_arrSections[i] != null)
+                    m_arrSections[i].ClearMesh();
             }
         }
     }

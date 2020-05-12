@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-using Assets.Scripts.NPattern;
-using Assets.Scripts.NBehaviorTree;
+
 using Assets.Scripts.NEvent;
 using Assets.Scripts.NCharacter;
 

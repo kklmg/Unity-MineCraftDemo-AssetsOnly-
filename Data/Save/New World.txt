@@ -1,0 +1,1 @@
+{"WorldSeed":"gmeose04kz","WorldName":"New World","LastPlayed":{"Year":2020,"Month":5,"Day":9,"Hour":18,"Minute":3,"Second":9},"PlayerPos":{"x":0.0,"y":0.0,"z":0.0},"playerRot":{"x":0.0,"y":0.0,"z":0.0,"w":0.0},"HasPlayerSpawned":false,"WorldModfication":{"m_Data":[]}}

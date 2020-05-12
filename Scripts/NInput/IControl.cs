@@ -21,5 +21,7 @@ namespace Assets.Scripts.NInput
         bool CursorUp();
         bool CursorPress();
         Vector3 CursorPosition();
+
+        bool HasCursorMoved();
     }
 }

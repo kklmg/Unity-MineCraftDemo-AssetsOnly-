@@ -201,7 +201,6 @@ GameObject:
   - component: {fileID: 3703686659888065556}
   - component: {fileID: 3703686659888065570}
   - component: {fileID: 3703686659888065561}
-  - component: {fileID: 3703686659888065560}
   - component: {fileID: 3703686659888065562}
   - component: {fileID: 3703686659888065563}
   - component: {fileID: 3703686659888065557}
@@ -299,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec733c4c8a142be458e134274ceb3a67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ViewDistance: 2
+  m_ViewDistance: 0
   m_Camera: {fileID: 3703686659272118600}
   m_BodyRadius: 0.1
   m_BodyHeight: 1
@@ -318,21 +317,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11106374b34f3f04494ca723d5b6e0b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3703686659888065560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703686659888065569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0080027087ffb5499828e9aae43eca8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Gravity: 2
-  m_DropSpeed: 0
-  m_Ground: 0
 --- !u!114 &3703686659888065562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,6 +343,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BodyWidth: 0.8
   m_BodyHeight: 1.8
+  m_Gravity: 0.9
+  m_DownSpeed: 0
+  m_IsGround: 0
 --- !u!114 &3703686659888065557
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,65 +1,59 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Collections;
+using System.IO;
+using System.Threading;
+
+using UnityEngine;
+
+using Assets.Scripts.NData;
 using Assets.Scripts.NMesh;
-using Assets.Scripts.NPattern;
+using Assets.Scripts.NWorld;
+using System;
 
-namespace Assets.Scripts.NWorld
+namespace Assets.Scripts.Tester
 {
-
-    public interface ISay
+    [System.Serializable]
+    public struct TestST
     {
-        void say();
+        public int HP;
+        public int MP;
+        public int STR;
+        public int DEF;
+        private int AGL;
+
+        public List<int> weapon;
     }
 
-    public class SayHello : ISay
+
+
+
+    class TestScript : MonoBehaviour
     {
-        public void say()
-        {
-            Debug.Log("Hello world");
-        }
-    }
+        //    public DynamicMeshScObj scobj;
 
-    public class SayHi : ISay
-    {
-        public void say()
-        {
-            Debug.Log("Hi world");
-        }
-    }
+        //    private void OnGUI()
+        //    {
 
-    public static class GTest
-    {
-        static int m_RunCount = 5;
-        public static int RunCount { set { m_RunCount = value; } get { return --m_RunCount; } }
-        public static bool isExecuted { get; set; }
-        static int m_Count;
-        static public void DoCount(int c)
-        {
-            m_Count += c;
-        }
-        static public int GetCount()
-        {
-            return m_Count;
-        }
-    }
+        //        //GUI.Label(new Rect(0 + 20, 0 + 350, 160, 20), "scobj: " + (scobj != null));
+        //        //GUI.Label(new Rect(0 + 20, 0 + 275, 160, 20), "scobj data: " + (scobj.Data!=null));
+        //        //GUI.Label(new Rect(0 + 20, 0 + 300, 160, 20), "vertex: " + scobj.Data._Vertices.Count);
+        //        //GUI.Label(new Rect(0 + 20, 0 + 325, 160, 20), "indicies: " + scobj.Data._Indicies.Count);
+        //        //// GUI.Label(new Rect(0 + 20, 0 + 350, 160, 20), "tex count: " + tile[);
 
-    class TestScript: MonoBehaviour
-    {
-        public ISay sayimpl;
 
-        //public QuadMesh[] quads;
-        public MeshFilter m_MeshFilter;
-        //public MeshData m_MeshData;
 
-        private void Awake()
-        {
-        }
-        private void Start()
-        {
-        }
+        //    }
 
-        private void Update()
-        {           
-        }
+
+        //}
+
 
     }
 }
+
+
+
+
+
+
+

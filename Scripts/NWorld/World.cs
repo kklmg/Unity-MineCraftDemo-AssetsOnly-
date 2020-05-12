@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+
 using UnityEngine;
+
 using Assets.Scripts.NNoise;
-using Assets.Scripts.NPattern;
+using Assets.Scripts.NData;
+
 
 namespace Assets.Scripts.NWorld
 {
@@ -21,16 +24,13 @@ namespace Assets.Scripts.NWorld
         [SerializeField]
         private ushort m_Chunk_Height = 16;
 
-        [SerializeField]
-        private uint m_Seed = 0xffffffff;
-
         //Biomes
         [SerializeField]
         private List<Biome> m_Bimoes;
 
 
         [SerializeField]
-        private List<Block> m_BlockTypes;
+        private BlockPalette m_BlockPalette;
 
         [SerializeField]
         private TextureSheet m_TextureSheet;
@@ -41,27 +41,36 @@ namespace Assets.Scripts.NWorld
         public ushort Section_Height { get { return m_Section_Height; } }
         public ushort Section_Depth { get { return m_Section_Depth; } }
         public ushort Chunk_Height { get { return m_Chunk_Height; } }
-        public uint Seed { get { return m_Seed; } }
-        public ChunkPool Pool { get; private set; }
-
-
+        public WorldEntity Entity { get; private set; }
+        
         public INoiseMaker NoiseMaker { get; private set; }
         public IHashMaker HashMaker { get; private set; }
 
-        public List<Block> BlockTypes { get { return m_BlockTypes; } }
+        public BlockPalette BlkPalette { get { return m_BlockPalette; } }
         public TextureSheet TexSheet { get { return m_TextureSheet; } }
-     
+
+        //Public Function
+        //--------------------------------------------------------------------
+        public void Init(string Seed)
+        {          
+            //Init Hash Maker
+            HashMaker = new HashMakerBase(Seed);
+            //Init Noise Maker
+            NoiseMaker = new PerlinNoiseMaker(HashMaker);
+
+            foreach (var bio in m_Bimoes)
+            {
+                bio.Init();
+            }
+
+            m_BlockPalette.Init();
+        }
 
         //unity function
         //--------------------------------------------------------------------
         private void Awake()
         {
-            Pool = GetComponent<ChunkPool>();
-
-            //Init Hash Maker
-            HashMaker = new HashMakerBase(m_Seed);
-            //Init Noise Maker
-            NoiseMaker = new PerlinNoiseMaker(HashMaker);
+            Entity = GetComponentInChildren<WorldEntity>();
         }
 
         public Bounds GetBound(Vector3 Coord)
@@ -78,7 +87,7 @@ namespace Assets.Scripts.NWorld
 
         public Biome GetBiome(ChunkInWorld chunkInWorld)
         {         
-            return m_Bimoes[HashMaker.GetHash_2D(chunkInWorld.Value) % m_Bimoes.Count];
+            return m_Bimoes[Mathf.Abs(HashMaker.GetHash_2D(chunkInWorld.Value)) % m_Bimoes.Count];
         }
     }
 }

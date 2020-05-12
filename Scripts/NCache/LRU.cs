@@ -77,11 +77,7 @@ namespace Assets.Scripts.NCache
             return true;
         }
 
-        //public bool Contains(TKEY key)
-        //{
 
-
-        //}
         public bool IsFull()
         {
             return m_Cache.Count == m_Capacity;

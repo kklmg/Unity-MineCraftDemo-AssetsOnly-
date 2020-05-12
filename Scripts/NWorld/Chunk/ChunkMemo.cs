@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Assets.Scripts.NCommand;
 
 namespace Assets.Scripts.NWorld
@@ -7,9 +8,9 @@ namespace Assets.Scripts.NWorld
     [Serializable]
     public struct ChunkMemo
     {
-        List<Com_ChangeBlock> m_Changes;
+        List<Com_ModifyBlock> m_Changes;
 
-        void add(Com_ChangeBlock _command)
+        void add(Com_ModifyBlock _command)
         {
             m_Changes.Add(_command);
         }

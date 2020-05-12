@@ -34,7 +34,5 @@ namespace Assets.Scripts.NEvent
         {
             m_Subscriber.Subscribe_Deccorate(EventID, decorator);
         }
-
-
     }
 }

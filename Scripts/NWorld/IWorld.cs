@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
+
 using Assets.Scripts.NNoise;
-using UnityEngine;
+using Assets.Scripts.NData;
 
 namespace Assets.Scripts.NWorld
 {
     public interface IWorld
     {
+        void Init(string Seed);
+
         //Section Size
         ushort Section_Width { get; }
         ushort Section_Height { get; }
@@ -14,16 +17,14 @@ namespace Assets.Scripts.NWorld
         //Chunk's Max Height
         ushort Chunk_Height { get; }
 
-        uint Seed { get; }
-
         //Chunk Creator
-        ChunkPool Pool { get; }
+        WorldEntity Entity { get; }
 
         INoiseMaker NoiseMaker { get; }
         IHashMaker HashMaker { get; }
 
-        //block type array
-        List<Block> BlockTypes { get; }
+        //array of block type array
+        BlockPalette BlkPalette { get; }
 
         //block textures
         TextureSheet TexSheet { get; }

@@ -8,6 +8,7 @@ namespace Assets.Scripts.NEvent
     {
         Guid Type { get; }
     }
+
     public abstract class EventBase<T> : IEvent
     {
         [SerializeField]

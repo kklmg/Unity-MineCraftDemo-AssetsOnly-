@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.NPattern;
 
-
 namespace Assets.Scripts.NBehaviorTree
 {
     //Behavior states
@@ -12,18 +11,6 @@ namespace Assets.Scripts.NBehaviorTree
         Running,
         Completed
     };
-
-    //public static class RunningState
-    //{
-    //    const int Failed = 0x00000000;
-    //    const int Suceed = 0x00000001;
-    //    const int Running = 0x00000010;
-
-    //    static bool And()
-    //    {
-    //        return true;
-    //    }
-    //}
 
     //Working Data
     public class BevData

@@ -1,11 +1,11 @@
-﻿using Assets.Scripts.NBehaviorTree;
+﻿using UnityEngine;
+
+using Assets.Scripts.NBehaviorTree;
 using Assets.Scripts.NInput;
 using Assets.Scripts.NEvent;
 using Assets.Scripts.NWorld;
 using Assets.Scripts.NGlobal.ServiceLocator;
 using Assets.Scripts.NGlobal.WorldSearcher;
-
-using UnityEngine;
 
 namespace Assets.Scripts.NCharacter
 {
@@ -151,7 +151,7 @@ namespace Assets.Scripts.NCharacter
 
             //notify subscribed component
             thisData.Communicator.PublishEvent(new E_Cha_Jump(thisData.Character.JumpForce));
-            Debug.Log("jump triggerd");
+            //Debug.Log("jump triggerd");
             return true;
         }
     }
@@ -170,8 +170,8 @@ namespace Assets.Scripts.NCharacter
             IController control = Locator<IController>.GetService();
 
             
-            Block adj = GWorldSearcher.GetBlock(thisData.Character.transform.position + Vector3.down,m_refWorld);
-            return !(adj != null && adj.IsSolid(Direction.UP));
+            IBlock adj = GWorldSearcher.GetBlock(thisData.Character.transform.position + Vector3.down,m_refWorld);
+            return !(adj != null && adj.IsObstacle);
         }
     }
 }

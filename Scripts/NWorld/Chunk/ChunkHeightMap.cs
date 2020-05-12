@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Assets.Scripts.NNoise;
+
 using UnityEngine;
+
+using Assets.Scripts.NNoise;
 
 namespace Assets.Scripts.NWorld
 {
@@ -38,7 +36,7 @@ namespace Assets.Scripts.NWorld
 
             INoiseMaker noiseMaker = world.NoiseMaker;
 
-            int i, j;
+            ushort i, j;
             for (i = 0; i < world.Section_Width; ++i)
             {
                 for (j = 0; j < world.Section_Depth; ++j)
@@ -48,7 +46,7 @@ namespace Assets.Scripts.NWorld
                         (int)noiseMaker.MakeOctave_2D
                         (new Vector2(i + coord.x + biome.Offset, j + coord.y + biome.Offset)   //coord
                         , biome.Frequency    //Frequecy
-                        , biome.Amplitude - biome.GroundHeight) + biome.GroundHeight;    //Height
+                        , biome.Amplitude - biome.GroundHeight,6) + biome.GroundHeight;    //Height
 
 
                     //Save Max and Min Height of This Chunk

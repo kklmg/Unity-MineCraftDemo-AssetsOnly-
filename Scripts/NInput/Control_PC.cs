@@ -66,5 +66,11 @@ namespace Assets.Scripts.NInput
             return Input.mousePosition;
         }
 
+        public bool HasCursorMoved()
+        {
+            return Input.GetAxis(KEY_INPUT.MOUSE_VERTICAL)!=0 
+                || Input.GetAxis(KEY_INPUT.MOUSE_HORIZONTAL)!=0;
+        }
+
     }
 }

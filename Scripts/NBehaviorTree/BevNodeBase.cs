@@ -1,14 +1,10 @@
 ﻿using UnityEngine;
-using Assets.Scripts.NPattern;
 
 namespace Assets.Scripts.NBehaviorTree
 {
     //Base Behavior Node
     //template method pattern
-    //Template - Enter();
-    //Template - Tick();
-    //Template - Exit();
-    //Template - Reset();
+
     public abstract class BevNodeBase : ScriptableObject //,ICloneable
     {
         //Field
@@ -65,10 +61,4 @@ namespace Assets.Scripts.NBehaviorTree
         protected abstract eRunningState Tick(BevData workData);
     }
 
-
-    public abstract class LoggedNode
-    {
-
-
-    }
 }

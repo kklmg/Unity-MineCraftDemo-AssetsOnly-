@@ -1,82 +1,103 @@
 ﻿using UnityEngine;
+
 using Assets.Scripts.NMesh;
+using Assets.Scripts.NData;
 
 namespace Assets.Scripts.NWorld
 {
+    [System.Serializable]
     [CreateAssetMenu(menuName = "block")]
-    public class Block : ScriptableObject
+    public class Block : ScriptableObject, IBlock
     {
         //Field------------------------------------------
         [SerializeField]
-        private Tile[] m_Tiles;
+        private Sprite m_Icon;
 
-        //public Function----------------------------------
-        public MeshDataScriptable GetMesh(byte dir)
-        {
-            return m_Tiles[dir].Mesh;
-        }
+        [SerializeField]
+        private bool m_IsOpaque = true;
+
+        [SerializeField]
+        private bool m_IsObstacle = true;
+
+        [SerializeField]
+        private Tile m_UpTile;
+        [SerializeField]
+        private Tile m_DownTile;
+        [SerializeField]
+        private Tile m_LeftTile;
+        [SerializeField]
+        private Tile m_RightTile;
+        [SerializeField]
+        private Tile m_FrontTile;
+        [SerializeField]
+        private Tile m_BackTile;
+
+        public Sprite Icon { get { return m_Icon; } }
+
+        public bool IsSpecial { get { return false; } }
+        public bool IsOpaque { get { return m_IsOpaque; } }
+        public bool IsObstacle { get { return m_IsObstacle; } }
+
+        public bool IsLeftMeshExist { get { return m_LeftTile != null; } }
+        public bool IsRigthMeshExist { get { return m_RightTile != null; } }
+        public bool IsUpMeshExist { get { return m_UpTile != null; } }
+        public bool IsDownMeshExist { get { return m_DownTile != null; } }
+        public bool IsFrontMeshExist { get { return m_FrontTile != null; } }
+        public bool IsBackMeshExist { get { return m_BackTile != null; } }
+
        
-       
-        public  bool IsSolid(byte dir)
+
+        public DynamicMesh GetLeftMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
         {
-            return m_Tiles[dir].IsSolid;
-        }
-        public  bool isOverlap(Block blk)
-        {
-            return true;
+            if (m_LeftTile == null) return null;
+            return m_LeftTile.GetClonedMesh(x, y, z, tex);
         }
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="dir"></param>
-        /// <param name="receiver"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="texRef"></param>
-        public void ExtractMesh(byte dir, MeshDataDynamic receiver,ref BlockInSection blkInSec,TextureSheet texRef)
+        public DynamicMesh GetRightMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
         {
-            if (m_Tiles[dir].Mesh == null) return;
-
-            //make clone
-            MeshDataDynamic mesh = m_Tiles[dir].Mesh.Data.Clone();
-            
-            //set postion
-            mesh.Translate(Vector3.right, blkInSec.x);
-            mesh.Translate(Vector3.up, blkInSec.y);
-            mesh.Translate(Vector3.forward, blkInSec.z);
-
-            //set texture
-            Frame fr = texRef.GetCoord(m_Tiles[dir].TexID);
-            mesh.SetUV_quad(fr);
-
-            //save mesh data
-            receiver.Add(mesh);
+            if (m_RightTile == null) return null;
+            return m_RightTile.GetClonedMesh(x, y, z, tex);
         }
 
-        public void ExtractMeshAll(MeshDataDynamic receiver, int x, int y, int z, TextureSheet texRef)
+        public DynamicMesh GetUpMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
         {
-            foreach (Tile t in m_Tiles)
-            {
-                if (t.Mesh == null) continue;
-
-                //make clone
-                MeshDataDynamic mesh = t.Mesh.Data.Clone();
-
-                //set postion
-                mesh.Translate(Vector3.right, x);
-                mesh.Translate(Vector3.up, y);
-                mesh.Translate(Vector3.back, z);
-
-                //set texture
-                Frame fr = texRef.GetCoord(t.TexID);
-                mesh.SetUV_quad(fr);
-
-                receiver.Add(mesh);
-            }
+            if (m_UpTile == null) return null;
+            return m_UpTile.GetClonedMesh(x, y, z, tex);
         }
 
+        public DynamicMesh GetDownMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+        {
+            if(m_DownTile == null) return null;
+            return m_DownTile.GetClonedMesh(x, y, z, tex);
+        }
+
+        public DynamicMesh GetFrontMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+        {
+            if (m_FrontTile == null) return null;
+            return m_FrontTile.GetClonedMesh(x, y, z, tex);
+        }
+
+        public DynamicMesh GetBackMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+        {
+            if (m_BackTile == null) return null;
+            return m_BackTile.GetClonedMesh(x, y, z, tex);
+        }
+
+        public DynamicMesh GetAllMesh(TextureSheet tex, int x, int y, int z)
+        {
+            DynamicMesh TempMesh = new DynamicMesh();
+
+            TempMesh.Add(GetUpMesh(tex, x, y, z));
+            TempMesh.Add(GetDownMesh(tex, x, y, z));
+            TempMesh.Add(GetLeftMesh(tex, x, y, z));
+            TempMesh.Add(GetRightMesh(tex, x, y, z));
+            TempMesh.Add(GetFrontMesh(tex, x, y, z));
+            TempMesh.Add(GetBackMesh(tex, x, y, z));
+
+            return TempMesh;
+        }
     }
+
+
+
 }

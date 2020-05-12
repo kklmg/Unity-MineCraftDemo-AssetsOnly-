@@ -6,20 +6,17 @@ namespace Tester
 {
     class NoiseTester : MonoBehaviour
     {
-        //public ObjectPool<Vector3> abc;
+        public GameObject TargetPrefab;
 
-
-        public GameObject targetprefab;
         private PerlinNoiseMaker m_NoiseMaker;
         private MeshRenderer m_MeshRenderer;
+
         public int m_Amplitude = 128;
         public float m_Frequency = 1.0f;
         public int m_Octaves = 6;
 
         public List<float> result1;
         public List<float> result2;
-
-
 
         private void Awake()
         {
@@ -32,7 +29,6 @@ namespace Tester
         {
             m_MeshRenderer = gameObject.GetComponent<MeshRenderer>();
 
-            Debug.Log("are you kidding me?");
             //getTexture();
             test_1D();
             //test_2D();
@@ -53,7 +49,7 @@ namespace Tester
                 result1.Add(y1);
                 //result2.Add(y2);
 
-                Instantiate(targetprefab, new Vector3(x*10, y1*10, 1.0f),Quaternion.Euler(0,180,0));
+                Instantiate(TargetPrefab, new Vector3(x*10, y1*10, 1.0f),Quaternion.Euler(0,180,0));
                 //Instantiate(targetprefab, new Vector3(x * 10, y2 * 10, 5.0f), Quaternion.Euler(0, 180, 0));
             }
 
@@ -102,7 +98,7 @@ namespace Tester
                     //float y = Mathf.PerlinNoise(x, z);
                     //float y = m_NoiseMaker.GetNoise_2D(new Vector2(x* m_Frequency, z));
                     float y = m_NoiseMaker.MakeOctave_2D(new Vector2(x ,z),m_Frequency,1.0f,6);
-                    Instantiate(targetprefab, new Vector3(x * m_Frequency, y * m_Frequency, z * m_Frequency), Quaternion.identity);
+                    Instantiate(TargetPrefab, new Vector3(x * m_Frequency, y * m_Frequency, z * m_Frequency), Quaternion.identity);
                 }
 
             }
