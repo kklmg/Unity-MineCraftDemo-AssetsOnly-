@@ -54,50 +54,31 @@ namespace Assets.Scripts.NWorld
         {
             m_refWorld = Locator<IWorld>.GetService();
 
-            Locator<IEventSubscriber>.GetService().Subscribe(E_Player_LeaveChunk.ID, Handle_PlayerLeaveChunk);
-            Locator<IEventSubscriber>.GetService().Subscribe(E_Player_Spawned.ID, Handle_PlayerSpawn);
+            Locator<IEventHelper>.GetService().Subscribe(E_Player_LeaveChunk.ID, Handle_PlayerLeaveChunk,0);
+            Locator<IEventHelper>.GetService().Subscribe(E_Player_Spawned.ID, Handle_PlayerSpawn,0);
         }
 
         //public Function
         //--------------------------------------------------------------------------- 
-        public Chunk Replace(ChunkInWorld bePlace, ChunkInWorld Place)
+        public Chunk Replace(ChunkInWorld Original, ChunkInWorld Place)
         {
 
             //Case: The Chunk has already spawned
-            if (m_WorldEntiry.TryGetChunk(bePlace, out Chunk TempChunk))
+            if (m_WorldEntiry.TryGetChunk(Original, out Chunk TempChunk))
             {
-                m_WorldEntiry.Remove(bePlace);
+                m_WorldEntiry.Remove(Original);
+
+                TempChunk.ClearUnityMesh();
 
                 //reset chunk
                 TempChunk.SetLocation(Place);
 
-                //GTimer.ShowElapsedTimeAndRestart("set loc");
-
                 TempChunk.GenerateBlocks();
-                //TempChunk.BuildMeshInstantly();
-                //TempChunk.RunBuildMeshCoro();
-               
 
                 m_SaveMng.LoadBlock(Place, TempChunk);
 
-                m_ChunkMeshBuilder.AddBuildRequest(TempChunk);
+                m_ChunkMeshBuilder.RequestBuildChunk(TempChunk);
 
-                //GTimer.ShowElapsedTimeAndRestart("Load block");
-
-                //GTimer.RestartTimer();
-
-                //ThreadPool.QueueUserWorkItem(Thread_CreateChunkMesh, TempChunk);
-
-                //Thread thread = new Thread(new ParameterizedThreadStart(Thread_CreateChunkMesh));
-                //thread.Start(TempChunk);
-
-
-                //GTimer.ShowElapsedTimeAndRestart("thread?????????");
-                //GTimer.ShowElapsedTimeAndRestart("queue thread");
-
-                //TempChunk.BuildMeshInBackground();
-
-                //put to cache
                 m_WorldEntiry.AddChunk(Place, TempChunk);
 
                 return TempChunk;

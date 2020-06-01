@@ -6,14 +6,12 @@ namespace Assets.Scripts.NEvent
     public class Communicator : MonoBehaviour
     {
         private EventCenter m_EventCenter;
-        private EventPublisher m_Publisher;
-        private EventSubscriber m_Subscriber;
+        private EventHelper m_EventHelper;
 
         private void Awake()
         {
-            m_EventCenter = new EventCenter();
-            m_Publisher = new EventPublisher(m_EventCenter);
-            m_Subscriber = new EventSubscriber(m_EventCenter);
+            m_EventCenter = new EventCenter(10);
+            m_EventHelper = new EventHelper(m_EventCenter);
         }
 
         private void LateUpdate()
@@ -23,16 +21,17 @@ namespace Assets.Scripts.NEvent
 
         public void PublishEvent(IEvent _event)
         {
-            m_Publisher.PublishAndHandle(_event);
+            m_EventHelper.PublishAndHandle(_event);
         }
 
-        public void SubsribeEvent(Guid EventID, Del_HandleEvent handler)
+        public void SubsribeEvent(Guid EventID, Del_HandleEvent handler,byte priority)
         {
-            m_Subscriber.Subscribe(EventID, handler);
+            m_EventHelper.Subscribe(EventID, handler,priority);
         }
-        public void SubsribeEvent_Decorate(Guid EventID, Del_DecorateEvent decorator)
+
+        public void UnSubscribe(Guid EventID, Del_HandleEvent handler)
         {
-            m_Subscriber.Subscribe_Deccorate(EventID, decorator);
+            m_EventHelper.UnSubscribe(EventID, handler);
         }
     }
 }

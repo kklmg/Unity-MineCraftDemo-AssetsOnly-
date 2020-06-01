@@ -6,13 +6,29 @@ using Assets.Scripts.NInput;
 
 namespace Assets.Scripts.NGameSystem
 {
-    class InputMng : MonoBehaviour
+    [System.Serializable]
+    class InputMng : MonoBehaviour, IGameMng
     {
         public Canvas prefab_Canvas;
-        public GameObject Prefab_Controller;
+        public GameObject Prefab_Picker;
+        public GameObject Prefab_CamCtrl;    //camera controller
+        public GameObject Prefab_PlayerCtrl; //Plyaer controller
 
-        public Picker BlockPicker { private set; get; }
-        private Character m_player;
+        public Picker PickerIns { private set; get; }
+        public CameraController CamCtrlIns { private set; get; }
+        public PlayerController PlayerCtrlIns { private set; get; }
+
+        [SerializeField]
+        [Range(1, 5)]
+        private float m_RotateSens;
+
+        [SerializeField]
+        [Range(1, 5)]
+        private int m_PickDistance;
+
+        public int PickDistance { set { m_PickDistance = value; } get { return m_PickDistance; } }
+        public float RotateSens { set { m_RotateSens = value; } get { return m_RotateSens; } }
+
 
         public bool InitInputService()
         {
@@ -35,20 +51,53 @@ namespace Assets.Scripts.NGameSystem
             if (Locator<IController>.GetService() == null)
                 Locator<IController>.ProvideService(new Control_PC());
 
+            Debug.Log(Locator<IController>.GetService());
+
             return true;
+        }
+
+        public void StopHandleInput()
+        {
+            PickerIns.gameObject.SetActive(false);
+            CamCtrlIns.gameObject.SetActive(false);
+            PlayerCtrlIns.gameObject.SetActive(false);
+        }
+
+        public void StartHandleInput()
+        {
+            PickerIns.gameObject.SetActive(true);
+            CamCtrlIns.gameObject.SetActive(true);
+            PlayerCtrlIns.gameObject.SetActive(true);
         }
 
         public void InitController()
         {
-            BlockPicker = 
-                Instantiate(Prefab_Controller).GetComponent<Picker>();
+            //Picker
+            PickerIns =
+                Instantiate(Prefab_Picker).GetComponent<Picker>();
+            PickerIns.SetPickingDistance(m_PickDistance);
 
-            Debug.Log("Init picker");
+            //Camera controller
+            CamCtrlIns =
+                Instantiate(Prefab_CamCtrl).GetComponent<CameraController>();
+            CamCtrlIns.RotateSensitivity = m_RotateSens;
+
+            //Player Controller
+            PlayerCtrlIns =
+                Instantiate(Prefab_PlayerCtrl).GetComponent<PlayerController>();
+            PlayerCtrlIns.RotateSensitivity = m_RotateSens;
+
         }
 
-        public void InitInteraction()
+        public void InitUISet()
         {
             Instantiate(prefab_Canvas);
+        }
+
+        public void ApplySettings(GameSetting setting)
+        { 
+            m_RotateSens = setting.RotateSensitivity.Get();
+            m_PickDistance = setting.PickingDistance.Get();
         }
     }
 }

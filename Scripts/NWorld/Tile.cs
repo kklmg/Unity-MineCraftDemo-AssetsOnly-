@@ -9,33 +9,26 @@ namespace Assets.Scripts.NWorld
     [System.Serializable]
     public class Tile
     {
-        [SerializeField]
-        private DynamicMeshScObj m_Mesh;
+        public DynamicMeshScObj OriginMesh;
 
         [SerializeField]
         private int m_TexID;
 
-        private Frame m_TexFrame;
+        private DynamicMesh m_Mesh;
+        private DynamicMesh m_ClonedMesh;
 
-        public DynamicMesh GetClonedMesh(int x, int y, int z,TextureSheet TexSheet)
+        public void Init(TextureSheet TexSheet)
         {
-            if (m_Mesh == null) return null;
-            DynamicMesh TempMesh = m_Mesh.GetClonedMesh(x,y,z);
-
-            //Compute UV
-            TempMesh.SetUV_quad(TexSheet.GetCoord(m_TexID));
-
-            return TempMesh;
+            m_Mesh = OriginMesh.GetClonedMesh();
+            m_Mesh.SetUV_quad(TexSheet.GetCoord(m_TexID));
         }
 
-        public DynamicMesh GetClonedMesh(int x, int y, int z)
+        public DynamicMesh GetTransMesh(int x, int y, int z)
         {
-            DynamicMesh TempMesh = m_Mesh.GetClonedMesh(x, y, z);
+            m_ClonedMesh = m_Mesh.Clone();
+            m_ClonedMesh.Translate(new Vector3(x, y, z));
 
-            //Compute UV
-            TempMesh.SetUV_quad(m_TexFrame);
-
-            return TempMesh;
+            return m_ClonedMesh;
         }
     }
 

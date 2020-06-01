@@ -30,13 +30,13 @@ namespace Assets.Scripts.NWorld
             {
                 m_Changes[m_Dic[slot.Value]]
                     = new BlockChange(slot.Value, blockId);
-                Debug.Log("Block has Modifid");
+                //Debug.Log("Block has Modifid");
             }
             else
             {
                 m_Dic.Add(slot.Value, m_Changes.Count);
                 m_Changes.Add(new BlockChange(slot.Value, blockId));
-                Debug.Log("Block has Added");
+                //Debug.Log("Block has Added");
             }
         }
 

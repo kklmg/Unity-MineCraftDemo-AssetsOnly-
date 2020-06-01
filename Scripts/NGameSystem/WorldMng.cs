@@ -7,9 +7,10 @@ using Assets.Scripts.NGlobal.ServiceLocator;
 
 namespace Assets.Scripts.NGameSystem
 {
+    [System.Serializable]
     [RequireComponent(typeof(SaveMng))]
     [RequireComponent(typeof(PlayerMng))]
-    class WorldMng : MonoBehaviour
+    class WorldMng : MonoBehaviour, IGameMng
     {
         public GameObject m_WorldPrefab;
         private GameObject m_WorldIns;
@@ -18,27 +19,20 @@ namespace Assets.Scripts.NGameSystem
 
         public GameObject WorldIns { get { return m_WorldIns; } }
 
+        public void ApplySettings(GameSetting setting)
+        {
+            
+
+            return;
+        }
+
         public void InitWorldService()
         {
-            int workerThreads;
-            int portThreads;
-
-            ThreadPool.GetMaxThreads(out workerThreads, out portThreads);
-            Debug.Log("workerThreads" + workerThreads);
-            Debug.Log("Maximum completion port threads" + portThreads);
-
-            ThreadPool.GetAvailableThreads(out workerThreads, out portThreads);
-            Debug.Log("available workerThreads" + workerThreads);
-            Debug.Log("available Maximum completion port threads" + portThreads);
-
-
-            ThreadPool.SetMaxThreads(100, 100);
-
             m_WorldIns = Instantiate(m_WorldPrefab);
 
             WorldService = m_WorldIns.GetComponent<World>();
             
-            WorldService.Init(GetComponent<SaveMng>().LoadedFile.WorldSeed);
+            WorldService.Init(GetComponent<SaveMng>().WorldSeed);
 
             Locator<IWorld>.ProvideService(WorldService);
         }
@@ -46,11 +40,9 @@ namespace Assets.Scripts.NGameSystem
         public void SpawnWorld()
         {
             ChunkSpawner spawner = WorldService.Entity.GetComponent<ChunkSpawner>();
-
-            GameSave SaveData = GetComponent<SaveMng>().LoadedFile;
             int ViewDistance = (int)GetComponent<PlayerMng>().PlayerView;
 
-            spawner.SpawnAt(SaveData.PlayerPos, ViewDistance, WorldService);
+            spawner.SpawnAt(GetComponent<SaveMng>().PlayerPos, ViewDistance, WorldService);
         }
 
     }

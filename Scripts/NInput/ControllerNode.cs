@@ -39,7 +39,7 @@ namespace Assets.Scripts.NInput
         private float cache;
         public override bool Check(BevData workData)
         {
-            cache = Locator<IController>.GetService().Rotate_X();
+            cache = Locator<IController>.GetService().Rotate_Yaw();
 
             if (Mathf.Approximately(cache, 0)) return false;
             else
@@ -54,7 +54,7 @@ namespace Assets.Scripts.NInput
         private float cache;
         public override bool Check(BevData workData)
         {
-            cache = Locator<IController>.GetService().Rotate_Y();
+            cache = Locator<IController>.GetService().Rotate_Pitch();
 
             if (Mathf.Approximately(cache, 0)) return false;
             else
@@ -69,7 +69,7 @@ namespace Assets.Scripts.NInput
         private float cache;
         public override bool Check(BevData workData)
         {
-            cache = Locator<IController>.GetService().Rotate_Z();
+            cache = Locator<IController>.GetService().Rotate_Roll();
 
             if (Mathf.Approximately(cache, 0)) return false;
             else

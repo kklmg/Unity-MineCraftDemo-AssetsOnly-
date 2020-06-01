@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.IO;
+
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using Assets.Scripts.NTouch;
@@ -12,41 +14,115 @@ namespace Assets.Scripts.NGameSystem
     [RequireComponent(typeof(PlayerMng))]
     class GameSystem : MonoSingleton<GameSystem>
     {
-        public int IndexMenuScene;
-        public int IndexPlayScene;
+        [SerializeField]
+        private string m_strMenuScene = "GameMenu";
+        [SerializeField]
+        private string m_strPlayScene = "GamePlay";
+        [SerializeField]
+        private string m_strSettingFile = "/Setting.txt";
+        [SerializeField]
+        private GameSetting m_GameSetting = null;
 
+        //public GameSetting GameSettingIns { private set; get; }
         public EventMng EventMngIns { private set; get; }
         public InputMng InputMngIns { private set; get; }
         public WorldMng WorldMngIns { private set; get; }
         public PlayerMng PlayerMngIns { private set; get; }
         public SaveMng SaveMngIns { private set; get; }
+        public GameSetting GameSettingIns { get { return m_GameSetting; } }
+
+        public string SettingPath { get { return Application.dataPath + m_strSettingFile; } }
 
         public Picker GetPicker()
         {
-            return InputMngIns.BlockPicker;
+            return InputMngIns.PickerIns;
         }
+
+        //Unity Function
+        //--------------------------------------------------
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
-
+     
             EventMngIns = GetComponent<EventMng>();
             InputMngIns = GetComponent<InputMng>();
             WorldMngIns = GetComponent<WorldMng>();
             PlayerMngIns = GetComponent<PlayerMng>();
             SaveMngIns = GetComponent<SaveMng>();
+
+            LoadSettingFile();
         }
+
+        //Game Setting Relatived Function
+        //--------------------------------------------------
+
+        private void LoadSettingFile()
+        {
+            //Case: There is a setting file
+            if (File.Exists(SettingPath))
+            {
+                string StrJson = File.ReadAllText(SettingPath);
+                m_GameSetting = JsonUtility.FromJson<GameSetting>(StrJson);
+            }
+            else
+            {
+                m_GameSetting = new GameSetting();
+
+                string StrJson = JsonUtility.ToJson(m_GameSetting);
+
+                File.WriteAllText(SettingPath, StrJson);
+            }
+        }
+
+        public GameSetting ResetSettingToDefault()
+        {
+            m_GameSetting = new GameSetting();
+
+            string StrJson = JsonUtility.ToJson(m_GameSetting);
+
+            File.WriteAllText(SettingPath, StrJson);
+
+            return m_GameSetting;
+        }
+
+        public void SaveSettings()
+        {
+            if (m_GameSetting != null)
+            {
+                string StrJson = JsonUtility.ToJson(m_GameSetting);
+                File.WriteAllText(SettingPath, StrJson);
+            }
+        }
+
+
+        public void ApplySettings(bool SaveToFile = true)
+        {
+            EventMngIns.ApplySettings(m_GameSetting);
+            InputMngIns.ApplySettings(m_GameSetting);
+            WorldMngIns.ApplySettings(m_GameSetting);
+            PlayerMngIns.ApplySettings(m_GameSetting);
+            SaveMngIns.ApplySettings(m_GameSetting);
+
+            //save settings to a file
+            if (SaveToFile)
+            {
+                string StrJson = JsonUtility.ToJson(m_GameSetting);
+                File.WriteAllText(SettingPath, StrJson);
+            }
+        }
+
+        //Scene Relatived Function
+        //--------------------------------------------------
 
         public void RunMenuScene()
         {
-            SceneManager.LoadScene("GameMenu");
-            //SceneManager.LoadScene(IndexMenuScene);
+            SceneManager.LoadScene(m_strMenuScene);
         }
 
         public void RunPlayScene()
         {         
-            SceneManager.LoadScene("GamePlay");
-            //SceneManager.LoadScene(IndexPlayScene);
+            SceneManager.LoadScene(m_strPlayScene);
         }
 
         public void InitMenuScene()
@@ -66,6 +142,10 @@ namespace Assets.Scripts.NGameSystem
             PlayerMngIns.enabled = true;
             SaveMngIns.enabled = true;
 
+
+            ApplySettings(false);
+            
+
             SaveMngIns.InitSaveSystem();
             EventMngIns.InitEventService();
 
@@ -76,7 +156,7 @@ namespace Assets.Scripts.NGameSystem
 
             InputMngIns.InitInputService();
             InputMngIns.InitController();
-            InputMngIns.InitInteraction();
+            InputMngIns.InitUISet();
         }
     }
 }

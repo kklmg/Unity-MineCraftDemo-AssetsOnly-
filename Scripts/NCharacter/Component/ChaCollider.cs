@@ -8,109 +8,108 @@ using Assets.Scripts.NData;
 
 namespace Assets.Scripts.NCharacter
 {
+    [RequireComponent(typeof(Character))]
     [RequireComponent(typeof(Communicator))]
     class ChaCollider : MonoBehaviour
     {
-        private IWorld m_refWorld;
+        private IWorld m_World;
+        private Character m_Character;
+        private Communicator m_Communicator;
 
-        //private ChaPosition m_ChaPosition;
-
-        //private Vector3Int
-        [Range(0.1f, 0.9f)]
-        public float m_BodyWidth = 0.8f;
-        [Range(1, 3)]
-        public float m_BodyHeight = 1.8f;
-
-        private float m_BodyWidthExtent;
-        private float m_BodyHeightExtent;
-
-        public float m_Gravity = 9.8f;
-
-        public float m_DownSpeed = 0.0f;
-
-        public bool m_IsGround = false;
-
-
+        private float m_BodyWidth;
+        private float m_BodyHeight;
+        private float m_BodyWidth_Half;
+        private float m_BodyHeight_Half;     
 
         //Unity Function
         //---------------------------------------------------------------------
-        private void Start()
+        private void Awake()
         {
-            GetComponent<Communicator>().SubsribeEvent_Decorate(E_Cha_MoveRequest.ID, AvoidIntersect);
+            m_Character = GetComponent<Character>();
+            m_Communicator = GetComponent<Communicator>();
 
-            //Handle jump request
-            GetComponent<Communicator>().SubsribeEvent(E_Cha_Jump.ID, TriggerJump);
-
-            m_refWorld = Locator<IWorld>.GetService();
-
-            //Init Body Bound Data
-            m_BodyWidthExtent = m_BodyWidth / 2;
-            m_BodyHeightExtent = m_BodyHeight / 2;
+            //get body size
+            m_BodyWidth = m_Character.BodyWidth;
+            m_BodyHeight = m_Character.BodyHeight;
+            m_BodyWidth_Half = m_BodyWidth / 2;
+            m_BodyHeight_Half = m_BodyHeight / 2;
         }
 
-
-        private void Update()
+        private void Start()
         {
-            if (m_IsGround == true)
-            {
-                if (Down(-0.1f, out Vector3 intersection) == false)
-                {
-                    m_IsGround = false;
-                }
-            }
+            //avoid intersection x z
+            m_Communicator.SubsribeEvent(E_Cha_MoveRequest_XZ.ID, AvoidIntersection_XZ, 0);
 
-            if (m_IsGround == false)
-            {
-                m_DownSpeed -= m_Gravity * Time.deltaTime;
+            //avoid intersection y
+            m_Communicator.SubsribeEvent(E_Cha_MoveRequest_Y.ID, AvoidInterSection_Y, 2);
 
-                //Limit speed for AABB collide detection
-                if (m_DownSpeed > 1.0f) m_DownSpeed = 1.0f;
-                if (m_DownSpeed < -1.0f) m_DownSpeed = -1.0f;
+            //Handle jump request
+            m_Communicator.SubsribeEvent(E_Cha_StartJump.ID, HandleJump, 2);
 
-                CheckUpDown();
-            }
+
+
+            m_World = Locator<IWorld>.GetService();
         }
 
 
         //intersection Handler
         //---------------------------------------------------------------------
-        private IEvent AvoidIntersect(IEvent _event)
+        private bool HandleJump(IEvent _event)
         {
-            Vector3 Translation = (_event as E_Cha_MoveRequest).Translation;
-
-            Vector3 Intersection;
-            if (Translation.z > 0 && Front(Translation.z,out Intersection))
-            {
-                Translation -= Intersection;
-            }
-
-            else if(Translation.z < 0 && Back(Translation.z, out Intersection))
-            {
-                Translation += Intersection;
-            }
-
-            if (Translation.x > 0 && Right(Translation.x, out Intersection))
-            {
-                Translation -= Intersection;
-            }
-            else if (Translation.x < 0 && Left(Translation.x, out Intersection))
-            {
-                Translation += Intersection;
-            }
-            return new E_Cha_MoveRequest(Translation);            
+            E_Cha_StartJump EJump = _event as E_Cha_StartJump;
+            m_Communicator.PublishEvent(new E_Cha_MoveRequest_Y(EJump.Force));
+            return false;
         }
 
 
-        //Jump request Handler
-        private bool TriggerJump(IEvent _event)
+        private bool AvoidIntersection_XZ(IEvent _event)
         {
-            E_Cha_Jump EJump = _event as E_Cha_Jump;
-            m_DownSpeed = EJump.Force;
-            m_IsGround = false;
+            E_Cha_MoveRequest_XZ req = (_event as E_Cha_MoveRequest_XZ);
+
+            Vector3 Intersection;
+            if (req.Translation.z > 0 && Front(req.Translation.z,out Intersection))
+            {
+                req.Translation -= Intersection;
+            }
+
+            else if(req.Translation.z < 0 && Back(req.Translation.z, out Intersection))
+            {
+                req.Translation += Intersection;
+            }
+
+            if (req.Translation.x > 0 && Right(req.Translation.x, out Intersection))
+            {
+                req.Translation -= Intersection;
+            }
+            else if (req.Translation.x < 0 && Left(req.Translation.x, out Intersection))
+            {
+                req.Translation += Intersection;
+            }
+
+            return true;           
+        }
+
+        //Jump request Handler
+        private bool AvoidInterSection_Y(IEvent _event)
+        {
+            E_Cha_MoveRequest_Y Y = _event as E_Cha_MoveRequest_Y;
+
+            if (Y.Speed > 0 && Up(Y.Speed, out Vector3 intersection))
+            {
+                Y.Speed -= intersection.y;
+
+                m_Communicator.PublishEvent(new E_Cha_TouchUpsideBlock());
+            }
+
+            else if (Y.Speed < 0 && Down(Y.Speed, out intersection))
+            {
+                Y.Speed += intersection.y;
+                m_Communicator.PublishEvent(new E_Cha_TouchGround());
+                Debug.Log("tg");
+            }
 
             return true;
         }
-
 
         //Check if there is a solid block in front of me
         private bool Front(float trans_z,out Vector3 intersect)
@@ -119,11 +118,11 @@ namespace Assets.Scripts.NCharacter
 
             for (int i = 0; i < m_BodyHeight; ++i)
             {
-                BlockLocation Loc = new BlockLocation(transform.position + new Vector3(0, i, m_BodyWidthExtent + trans_z), m_refWorld);
+                BlockLocation Loc = new BlockLocation(transform.position + new Vector3(0, i, m_BodyWidth_Half + trans_z), m_World);
 
                 if (Loc.IsBlockExists() && Loc.CurBlockRef.IsObstacle)
                 {
-                    intersect.z = transform.position.z + trans_z + m_BodyWidthExtent- Loc.Bound.min.z;
+                    intersect.z = transform.position.z + trans_z + m_BodyWidth_Half- Loc.Bound.min.z;
                     //Debug.Log("front intersection"+ intersect);
                     return true;
                 } 
@@ -137,11 +136,11 @@ namespace Assets.Scripts.NCharacter
 
             for (int i = 0; i < m_BodyHeight; ++i)
             {
-                BlockLocation Loc = new BlockLocation(transform.position + new Vector3(0, i, -m_BodyWidthExtent + trans_z), m_refWorld);
+                BlockLocation Loc = new BlockLocation(transform.position + new Vector3(0, i, -m_BodyWidth_Half + trans_z), m_World);
 
                 if (Loc.IsBlockExists() && Loc.CurBlockRef.IsObstacle)
                 {
-                    intersect.z = Loc.Bound.max.z - (transform.position.z + trans_z - m_BodyWidthExtent);
+                    intersect.z = Loc.Bound.max.z - (transform.position.z + trans_z - m_BodyWidth_Half);
                     //Debug.Log("back intersection" + intersect);
                     return true;
                 }
@@ -153,11 +152,11 @@ namespace Assets.Scripts.NCharacter
             intersect = Vector3.zero;
             for (int i = 0; i < m_BodyHeight; ++i)
             {
-                BlockLocation Loc = new BlockLocation(transform.position + new Vector3(-m_BodyWidthExtent + trans_x, i, 0), m_refWorld);
+                BlockLocation Loc = new BlockLocation(transform.position + new Vector3(-m_BodyWidth_Half + trans_x, i, 0), m_World);
 
                 if (Loc.IsBlockExists() && Loc.CurBlockRef.IsObstacle)
                 {
-                    intersect.x = Loc.Bound.max.x-(transform.position.x + trans_x - m_BodyWidthExtent);
+                    intersect.x = Loc.Bound.max.x-(transform.position.x + trans_x - m_BodyWidth_Half);
                     //Debug.Log("left intersection" + intersect);
                     return true;
                 }
@@ -170,11 +169,11 @@ namespace Assets.Scripts.NCharacter
             for (int i = 0; i < m_BodyHeight; ++i)
             {
                 BlockLocation Loc = new BlockLocation
-                    (transform.position + new Vector3(m_BodyWidthExtent + trans_x, i, 0), m_refWorld);
+                    (transform.position + new Vector3(m_BodyWidth_Half + trans_x, i, 0), m_World);
                 
                 if (Loc.IsBlockExists() && Loc.CurBlockRef.IsObstacle)
                 {
-                    intersect.x = (transform.position.x + trans_x + m_BodyWidthExtent) - Loc.Bound.min.x;
+                    intersect.x = (transform.position.x + trans_x + m_BodyWidth_Half) - Loc.Bound.min.x;
                     //Debug.Log("right intersection" + intersect);
                     return true;
                 }
@@ -186,11 +185,11 @@ namespace Assets.Scripts.NCharacter
         {
             intersect = Vector3.zero;
             BlockLocation Loc =
-                new BlockLocation(transform.position + new Vector3(0, trans_y - m_BodyHeightExtent, 0), m_refWorld);
+                new BlockLocation(transform.position + new Vector3(0, trans_y, 0), m_World);
 
             if (Loc.IsBlockExists() && Loc.CurBlockRef.IsObstacle)
             {
-                intersect.y = Loc.Bound.max.y - (transform.position.y + trans_y - m_BodyHeightExtent);
+                intersect.y = Loc.Bound.max.y - (transform.position.y + trans_y);
                 //Debug.Log("Down intersection" + intersect);
                 return true;
             }
@@ -200,46 +199,16 @@ namespace Assets.Scripts.NCharacter
         {
             intersect = Vector3.zero;
             BlockLocation Loc =
-                new BlockLocation(transform.position + new Vector3(0, trans_y + m_BodyHeightExtent, 0), m_refWorld);
+                new BlockLocation(transform.position + new Vector3(0, trans_y + m_BodyHeight, 0), m_World);
 
             if (Loc.IsBlockExists() && Loc.CurBlockRef.IsObstacle)
             {
-                intersect.y = Loc.Bound.min.y - (transform.position.y + trans_y + m_BodyHeight);
-                //Debug.Log("Up intersection" + intersect);
+                intersect.y = (transform.position.y + trans_y + m_BodyHeight) - Loc.Bound.min.y ;
+
                 return true;
             }
             return false;
         }
-
-        private void CheckUpDown()
-        {       
-            if (m_DownSpeed > 0)
-            {
-                //check up block
-                Vector3 intersection = Vector3.zero;
-                if (Up(m_DownSpeed, out intersection))
-                {
-                    m_DownSpeed = 0;
-                }
-
-                transform.position += new Vector3(0, m_DownSpeed, 0) - intersection;
-            }
-
-            else if (m_DownSpeed < 0)
-            {
-                Vector3 intersection = Vector3.zero;
-                if (Down(m_DownSpeed, out intersection))
-                {
-                    m_IsGround = true;
-                    //Debug.Log("touch ground");
-                }
-
-                transform.position = transform.position + new Vector3(0, m_DownSpeed, 0) + intersection;
-                
-            }
-        }
-
- 
     }
 
 }

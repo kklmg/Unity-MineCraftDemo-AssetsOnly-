@@ -18,15 +18,35 @@ namespace Assets.Scripts.NCharacter
 
         private void Start()
         {
-            m_Communicator.SubsribeEvent(E_Cha_MoveRequest.ID, HandleMovement);
-            m_Communicator.SubsribeEvent(E_Cha_RotateRequest.ID, HandleRotation);
+            m_Communicator.SubsribeEvent(E_Cha_MoveRequest_XZ.ID, HandleMovement_XZ,9);
+            m_Communicator.SubsribeEvent(E_Cha_YawRequest.ID, HandleYaw, 9);
+            m_Communicator.SubsribeEvent(E_Cha_RotateRequest.ID, HandleRotation,9);
+            m_Communicator.SubsribeEvent(E_Cha_MoveRequest_Y.ID, HandleMovement_Y, 9);
         }
 
-        bool HandleMovement(IEvent _event)
+        bool HandleMovement_XZ(IEvent _event)
         {
-            Vector3 trans = (_event as E_Cha_MoveRequest).Translation;
+            Vector3 trans = (_event as E_Cha_MoveRequest_XZ).Translation;
             transform.position += trans;
+
+            m_Communicator.PublishEvent(new E_Cha_Moved_XZ());
             
+            return true;
+        }
+
+        bool HandleMovement_Y(IEvent _event)
+        {
+            float Y = (_event as E_Cha_MoveRequest_Y).Speed;
+            transform.position =
+                new Vector3(transform.position.x, transform.position.y + Y, transform.position.z);
+
+            return true;
+        }
+
+        bool HandleYaw(IEvent _event)
+        {
+            float Y = (_event as E_Cha_YawRequest).Value;
+            transform.Rotate(Vector3.up,Y);
             return true;
         }
 

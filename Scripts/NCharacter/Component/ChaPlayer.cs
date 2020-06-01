@@ -16,29 +16,37 @@ namespace Assets.Scripts.NCharacter
     {
         //Field
         //-------------------------------------------------------------------------------      
-        private IWorld m_refWorld;
+        private IWorld m_World;
         private Communicator m_Communicator;
+        private SaveMng m_SaveMng;
+        private Character m_Character;
 
+
+        [SerializeField]
+        private Transform m_Eye;
+
+        //Player Location
         private BlockLocation m_CurLoc;
         private Vector2Int m_PreChunkLoc;
         private Vector3Int m_PreSecLoc;
-        private SaveMng m_SaveMng;
+
+        public Transform TransformEye { get { return m_Eye; } }
+
 
         private E_Player_LeaveChunk m_Cache_EChunkChange;
-        private IEventPublisher m_EventPublisher;
 
         private void Awake()
         {               
             m_Communicator = GetComponent<Communicator>();
-            m_SaveMng = MonoSingleton<GameSystem>.Instance.SaveMngIns;
+            m_Character = GetComponent<Character>();
+            m_SaveMng = MonoSingleton<GameSystem>.Instance.SaveMngIns;        
         }
         private void Start()
         {
-            m_refWorld = Locator<IWorld>.GetService();
-            m_EventPublisher = Locator<IEventPublisher>.GetService();
+            m_World = Locator<IWorld>.GetService();
 
             //Compute Current Location
-            m_CurLoc = new BlockLocation(transform.position, m_refWorld);
+            m_CurLoc = new BlockLocation(transform.position, m_World);
             m_PreChunkLoc = m_CurLoc.ChunkInWorld.Value;
             m_PreSecLoc = m_CurLoc.SecInWorld.Value;
 
@@ -56,7 +64,7 @@ namespace Assets.Scripts.NCharacter
             m_SaveMng.SavePlayerLocation(transform);
 
             //Update Location 
-            m_CurLoc.Update(transform.position, m_refWorld);
+            m_CurLoc.Update(transform.position, m_World);
 
             if (m_PreChunkLoc != m_CurLoc.ChunkInWorld.Value)
             {
@@ -64,9 +72,15 @@ namespace Assets.Scripts.NCharacter
                 m_Cache_EChunkChange.Offset = m_CurLoc.ChunkInWorld.Value - m_PreChunkLoc;
 
                 //Publish Event: player's Chunk location has Changed
-                m_EventPublisher.Publish(m_Cache_EChunkChange);
+                Locator<IEventHelper>.GetService().Publish(m_Cache_EChunkChange);
             }
         }
+
+        public bool IntersectWithBound(Bounds target)
+        {
+            return m_Character.GlobalBodyBound.Intersects(target);
+        }
+        
 
         void OnGUI()
         {

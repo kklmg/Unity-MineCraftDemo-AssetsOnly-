@@ -9,53 +9,37 @@ namespace Assets.Scripts.NCharacter
         {         
             BevSequence seq = new BevSequence();
 
-            Control_Cha_Move control = new Control_Cha_Move();
-            Cha_ApplyMove move = new Cha_ApplyMove();
+           // Control_Cha_Move control = new Control_Cha_Move();
+            ChaBev_HandleMovement move = new ChaBev_HandleMovement();
 
-            seq.AddChild(control);
+            //seq.AddChild(control);
             seq.AddChild(move);
 
             BevRepeator repeat = new BevRepeator(seq);
 
             return repeat;
         }
-        public BevNodeBase ChaRotate_Control()
-        {
+        public BevNodeBase ChaRotation_Control()
+        { 
+            BevSequence seq = new BevSequence();
             
-            BevSequence seq = new BevSequence();
+            ChaBev_HandleYaw Yaw = new ChaBev_HandleYaw();
 
-            Control_Cha_RotateY control = new Control_Cha_RotateY();
-            Cha_Rotate rotate = new Cha_Rotate();
-
-            seq.AddChild(control);
-            seq.AddChild(rotate);
+            seq.AddChild(Yaw);
 
             BevRepeator repeat = new BevRepeator(seq);
 
             return repeat;
         }
-        public BevNodeBase Camera_Control()
-        {    
-            BevSequence seq = new BevSequence();
-
-            Control_Camera_UpDown control = new Control_Camera_UpDown();
-            CameraUpDown cam = new CameraUpDown();
-
-            seq.AddChild(control);
-            seq.AddChild(cam);
-
-            BevRepeator repeat = new BevRepeator(seq);
-
-            return repeat;
-        }
-        public BevNodeBase ChaControl_Base()
+      
+        public BevNodeBase ChaAct_Base()
         {
             BevParallel parall = new BevParallel();
            
-            parall.AddChild(new BevRepeator(new Cha_Jump()));
+            parall.AddChild(new BevRepeator(new ChaBev_HandleJump()));
             parall.AddChild(this.ChaMoving_Control());
-            parall.AddChild(this.ChaRotate_Control());
-            parall.AddChild(this.Camera_Control());
+            parall.AddChild(this.ChaRotation_Control());
+            //parall.AddChild(this.Camera_Control());
 
             return parall;
         }

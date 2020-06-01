@@ -37,7 +37,7 @@ namespace Assets.Scripts.NWorld
                 m_Helpers.Add(Location.ChunkInWorld.Value, Chunkhelper);
                 Chunkhelper.Modify(Location.SecInChunk, Location.BlkInSec, blockId);
             }
-            Debug.Log("Total: " + Count);
+
         }
 
         public void ApplyModification(ChunkInWorld chunkInWorld, Chunk chunk, IWorld world)

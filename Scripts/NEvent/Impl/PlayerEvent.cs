@@ -10,6 +10,8 @@ namespace Assets.Scripts.NEvent
 
         public E_Player_Spawned(Vector3 _SpawnPos,Character _player)
         {
+            SetPriority(0);
+
             SpawnPos = _SpawnPos;
             Player = _player;
         }
@@ -21,6 +23,8 @@ namespace Assets.Scripts.NEvent
 
         public E_Player_LeaveChunk(Vector2Int _offset)
         {
+            SetPriority(0);
+
             Offset = _offset;
         }
     }

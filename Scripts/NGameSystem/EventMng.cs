@@ -5,19 +5,25 @@ using Assets.Scripts.NEvent;
 
 namespace Assets.Scripts.NGameSystem
 {
-    class EventMng : MonoBehaviour
+    class EventMng : MonoBehaviour, IGameMng
     {
-        private EventCenter m_EventCenter;
+        private IEventCenter m_EventCenter;
+        private IEventHelper m_EventHelper;
+
+        [SerializeField]
+        private byte PriorityLevleCount = 10;
+
+        public void ApplySettings(GameSetting setting)
+        {
+            return;
+        }
 
         public void InitEventService()
         {
-            m_EventCenter = new EventCenter();
-
-            EventPublisher publisher = new EventPublisher(m_EventCenter);
-            EventSubscriber Subscriber = new EventSubscriber(m_EventCenter);
-
-            Locator<IEventPublisher>.ProvideService(publisher);
-            Locator<IEventSubscriber>.ProvideService(Subscriber);
+            m_EventCenter = new EventCenter(PriorityLevleCount);
+            m_EventHelper = new EventHelper(m_EventCenter);
+            
+            Locator<IEventHelper>.ProvideService(m_EventHelper);
         }
 
         private void LateUpdate()

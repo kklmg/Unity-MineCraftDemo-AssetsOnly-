@@ -1,131 +1,204 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using System.Collections;
+
+using UnityEngine;
+
 namespace Assets.Scripts.NEvent
 {
-    public static class SubsribeOption
-    {
-        public const byte NO_OPTION =  0x00;
-        public const byte LOW_PRIORITY =  0x01;
-        public const byte HIGH_PRIORITY = 0x0f;
-        //public const byte DECORATE = 0x10;
-    }
-
-
-    public interface IEveneCenter
-    {
-        void GetEvent(IEvent _event);
-        void SubScribe(Guid id, Del_HandleEvent handler, byte option = SubsribeOption.NO_OPTION);
-        void SubScribe_Decorate(Guid id, Del_DecorateEvent decorator, byte option = SubsribeOption.NO_OPTION);
-        void Handle(IEvent _event);
-        void HandleAll();
-    }
-
-    class EventCenter : IEveneCenter
+    class EventCenter : IEventCenter
     {
         //Field 
         //-----------------------------------------------------------------------------
-        Dictionary<Guid, LinkedList<Del_HandleEvent>> m_EventHandlers; //Event listeners
-        Dictionary<Guid, LinkedList<Del_DecorateEvent>> m_EventDecorators; //Event Decorators
+        Dictionary<Guid/*EventID*/, ListenerStorage> m_EventListeners; //Event listeners
 
-        Queue<IEvent> m_EventQueue; //Event Storage
+        Queue<IEvent>[] m_EventStorage; //Event Storage
 
-        //Cache
-        IEvent m_Cache_Event;
-        LinkedList<Del_HandleEvent> m_Cache_Listeners;
-        LinkedList<Del_DecorateEvent> m_Cache_Decorators;
+        int m_PriorityLevelCount;
 
         //Constructor
         //-----------------------------------------------------------------------------
-        public EventCenter()
+        public EventCenter(int priorityCount)
         {
-            m_EventHandlers = new Dictionary<Guid, LinkedList<Del_HandleEvent>>();
-            m_EventDecorators = new Dictionary<Guid, LinkedList<Del_DecorateEvent>>();
-            m_EventQueue = new Queue<IEvent>();
+            m_PriorityLevelCount = priorityCount;
+
+            m_EventListeners = new Dictionary<Guid, ListenerStorage>();
+            m_EventStorage = new Queue<IEvent>[10];
+            
+            for (int i = 0; i < priorityCount; ++i)
+            {
+                m_EventStorage[i] = new Queue<IEvent>();
+            }
         }
 
         //public Functions
         //-----------------------------------------------------------------------------
-        public void GetEvent(IEvent _event)
+        public void AddEvent(IEvent _event)
         {
-            m_EventQueue.Enqueue(_event);
+            m_EventStorage[_event.Priority].Enqueue(_event);
         }
-        public void SubScribe(Guid EventType, Del_HandleEvent handler, byte option = SubsribeOption.NO_OPTION)
+
+        public void SubScribe(Guid EventID, Del_HandleEvent EventHandler
+            , byte HandlePriority)
         {
-            //Case: Exist listener list
-            if (m_EventHandlers.TryGetValue(EventType, out m_Cache_Listeners))
+            //Case: Exist listenerStorage
+            if (m_EventListeners.TryGetValue(EventID,
+                out ListenerStorage tempListeners))
             {
-                if (option == SubsribeOption.HIGH_PRIORITY)
-                    m_Cache_Listeners.AddFirst(handler);
-
-                else if (option ==SubsribeOption.LOW_PRIORITY)
-                    m_Cache_Listeners.AddLast(handler);
-
-                else
-                    m_Cache_Listeners.AddLast(handler);
+                tempListeners.Add(EventID, EventHandler,HandlePriority);
             }
-            //Case: No listener List
+            //Case: No listenerStorage
             else
             {
-                m_Cache_Listeners = new LinkedList<Del_HandleEvent>();
-                m_Cache_Listeners.AddLast(handler);
-                m_EventHandlers.Add(EventType, m_Cache_Listeners);
+                //Make a new instance of  this event listeneres
+                tempListeners = new ListenerStorage();
+                //add this event Handler
+                tempListeners.Add(EventID, EventHandler, HandlePriority);
+                //save this event listeners
+                m_EventListeners.Add(EventID, tempListeners);
             }
         }
-        public void SubScribe_Decorate(Guid EventType, Del_DecorateEvent decorator, byte option = SubsribeOption.NO_OPTION)
+
+        public void UnSubScribe(Guid ID, Del_HandleEvent EventHandler)
         {
             //Case: Exist listener list
-            if (m_EventDecorators.TryGetValue(EventType, out m_Cache_Decorators))
+            if (m_EventListeners.TryGetValue(ID,
+                out ListenerStorage tempListeners))
             {
-                if (option == SubsribeOption.HIGH_PRIORITY)
-                    m_Cache_Decorators.AddFirst(decorator);
-
-                else if (option == SubsribeOption.LOW_PRIORITY)
-                    m_Cache_Decorators.AddLast(decorator);
-
-                else
-                    m_Cache_Decorators.AddLast(decorator);
-            }
-            //Case: No listener List
-            else
-            {
-                m_Cache_Decorators = new LinkedList<Del_DecorateEvent>();
-                m_Cache_Decorators.AddLast(decorator);
-                m_EventDecorators.Add(EventType, m_Cache_Decorators);
+                tempListeners.Remove(ID,EventHandler);
             }
         }
+
 
         public void Handle(IEvent _event)
         {
-            //find mapped decorators
-            if (m_EventDecorators.TryGetValue(_event.Type, out m_Cache_Decorators))
-            {
-                foreach (var Decorator in m_Cache_Decorators)
-                {
-                    //Decorate event
-                    _event = Decorator(_event);
-                }
-            }
-
             //find mapped listerners 
-            if (m_EventHandlers.TryGetValue(_event.Type, out m_Cache_Listeners))
-            { 
-                foreach (var Handler in m_Cache_Listeners)
-                {
-                    //Handle event
-                    Handler(_event);
-                }
+            if (m_EventListeners.TryGetValue
+                (_event.Type, out ListenerStorage Listeners))
+            {
+                Listeners.Handle(_event);
             }
         }
 
         public void HandleAll()
         {
-            while (m_EventQueue.Count != 0)
+            foreach (var eventqueue in m_EventStorage)
             {
-                //event wiil be handled
-                m_Cache_Event = m_EventQueue.Dequeue();
-                Handle(m_Cache_Event);
+                while (eventqueue.Count != 0)
+                {
+                    Handle(eventqueue.Dequeue());
+                }
             }
         }
     }
 }
+
+
+
+//using System;
+//using System.Collections.Generic;
+
+//using System.Collections;
+
+//using UnityEngine;
+
+//namespace Assets.Scripts.NEvent
+//{
+//    class EventCenter : IEventCenter
+//    {
+//        //Field 
+//        //-----------------------------------------------------------------------------
+//        Dictionary<Guid/*EventID*/, SortedDictionary<byte, Del_HandleEvent>> m_EventListeners; //Event listeners
+
+//        Queue<IEvent>[] m_EventStorage; //Event Storage
+
+//        int m_PriorityLevelCount;
+
+//        //Constructor
+//        //-----------------------------------------------------------------------------
+//        public EventCenter(int priorityCount)
+//        {
+//            m_PriorityLevelCount = priorityCount;
+
+//            m_EventListeners = new Dictionary<Guid, SortedDictionary<byte, Del_HandleEvent>>();
+//            m_EventStorage = new Queue<IEvent>[10];
+
+//            for (int i = 0; i < priorityCount; ++i)
+//            {
+//                m_EventStorage[i] = new Queue<IEvent>();
+//            }
+//        }
+
+//        //public Functions
+//        //-----------------------------------------------------------------------------
+//        public void AddEvent(IEvent _event)
+//        {
+//            m_EventStorage[_event.Priority].Enqueue(_event);
+//        }
+
+//        public void SubScribe(Guid EventID, Del_HandleEvent EventHandler
+//            , byte HandlePriority)
+//        {
+//            //Case: Exist listener list
+//            if (m_EventListeners.TryGetValue(EventID,
+//                out SortedDictionary<byte, Del_HandleEvent> tempListeners))
+//            {
+//                tempListeners.Add(HandlePriority, EventHandler);
+//            }
+//            //Case: No listener List
+//            else
+//            {
+//                //Make a new instance of  this event listeneres
+//                tempListeners = new SortedDictionary<byte, Del_HandleEvent>();
+//                //add this event Handler
+//                tempListeners.Add(HandlePriority, EventHandler);
+//                //save this event listeners
+//                m_EventListeners.Add(EventID, tempListeners);
+//            }
+//        }
+
+//        public void UnSubScribe(Guid ID, Del_HandleEvent EventHandler)
+//        {
+//            //Case: Exist listener list
+//            if (m_EventListeners.TryGetValue(ID,
+//                out SortedDictionary<byte, Del_HandleEvent> tempListeners))
+//            {
+
+//                foreach (var handler in tempListeners)
+//                {
+//                    if (handler.Value == EventHandler)
+//                    {
+//                        tempListeners.Remove(handler.Key);
+//                    }
+//                }
+//            }
+//        }
+
+
+//        public void Handle(IEvent _event)
+//        {
+//            //find mapped listerners 
+//            if (m_EventListeners.TryGetValue
+//                (_event.Type, out SortedDictionary<byte, Del_HandleEvent> Listeners))
+//            {
+//                foreach (var Handler in Listeners)
+//                {
+//                    //Handle event
+//                    Handler.Value(_event);
+//                }
+//            }
+//        }
+
+//        public void HandleAll()
+//        {
+//            foreach (var eventqueue in m_EventStorage)
+//            {
+//                while (eventqueue.Count != 0)
+//                {
+//                    Handle(eventqueue.Dequeue());
+//                }
+//            }
+//        }
+//    }
+//}

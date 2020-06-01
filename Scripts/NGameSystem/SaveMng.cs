@@ -1,53 +1,106 @@
 ﻿using System.IO;
 
 using UnityEngine;
-using UnityEditor;
 
 using Assets.Scripts.NWorld;
 using Assets.Scripts.NData;
 
 namespace Assets.Scripts.NGameSystem
 {
+    [System.Serializable]
     [RequireComponent(typeof(WorldMng))]
-    class SaveMng : MonoBehaviour
+    class SaveMng : MonoBehaviour, IGameMng
     {
-        public GameSave FileTest;
-        public string FileTest_Path;
+        public string Test_Name = "TestWorld";
+        public string Test_Seed = "HelloWorld";
 
         [SerializeField]
-        private string m_SavePath;
+        private string m_SaveDirectory = "/save";
+        [SerializeField]
+        private string m_FilePostfix = ".txt";
+
+        [SerializeField]
+        private GameSave m_LoadedSave;
+        private string m_LoadedFilePath;
 
         private SaveHelper_World m_SaveHelper;
 
-
-        public string SavePath { get { return Application.dataPath + m_SavePath; } }
-        //Save File
-        public GameSave LoadedFile { private set; get; }
-        public string LoadedFilePath { private set; get; }
-
-        public void Update()
+        public string SaveDirectory
         {
-            //if (LoadedFile != null)
-            //{
-            //    LoadedFile.LastPlayed.Assign(System.DateTime.Now);
-            //}
+            get { return Application.dataPath + m_SaveDirectory; }
+        }
+        public Vector3 PlayerPos
+        {
+            get { return m_LoadedSave.PlayerPos; }
+            set { m_LoadedSave.PlayerPos = value; }
+        }
+        public float PlayerAltitude
+        {
+            get { return m_LoadedSave.PlayerPos.y; }
+            set { m_LoadedSave.PlayerPos.y = value; }
+        }
+        public Quaternion PlayerRot
+        {
+            get { return m_LoadedSave.playerRot; }
+            set { m_LoadedSave.playerRot = value; }
+        }
+        public bool IsFirstCreated
+        {
+            get { return m_LoadedSave.HasPlayerSpawned; }
+            set { m_LoadedSave.HasPlayerSpawned = value; }
+        }
+        public string WorldSeed
+        {
+            get { return m_LoadedSave.WorldSeed; }
+        }
+        public bool IsSaveFileLoaded { get; private set; }
+
+        public void Awake()
+        {
+            //Create Directory
+            if (!Directory.Exists(SaveDirectory))
+            {
+                Directory.CreateDirectory(SaveDirectory);
+            }
+        }
+
+        public void OnApplicationQuit()
+        {
+            SaveCurProgress();
+            IsSaveFileLoaded = false;
+        }
+        public void OnDisable()
+        {
+            SaveCurProgress();
+            IsSaveFileLoaded = false;
         }
 
         public void InitSaveSystem()
         {
-            if (LoadedFile == null)
+#if UNITY_EDITOR
+            if (IsSaveFileLoaded == false)
             {
-                CreateSaveFile("TempFile", "TempWorld");
+                if (File.Exists(SaveDirectory + '/' + Test_Name + m_FilePostfix))
+                {
+                    LoadSaveFile(SaveDirectory + '/' + Test_Name + m_FilePostfix);
+                }
+                else
+                {
+                    Debug.Log(Test_Name);
+                    Debug.Log(Test_Seed);
+                    Debug.Log(SaveDirectory + '/' + Test_Name + m_FilePostfix);
+                    CreateSaveFile(Test_Name, Test_Seed);
+                }
             }
-
-            m_SaveHelper = new SaveHelper_World(LoadedFile.WorldModfication);
+#endif
+            m_SaveHelper = new SaveHelper_World(m_LoadedSave.WorldModfication);
         }
 
         public string[] GetAllSavePaths()
         {
-            if (!Directory.Exists(SavePath)) return null;
+            if (!Directory.Exists(SaveDirectory)) return null;
 
-            DirectoryInfo directoryInfo  = new DirectoryInfo(SavePath);
+            DirectoryInfo directoryInfo  = new DirectoryInfo(SaveDirectory);
 
             FileInfo[] files = directoryInfo.GetFiles("*.txt");
 
@@ -65,37 +118,49 @@ namespace Assets.Scripts.NGameSystem
 
         public void CreateSaveFile(string WorldName, string WorldSeed)
         {
-            //Create Directory
-            if (!Directory.Exists(SavePath))
-            {
-                Directory.CreateDirectory(SavePath);
-            }
-
-
             //Create instance of Save Data
-            LoadedFile = new GameSave();
-            LoadedFile.Init(WorldName, WorldSeed);
+            m_LoadedSave = new GameSave();
+            m_LoadedSave.Init(WorldName, WorldSeed);
 
-            string tempPath = SavePath +"/"+ WorldName + ".txt";
+            string tempPath = SaveDirectory +"/"+ WorldName + m_FilePostfix;
+
+            Debug.Log(SaveDirectory + "/" + WorldName + m_FilePostfix);
+            Debug.Log(WorldName);
+            Debug.Log(m_FilePostfix);
+
 
             //Avoid Duplicate file
             int i = 1;
             while (File.Exists(tempPath))
             {
-                tempPath = SavePath + "/" + WorldName + '(' + i + ')' + ".txt";
+                tempPath = SaveDirectory + "/" + WorldName + '(' + i + ')' + m_FilePostfix;
                 ++i;
             }
 
-            LoadedFilePath = tempPath;
+            m_LoadedFilePath = tempPath;
 
-            string strJson = JsonUtility.ToJson(LoadedFile);
+            Debug.Log(tempPath);
+            string strJson = JsonUtility.ToJson(m_LoadedSave);
             File.WriteAllText(tempPath, strJson);
+
+            IsSaveFileLoaded = true;
         }
 
-        public void LoadSaveFile(GameSave save, string path)
+        public void LoadSaveFile(string path)
         {
-            LoadedFile = save;
-            LoadedFilePath = path;
+            string StrJson = File.ReadAllText(path);
+            m_LoadedSave= JsonUtility.FromJson<GameSave>(StrJson);
+            m_LoadedFilePath = path;
+
+            IsSaveFileLoaded = true;
+        }
+
+        public void LoadSaveIns(GameSave save, string path)
+        {
+            m_LoadedSave = save;
+            m_LoadedFilePath = path;
+
+            IsSaveFileLoaded = true;
         }
 
         public void SaveBlock(BlockLocation Location, byte blockId)
@@ -109,24 +174,24 @@ namespace Assets.Scripts.NGameSystem
 
         public void SavePlayerLocation(Transform PlayerTransform)
         {
-            LoadedFile.PlayerPos = PlayerTransform.localPosition;
-            LoadedFile.playerRot = PlayerTransform.localRotation;
+            m_LoadedSave.PlayerPos = PlayerTransform.localPosition;
+            m_LoadedSave.playerRot = PlayerTransform.localRotation;
         }
 
         public void SaveCurProgress()
         {
-            if (LoadedFile != null)
+            if (IsSaveFileLoaded)
             {
-                Debug.Log(LoadedFilePath);
-                LoadedFile.LastPlayed.Assign(System.DateTime.Now);
-                File.WriteAllText(LoadedFilePath,JsonUtility.ToJson(LoadedFile));
+                //Debug.Log(m_LoadedFilePath);
+                m_LoadedSave.LastPlayed.Assign(System.DateTime.Now);
+                File.WriteAllText(m_LoadedFilePath,JsonUtility.ToJson(m_LoadedSave));
             }
         }
 
-        public void OnApplicationQuit()
+        public void ApplySettings(GameSetting setting)
         {
-            SaveCurProgress();
-            Debug.Log("quited");
+
+            return;
         }
     }
 }

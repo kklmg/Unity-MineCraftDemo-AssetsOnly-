@@ -1,1 +1,0 @@
-{"WorldSeed":"TempWorld","WorldName":"TempFile","LastPlayed":{"Year":2020,"Month":5,"Day":12,"Hour":19,"Minute":1,"Second":39},"PlayerPos":{"x":-0.6000000238418579,"y":50.900001525878909,"z":-1.32716965675354},"playerRot":{"x":0.0,"y":0.17106957733631135,"z":0.0,"w":0.985258936882019},"HasPlayerSpawned":true,"WorldModfication":{"m_Data":[]}}

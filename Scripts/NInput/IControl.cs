@@ -13,9 +13,9 @@ namespace Assets.Scripts.NInput
         bool Sprint();
         bool Back();
 
-        float Rotate_X();
-        float Rotate_Y();
-        float Rotate_Z();
+        float Rotate_Yaw();
+        float Rotate_Pitch();
+        float Rotate_Roll();
 
         bool CursorDown();
         bool CursorUp();

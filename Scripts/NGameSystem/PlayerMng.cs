@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
 using Assets.Scripts.NData;
+using Assets.Scripts.NCharacter;
+using Assets.Scripts.NBehaviorTree;
 using Assets.Scripts.NGlobal.Singleton;
 using Assets.Scripts.NGlobal.ServiceLocator;
 using Assets.Scripts.NGlobal.WorldSearcher;
@@ -9,40 +11,82 @@ using Assets.Scripts.NEvent;
 
 namespace Assets.Scripts.NGameSystem
 {
-    class PlayerMng : MonoBehaviour
+    class PlayerMng : MonoBehaviour,IGameMng
     {
         public GameObject m_PrefabPlayer;
 
         [SerializeField]
-        [Range(0, 5)]
-        private uint m_PlayerView = 2;
+        [Range(1, 5)]
+        private int m_ViewDistance = 2;
+
+        [SerializeField]
+        private int m_Speed = 10;
+
+        [SerializeField]
+        private float m_JumpForce = 0.5f;
+
 
         private GameObject m_playerIns; //player instance
-        public uint PlayerView { get { return m_PlayerView; } }
+
+        //------------------------------------------------------------
+
+        public GameObject PlayerIns { get { return m_playerIns; } }
+        public int PlayerView { get { return m_ViewDistance; } }   
+        public int Speed { get { return m_Speed; }set { m_Speed = value; } }
+        public float JumpForce { get { return m_JumpForce; } set { m_JumpForce = value; } }
+
+        public ChaBevData BevData
+        {
+            get
+            {
+                return m_playerIns.GetComponent<ChaBevExecuter>().BevData;
+            }
+        }
+        public ChaPlayer PlayerScript
+        {
+            get
+            {
+                return m_playerIns.GetComponent<ChaPlayer>();
+            }
+        }
+
+        public void ApplySettings(GameSetting setting)
+        {
+            m_ViewDistance = setting.PlayerView.Get();
+            m_Speed = setting.PlayerSpeed.Get();
+            m_JumpForce = setting.JumpForce.Get();
+        }
+
+        //------------------------------------------------------------
 
         public void SpawnPlayer()
         {
-            GameSave SaveFile = MonoSingleton<GameSystem>.Instance.SaveMngIns.LoadedFile;
+            SaveMng Mng = MonoSingleton<GameSystem>.Instance.SaveMngIns;
             IWorld world = Locator<IWorld>.GetService();
 
-            if (SaveFile.HasPlayerSpawned == false)
+            if (!Mng.IsFirstCreated)
             {
-                SaveFile.PlayerPos.y =
-                GWorldSearcher.GetGroundHeight(SaveFile.PlayerPos, world) + 3;
-                SaveFile.HasPlayerSpawned = true;
+                Mng.PlayerAltitude = GWorldSearcher.GetGroundHeight(Mng.PlayerPos, world) + 3;
+                Mng.IsFirstCreated = true;
             }
 
             //make a player Instance
             m_playerIns = Instantiate(m_PrefabPlayer,
                 MonoSingleton<WorldMng>.Instance.WorldIns.transform);
 
+            //set character attribute
+            Character character = m_playerIns.GetComponent<Character>();
+            character.WalkSpeed = m_Speed;
+            character.RunSpeed = m_Speed * 2;
+            character.JumpForce = m_JumpForce;
+
             //set player's postion
-            m_playerIns.transform.localPosition = SaveFile.PlayerPos;
-            m_playerIns.transform.localRotation = SaveFile.playerRot;
+            m_playerIns.transform.localPosition = Mng.PlayerPos;
+            m_playerIns.transform.localRotation = Mng.PlayerRot;
 
             //publish event
-            Locator<IEventPublisher>.GetService().
-               Publish(new E_Player_Spawned(SaveFile.PlayerPos, m_playerIns.GetComponent<Character>()));
+            Locator<IEventHelper>.GetService().
+               Publish(new E_Player_Spawned(Mng.PlayerPos, m_playerIns.GetComponent<Character>()));
         }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Assets.Scripts.NWorld;
 
+#if UNITY_EDITOR
 namespace Assets.Scripts.NEditor
 {
     [CustomEditor(typeof(TextureSheet))]
@@ -46,3 +47,4 @@ namespace Assets.Scripts.NEditor
 
     }
 }
+#endif

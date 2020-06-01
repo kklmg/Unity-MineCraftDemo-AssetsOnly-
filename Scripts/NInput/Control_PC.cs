@@ -26,21 +26,19 @@ namespace Assets.Scripts.NInput
             return Input.GetButtonDown(KEY_INPUT.RUN);
         }
 
-        public float Rotate_X()
-        {
-            return Input.GetAxis(KEY_INPUT.MOUSE_VERTICAL);
-        }
-        public float Rotate_Y()
+        public float Rotate_Yaw()
         {
             return Input.GetAxis(KEY_INPUT.MOUSE_HORIZONTAL);
         }
-
-        //xxxxx
-        //xxxxx
-        public float Rotate_Z()
+        public float Rotate_Pitch()
         {
+            return Input.GetAxis(KEY_INPUT.MOUSE_VERTICAL);
+        }
+
+        public float Rotate_Roll()
+        {
+            new System.NotImplementedException("Roll");
             return 0;
-            //return Input.GetAxis(KEY_INPUT.ROTATION_Z);
         }
         //xxxxxx
 

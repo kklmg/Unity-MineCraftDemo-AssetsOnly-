@@ -3,6 +3,7 @@ using UnityEditor;
 
 using Assets.Scripts.NMesh;
 
+#if UNITY_EDITOR
 namespace Assets.Scripts.NEditor
 {
     [CustomEditor(typeof(DynamicMeshScObj))]
@@ -53,15 +54,17 @@ namespace Assets.Scripts.NEditor
                 EditingMesh.Clear();
                 EditingMesh.AddQuad(new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 0, 1));
             }
-            if (GUILayout.Button("Make Cross Mesh", GUILayout.Width(200)))
+            if (GUILayout.Button("Make Left-Right Slice Mesh", GUILayout.Width(200)))
             {
                 EditingMesh.Clear();
-                //EditingMesh.AddQuad(new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 0, 1));
+                EditingMesh.AddQuad(new Vector3(1, 0, 0.5f), new Vector3(1, 1, 0.5f), new Vector3(0, 1, 0.5f), new Vector3(0, 0, 0.5f));
+                EditingMesh.AddQuad(new Vector3(0, 0, 0.5f), new Vector3(0, 1, 0.5f), new Vector3(1, 1, 0.5f), new Vector3(1, 0, 0.5f));
             }
-            if (GUILayout.Button("Make Double Slice Mesh", GUILayout.Width(200)))
+            if (GUILayout.Button("Make Front-Back Slice Mesh", GUILayout.Width(200)))
             {
-               EditingMesh.Clear();
-               //EditingMesh.AddQuad(new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 0, 1));
+                EditingMesh.Clear();
+                EditingMesh.AddQuad(new Vector3(0.5f, 0, 1), new Vector3(0.5f, 1, 1), new Vector3(0.5f, 1, 0), new Vector3(0.5f, 0, 0));
+                EditingMesh.AddQuad(new Vector3(0.5f, 0, 0), new Vector3(0.5f, 1, 0), new Vector3(0.5f, 1, 1), new Vector3(0.5f, 0, 1));
             }
 
             GUILayout.Space(20);
@@ -76,3 +79,4 @@ namespace Assets.Scripts.NEditor
         }
     }
 }
+#endif

@@ -14,3 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BaseBlocks:
   - {fileID: 11400000, guid: 6abe9cd660b50074d912f1170e4d88ec, type: 2}
+  - {fileID: 11400000, guid: c8103f1fb2358bc4386ef28271c3b446, type: 2}
+  - {fileID: 11400000, guid: 335f0f1c14e235d4c813ad2f20ea3a21, type: 2}
+  - {fileID: 11400000, guid: 22377c9e0f528b24c91c472a754f7ae0, type: 2}
+  - {fileID: 11400000, guid: 99f1cbf242c3be74b8d713e11398ad25, type: 2}
+  - {fileID: 11400000, guid: 547bb785ecd88d445a6c940b26feb483, type: 2}
+  - {fileID: 11400000, guid: a530cadfd30f18e45aa2008d915bbaeb, type: 2}
+  - {fileID: 11400000, guid: 1c977d8895f28244bb56af34a0fe78ef, type: 2}
+  - {fileID: 11400000, guid: 4cdc68ec50816fc4c9bccdb803852808, type: 2}
+  m_CrossBlocks:
+  - {fileID: 11400000, guid: 81f27f3361161024588edda5d655875f, type: 2}
+  - {fileID: 11400000, guid: 53a65e3de17c5744088c1425b3537ffc, type: 2}
+  m_SliceBlocks:
+  - {fileID: 11400000, guid: b1eee89171921544984195e1d6cae5d3, type: 2}
+  m_TexSheet: {fileID: 11400000, guid: eeb3dd502a7c11a4789db0872810ce75, type: 2}

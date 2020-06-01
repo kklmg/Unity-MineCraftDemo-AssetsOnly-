@@ -1,0 +1,1 @@
+{"WorldSeed":"","WorldName":"","LastPlayed":{"Year":2020,"Month":5,"Day":21,"Hour":16,"Minute":0,"Second":48},"PlayerPos":{"x":28.250865936279298,"y":46.900001525878909,"z":76.98479461669922},"playerRot":{"x":0.0,"y":0.2861066162586212,"z":0.0,"w":0.958197832107544},"HasPlayerSpawned":true,"WorldModfication":{"m_Data":[]}}

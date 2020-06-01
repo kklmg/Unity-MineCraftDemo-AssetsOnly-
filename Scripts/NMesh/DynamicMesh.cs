@@ -63,6 +63,7 @@ namespace Assets.Scripts.NMesh
 
             UnityMesh.vertices = _Vertices.ToArray();
             UnityMesh.triangles = _Indicies.ToArray();
+
             UnityMesh.uv = _Texture.ToArray();
             UnityMesh.RecalculateNormals();
 

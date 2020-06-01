@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 756b0482abbc5964eb9bdc466e1595ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PriorityLevleCount: 10
 --- !u!114 &4368885106257415194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,10 +61,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ca027964e198d5469144a3edbc408db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab_Canvas: {fileID: 400320352053730754, guid: 7f71ba1b55d34f54d89593f69b8fa37c,
+  prefab_Canvas: {fileID: 8658693380757329858, guid: b875579747388284cbbd8f98ac804f7c,
     type: 3}
-  Prefab_Controller: {fileID: 8474156636983563399, guid: d2dfe401fcff9d642aa2c4df02581464,
+  Prefab_Picker: {fileID: 8474156636983563399, guid: d2dfe401fcff9d642aa2c4df02581464,
     type: 3}
+  Prefab_CamCtrl: {fileID: 4994253796413208265, guid: 342f8bb18530cb34abb350fea74333fc,
+    type: 3}
+  Prefab_PlayerCtrl: {fileID: 1435687862641969544, guid: 934dbd545d0733b40ad34d2e2b203e2a,
+    type: 3}
+  m_RotateSens: 0
+  m_PickDistance: 0
 --- !u!114 &4368885106257415195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,7 +99,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PrefabPlayer: {fileID: 3703686659888065569, guid: 6f2725880d6acb645b679c18b604ba87,
     type: 3}
-  m_PlayerView: 2
+  m_ViewDistance: 2
+  m_Speed: 10
+  m_JumpForce: 0.5
 --- !u!114 &7530696831107076657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,7 +114,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5190e9c6931cc7a4fbc5d3dbe067affb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FileTest:
+  Test_Name: TestWorld
+  Test_Seed: HelloWorld
+  m_SaveDirectory: /Save
+  m_FilePostfix: .txt
+  m_LoadedSave:
     WorldSeed: 
     WorldName: 
     LastPlayed:
@@ -120,8 +133,6 @@ MonoBehaviour:
     HasPlayerSpawned: 0
     WorldModfication:
       m_Data: []
-  FileTest_Path: 
-  m_SavePath: /Save
 --- !u!114 &4368885106257415190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,5 +145,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 062c96087bf494d489db2a9d47f85836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IndexMenuScene: 0
-  IndexPlayScene: 1
+  m_strMenuScene: GameMenu
+  m_strPlayScene: GamePlay
+  m_strSettingFile: /Setting.txt
+  m_GameSetting:
+    PlayerView:
+      m_Value: 2
+    PlayerSpeed:
+      m_Value: 2
+    JumpForce:
+      m_Value: 1
+    RotateSensitivity:
+      m_Value: 1
+    PickingDistance:
+      m_Value: 16

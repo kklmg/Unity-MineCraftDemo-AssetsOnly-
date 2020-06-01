@@ -7,6 +7,9 @@ namespace Assets.Scripts.NWorld
 {
     public interface IBlock
     {
+        byte ID { get; }
+        string Name { get; }
+
         Sprite Icon { get; }
 
         bool IsSpecial { get; }
@@ -20,12 +23,14 @@ namespace Assets.Scripts.NWorld
         bool IsFrontMeshExist { get; }
         bool IsBackMeshExist { get; }
 
-        DynamicMesh GetLeftMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0);
-        DynamicMesh GetRightMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0);
-        DynamicMesh GetUpMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0);
-        DynamicMesh GetDownMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0);
-        DynamicMesh GetFrontMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0);
-        DynamicMesh GetBackMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0);
+        void Init(TextureSheet TexSheet);
+
+        DynamicMesh GetLeftMesh(int x = 0, int y = 0, int z = 0);
+        DynamicMesh GetRightMesh(int x = 0, int y = 0, int z = 0);
+        DynamicMesh GetUpMesh(int x = 0, int y = 0, int z = 0);
+        DynamicMesh GetDownMesh(int x = 0, int y = 0, int z = 0);
+        DynamicMesh GetFrontMesh(int x = 0, int y = 0, int z = 0);
+        DynamicMesh GetBackMesh(int x = 0, int y = 0, int z = 0);
 
         //ushort GetLeftTextureID();
         //ushort GetRightTextureID();
@@ -34,6 +39,6 @@ namespace Assets.Scripts.NWorld
         //ushort GetFrontTextureID();
         //ushort GetBackTextureID();
 
-        DynamicMesh GetAllMesh(TextureSheet tex, int x, int y, int z);
+        DynamicMesh GetAllMesh(int x, int y, int z);
     }
 }

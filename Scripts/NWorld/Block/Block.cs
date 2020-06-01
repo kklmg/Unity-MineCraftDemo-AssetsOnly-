@@ -11,6 +11,9 @@ namespace Assets.Scripts.NWorld
     {
         //Field------------------------------------------
         [SerializeField]
+        private byte m_ID;
+
+        [SerializeField]
         private Sprite m_Icon;
 
         [SerializeField]
@@ -32,6 +35,8 @@ namespace Assets.Scripts.NWorld
         [SerializeField]
         private Tile m_BackTile;
 
+        public byte ID { get { return m_ID; } }
+        public string Name { get { return name; } }
         public Sprite Icon { get { return m_Icon; } }
 
         public bool IsSpecial { get { return false; } }
@@ -45,54 +50,71 @@ namespace Assets.Scripts.NWorld
         public bool IsFrontMeshExist { get { return m_FrontTile != null; } }
         public bool IsBackMeshExist { get { return m_BackTile != null; } }
 
-       
+        public Tile UpTile { get { return m_UpTile; } }
+        public Tile DownTile { get { return m_DownTile; } }
+        public Tile LeftTile { get { return m_LeftTile; } }
+        public Tile RightTile { get { return m_RightTile; } }
+        public Tile FrontTile { get { return m_FrontTile; } }
+        public Tile BackTile { get { return m_BackTile; } }
 
-        public DynamicMesh GetLeftMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+
+        public void Init(TextureSheet TexSheet)
         {
-            if (m_LeftTile == null) return null;
-            return m_LeftTile.GetClonedMesh(x, y, z, tex);
+            m_LeftTile.Init(TexSheet);
+            m_RightTile.Init(TexSheet);
+            m_UpTile.Init(TexSheet);
+            m_DownTile.Init(TexSheet);
+            m_FrontTile.Init(TexSheet);
+            m_BackTile.Init(TexSheet);
         }
 
-        public DynamicMesh GetRightMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+
+        public DynamicMesh GetLeftMesh(int x = 0, int y = 0, int z = 0)
         {
-            if (m_RightTile == null) return null;
-            return m_RightTile.GetClonedMesh(x, y, z, tex);
+            //if (m_LeftTile == null) return null;
+            return m_LeftTile.GetTransMesh(x, y, z);
         }
 
-        public DynamicMesh GetUpMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+        public DynamicMesh GetRightMesh(int x = 0, int y = 0, int z = 0)
         {
-            if (m_UpTile == null) return null;
-            return m_UpTile.GetClonedMesh(x, y, z, tex);
+            //if (m_RightTile == null) return null;
+            return m_RightTile.GetTransMesh(x, y, z);
         }
 
-        public DynamicMesh GetDownMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+        public DynamicMesh GetUpMesh(int x = 0, int y = 0, int z = 0)
         {
-            if(m_DownTile == null) return null;
-            return m_DownTile.GetClonedMesh(x, y, z, tex);
+            //if (m_UpTile == null) return null;
+            return m_UpTile.GetTransMesh(x, y, z);
         }
 
-        public DynamicMesh GetFrontMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+        public DynamicMesh GetDownMesh(int x = 0, int y = 0, int z = 0)
         {
-            if (m_FrontTile == null) return null;
-            return m_FrontTile.GetClonedMesh(x, y, z, tex);
+            //if(m_DownTile == null) return null;
+            return m_DownTile.GetTransMesh(x, y, z);
         }
 
-        public DynamicMesh GetBackMesh(TextureSheet tex = null, int x = 0, int y = 0, int z = 0)
+        public DynamicMesh GetFrontMesh(int x = 0, int y = 0, int z = 0)
         {
-            if (m_BackTile == null) return null;
-            return m_BackTile.GetClonedMesh(x, y, z, tex);
+            //if (m_FrontTile == null) return null;
+            return m_FrontTile.GetTransMesh(x, y, z);
         }
 
-        public DynamicMesh GetAllMesh(TextureSheet tex, int x, int y, int z)
+        public DynamicMesh GetBackMesh(int x = 0, int y = 0, int z = 0)
+        {
+            //if (m_BackTile == null) return null;
+            return m_BackTile.GetTransMesh(x, y, z);
+        }
+
+        public DynamicMesh GetAllMesh(int x, int y, int z)
         {
             DynamicMesh TempMesh = new DynamicMesh();
 
-            TempMesh.Add(GetUpMesh(tex, x, y, z));
-            TempMesh.Add(GetDownMesh(tex, x, y, z));
-            TempMesh.Add(GetLeftMesh(tex, x, y, z));
-            TempMesh.Add(GetRightMesh(tex, x, y, z));
-            TempMesh.Add(GetFrontMesh(tex, x, y, z));
-            TempMesh.Add(GetBackMesh(tex, x, y, z));
+            TempMesh.Add(GetUpMesh(x, y, z));
+            TempMesh.Add(GetDownMesh(x, y, z));
+            TempMesh.Add(GetLeftMesh(x, y, z));
+            TempMesh.Add(GetRightMesh(x, y, z));
+            TempMesh.Add(GetFrontMesh(x, y, z));
+            TempMesh.Add(GetBackMesh(x, y, z));
 
             return TempMesh;
         }

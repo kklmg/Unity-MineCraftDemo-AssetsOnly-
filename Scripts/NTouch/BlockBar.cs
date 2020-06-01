@@ -1,52 +1,124 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+using Assets.Scripts.NGameSystem;
 using Assets.Scripts.NWorld;
 using Assets.Scripts.NGlobal.Singleton;
 using Assets.Scripts.NGlobal.ServiceLocator;
 
 namespace Assets.Scripts.NTouch
 {
-  
-    class BlockBar : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
+    class BlockBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        public Color SelectedColor;
-        public Color UnSelectedColor;
+        public BlockSlot_Bar DefaultSlot;
 
-        public BlockButton DefaultButton;
+        [SerializeField]
+        private Color m_SelectedColor;
+        [SerializeField]
+        private Color m_UnSelectedColor;
 
-        public BlockButton CurSelectedButton { set; get; }
+        public Color SelectedColor { get { return m_SelectedColor; } }
+        public Color UnselectedColor { get { return m_UnSelectedColor; } }
 
-        private IWorld m_refWorld;
+        public bool IsMenuOpen { get { return m_BlockMenu.IsOpened; } }
 
+        [SerializeField]
+        private BlockMenu m_BlockMenu;
+
+        private BlockSlot_Bar m_SelectedSlot;
+
+        private IWorld m_World;
+        private Picker m_Picker;
+
+        public void SetSelection(BlockSlot_Bar slot)
+        {
+            if (m_SelectedSlot != null)
+                m_SelectedSlot.DisSelect();
+
+            m_SelectedSlot = slot;
+        }
 
         private void Start()
         {
-            m_refWorld = Locator<IWorld>.GetService();
-            BlockPalette Palette = m_refWorld.BlkPalette;
-            var buttons = GetComponentsInChildren<BlockButton>();
+            m_World = Locator<IWorld>.GetService();
+            m_Picker = MonoSingleton<GameSystem>.Instance.InputMngIns.PickerIns;
+
+            BlockPalette Palette = m_World.BlkPalette;
+
+            var buttons = GetComponentsInChildren<BlockSlot_Bar>();
 
             byte i = 1;
             foreach (var bt in buttons)
             {
                 if (i >= Palette.Count) break;
-                bt.SetBlock(Palette[i],i);
+
+                bt.SetBlock(Palette[i]);
                 ++i;
             }
 
             //set default selected
-            DefaultButton.OnSelect();
+            DefaultSlot.OnSelect();
         }
-        
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            MonoSingleton<Picker>.Instance.gameObject.SetActive(false);
+            if (m_BlockMenu.IsOpened == false)
+                MonoSingleton<GameSystem>.Instance.InputMngIns.StopHandleInput();
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            MonoSingleton<Picker>.Instance.gameObject.SetActive(true);
+            if (m_BlockMenu.IsOpened == false)
+                MonoSingleton<GameSystem>.Instance.InputMngIns.StartHandleInput();
+        }
+
+        public void OnSelectSlot(BlockSlot_Bar Slot)
+        {
+            //Case: Block Menu is Opened
+            if (m_BlockMenu.IsOpened)
+            {
+                Slot.DisSelect();
+                Slot.SetBlock(m_BlockMenu.SelectedBlock);
+            }
+            else
+            {
+                //DisSelect Current Slot
+                if (m_SelectedSlot != null)
+                {
+                    m_SelectedSlot.DisSelect();
+                }
+
+                //Set Selected Slot
+                m_SelectedSlot = Slot;
+
+                //Change Color
+                m_SelectedSlot.GetComponent<Image>().color = m_SelectedColor;
+
+                //Set Picker 
+                m_Picker.SelectedBlock = m_SelectedSlot._Block;
+            }
+        }
+
+        public void DisselectSlot(BlockSlot_Bar Slot)
+        {
+            //Clear Selection
+            m_SelectedSlot = null;
+
+            //Change Color
+            Slot.GetComponent<Image>().color = m_UnSelectedColor;
+
+            //Set Picker 
+            m_Picker.SelectedBlock = null;
+        }
+
+        public void ClearSelection()
+        {
+            //DisSelect Current Slot
+            if (m_SelectedSlot != null)
+            {
+                m_SelectedSlot.DisSelect();
+            }
         }
     }
 }

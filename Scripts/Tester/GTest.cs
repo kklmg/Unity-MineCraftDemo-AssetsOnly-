@@ -2,7 +2,7 @@
 
 public static class GSW
 {
-    static bool IsActive = true;
+    static bool IsActive = false;
 
     static System.Diagnostics.Stopwatch m_Stopwatch;
 

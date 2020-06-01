@@ -39,8 +39,8 @@ namespace Assets.Scripts.NWorld
         {
             m_refWorld = Locator<IWorld>.GetService();
 
-            Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Modify.ID, Handle_BlockModify);
-            Locator<IEventSubscriber>.GetService().Subscribe(E_Block_Recover.ID, Handle_BlockRecover);
+            Locator<IEventHelper>.GetService().Subscribe(E_Block_Modify.ID, Handle_BlockModify, 0);
+            Locator<IEventHelper>.GetService().Subscribe(E_Block_Recover.ID, Handle_BlockRecover, 0);
         }
 
         public bool Handle_BlockModify(IEvent _event)

@@ -29,24 +29,66 @@ namespace Assets.Scripts.Tester
 
     class TestScript : MonoBehaviour
     {
-        //    public DynamicMeshScObj scobj;
+        //public uint count;
+        //private Thread m_thread;
+        //private EventWaitHandle m_WaitHandle;
 
-        //    private void OnGUI()
-        //    {
+        //public bool ActiveThread;
 
-        //        //GUI.Label(new Rect(0 + 20, 0 + 350, 160, 20), "scobj: " + (scobj != null));
-        //        //GUI.Label(new Rect(0 + 20, 0 + 275, 160, 20), "scobj data: " + (scobj.Data!=null));
-        //        //GUI.Label(new Rect(0 + 20, 0 + 300, 160, 20), "vertex: " + scobj.Data._Vertices.Count);
-        //        //GUI.Label(new Rect(0 + 20, 0 + 325, 160, 20), "indicies: " + scobj.Data._Indicies.Count);
-        //        //// GUI.Label(new Rect(0 + 20, 0 + 350, 160, 20), "tex count: " + tile[);
-
-
-
-        //    }
-
-
+        //private void Awake()
+        //{
+        //    m_WaitHandle = new EventWaitHandle(false,EventResetMode.ManualReset);
+        //    m_thread = new Thread(thread00);
+        //    m_thread.Start();
         //}
 
+        //private void Update()
+        //{
+        //    if (ActiveThread)
+        //    {
+        //        if (m_WaitHandle.Set()) Debug.Log("actived");
+        //    }
+
+        //    else
+        //    {
+        //        if (m_WaitHandle.Reset()) Debug.Log("Disactived");
+        //    } 
+        //}
+
+
+        //private void OnEnable()
+        //{
+            
+        //}
+
+
+        //void thread00()
+        //{
+        //    Debug.Log("start thread ");
+        //    while (true)
+        //    {
+        //        m_WaitHandle.WaitOne();
+        //        count++;
+        //        //Debug.Log("thread is Running");               
+        //    }
+        //}
+
+        //private void OnDestroy()
+        //{
+        //    m_thread.Abort();
+        //    Debug.Log("Thread aborted");
+        //}
+        //private void OnDisable()
+        //{
+        //    m_WaitHandle.Reset();
+        //    //m_thread.Abort();
+        //    Debug.Log("Thread aborted");
+        //}
+        //private void OnApplicationQuit()
+        //{
+        //    m_thread.Abort();
+        //    Debug.Log("Thread aborted");
+        //}
 
     }
 }

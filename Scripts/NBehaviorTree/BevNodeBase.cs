@@ -9,25 +9,15 @@ namespace Assets.Scripts.NBehaviorTree
     {
         //Field
         //----------------------------------------------------------------------
-        protected bool m_bVisited;
-        protected eRunningState m_enRunningState;
+        protected bool m_bVisited = false;
+        protected eRunningState m_enRunningState = eRunningState.Ready;
         protected string m_strNodeName;
 
         //Property
         //----------------------------------------------------------------------
         public bool Visited { get { return m_bVisited; } }
         public eRunningState RunningState{ get { return m_enRunningState; }  }
-        public void LogTree()
-        {
-            //Debug.Log(m_strNodeName);
-           // Debug.Log(m_enRunningState);
-        }
-        //Constructor
-        //----------------------------------------------------------------------
-        public BevNodeBase()
-        {
-            Reset();
-        }
+
 
         //Public Function
         //----------------------------------------------------------------------

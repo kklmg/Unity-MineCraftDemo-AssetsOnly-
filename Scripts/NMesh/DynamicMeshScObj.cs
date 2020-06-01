@@ -10,16 +10,11 @@ namespace Assets.Scripts.NMesh
         [SerializeField]
         private DynamicMesh m_Mesh;
 
-        public DynamicMesh Mesh { get { return m_Mesh; } }
+        public DynamicMesh Mesh{ get { return m_Mesh; } }
 
-        public DynamicMesh GetClonedMesh(int x, int y, int z)
-        {  
-            DynamicMesh TempMesh = m_Mesh.Clone();
-
-            //Compute translated postion
-            TempMesh.Translate(new Vector3(x, y, z));
-
-            return TempMesh;
+        public DynamicMesh GetClonedMesh()
+        {
+            return m_Mesh.Clone();
         }
     }
 }

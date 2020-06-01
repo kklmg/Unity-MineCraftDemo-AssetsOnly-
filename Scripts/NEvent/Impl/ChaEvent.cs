@@ -3,28 +3,37 @@ using UnityEngine;
 
 namespace Assets.Scripts.NEvent
 {
-    //The Character want to move
-    public class E_Cha_MoveRequest : EventBase<E_Cha_MoveRequest>
+    //Event Character Movement
+    public class E_Cha_MoveRequest_XZ : EventBase<E_Cha_MoveRequest_XZ>
     {
         public Vector3 Translation { get; set; }
-        public E_Cha_MoveRequest(Vector3 value)
+
+        public E_Cha_MoveRequest_XZ(Vector3 value)
         {
             Translation = value;
         }
     }
 
-    public class E_Cha_Drop : EventBase<E_Cha_Drop>
+    public class E_Cha_MoveRequest_Y : EventBase<E_Cha_MoveRequest_Y>
     {
-        public float DropSpeed { get; private set; }
+        public float Speed { get; set; }
 
-        public E_Cha_Drop(float value)
+        public E_Cha_MoveRequest_Y(float _Speed)
         {
-            DropSpeed = value;
+            SetPriority(5);
+            Speed = _Speed;
         }
     }
 
+    public class E_Cha_YawRequest : EventBase<E_Cha_YawRequest>
+    {
+        public float Value {set; get; }
+        public E_Cha_YawRequest(float _value)
+        {
+            Value = _value;
+        }
+    }
 
-    //The Character want to rotate
     public class E_Cha_RotateRequest : EventBase<E_Cha_RotateRequest>
     {
         public Vector3 Rotation { get; }
@@ -38,28 +47,28 @@ namespace Assets.Scripts.NEvent
     public class E_Cha_Spawned : EventBase<E_Cha_Spawned>
     {
     }
+    public class E_Cha_TouchGround : EventBase<E_Cha_TouchGround>
+    {
+    }
+    public class E_Cha_TouchUpsideBlock : EventBase<E_Cha_TouchUpsideBlock>
+    {
+    }
 
-    public class E_Cha_Jump : EventBase<E_Cha_Jump>
+
+
+    public class E_Cha_StartJump : EventBase<E_Cha_StartJump>
     {
         private float m_Force;
         public float Force { get { return m_Force; } }
 
-        public E_Cha_Jump(float force)
+        public E_Cha_StartJump(float force)
         {
             m_Force = force;
         }
     }
 
-    public class E_Cha_Moved : EventBase<E_Cha_Moved>
-    {
-        //character reference
-        public Character Cha { get; set; }
 
-        //Contructor;
-        public E_Cha_Moved() { }
-        public E_Cha_Moved(Character cha)
-        {
-            Cha = cha;
-        }
+    public class E_Cha_Moved_XZ : EventBase<E_Cha_Moved_XZ>
+    {
     }
 }

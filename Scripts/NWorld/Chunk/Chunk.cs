@@ -230,12 +230,12 @@ namespace Assets.Scripts.NWorld
             }
         }
 
-        public void ClearMesh()
+        public void ClearUnityMesh()
         {
             for (int i = 0; i < m_refWorld.Chunk_Height; ++i)
             {
                 if (m_arrSections[i] != null)
-                    m_arrSections[i].ClearMesh();
+                    m_arrSections[i].ClearUnityMesh();
             }
         }
     }
