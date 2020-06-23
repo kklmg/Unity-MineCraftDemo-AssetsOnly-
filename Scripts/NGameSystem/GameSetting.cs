@@ -21,9 +21,9 @@ namespace Assets.Scripts.NGameSystem
 
         public GameSetting()
         {
-            PlayerView = new RangedInt(1, 5, 2);
-            PlayerSpeed = new RangedInt(1, 9, 2);
-            JumpForce = new RangedFloat(0.5f, 5.0f, 1.0f);
+            PlayerView = new RangedInt(1, 5, 3);
+            PlayerSpeed = new RangedInt(1, 9, 4);
+            JumpForce = new RangedFloat(0.5f, 5.0f, 0.5f);
             RotateSensitivity = new RangedFloat(0.2f, 5.0f, 1.0f);
             PickingDistance = new RangedInt(12, 32, 16);
         }

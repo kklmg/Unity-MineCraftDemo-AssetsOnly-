@@ -5,67 +5,71 @@ using Assets.Scripts.NWorld;
 using Assets.Scripts.NEvent;
 using Assets.Scripts.NData;
 
-namespace Assets.Scripts.NCharacter.Component
+namespace Assets.Scripts.NCharacter
 {
     [RequireComponent(typeof(Character))]
     [RequireComponent(typeof(Communicator))]
     class ChaGravity : MonoBehaviour
     {
         public float m_Gravity = 9.8f;
-        public bool m_IsGround = false;
+        public bool m_IsOnGround = false;
 
-        public float m_YAxisSpeed = 0.0f;
-
+        [SerializeField]
+        public float m_VDrop = 0.0f;
+        
         private float m_BodyHeight_Half;
 
         private Communicator m_Communicator;
+        private Character m_Character;
 
         public IWorld m_World;
 
         private void Awake()
         {
-            m_BodyHeight_Half = GetComponent<Character>().BodyHeight / 2;
+            m_Character = GetComponent<Character>();
             m_Communicator = GetComponent<Communicator>();
+            m_BodyHeight_Half = m_Character.BodyHeight / 2;
         }
 
         private void OnEnable()
         {
-            //Handle jump start
-            m_Communicator.SubsribeEvent(E_Cha_StartJump.ID, HandleJump, 2);
+            //Handle Leave Ground
+            m_Communicator.SubsribeEvent(E_Cha_LeaveGround.ID, HandleleaveGround, enPriority.level_2);
 
             //Handle Touch Ground
-            m_Communicator.SubsribeEvent(E_Cha_TouchGround.ID, HandleTouchGround, 2);
+            m_Communicator.SubsribeEvent(E_Cha_TouchGround.ID, HandleTouchGround, enPriority.level_2);
 
-            //Handle Touch Upside
-            m_Communicator.SubsribeEvent(E_Cha_TouchUpsideBlock.ID, HandleTouchUpside, 2);
+            //Handle character moving
+            m_Communicator.SubsribeEvent(E_Cha_HasMoved.ID, Handle_CheckGround, enPriority.Highest);
 
-            //Check Ground
-            m_Communicator.SubsribeEvent(E_Cha_Moved_XZ.ID, CheckGround, 0);
+            //Handle character moving
+            m_Communicator.SubsribeEvent(E_Cha_Fly.ID, Handle_Fly, enPriority.Highest);
+
 
             //Global Event
-            Locator<IEventHelper>.GetService().Subscribe(E_Block_Recover.ID, CheckGround, 0);
-            Locator<IEventHelper>.GetService().Subscribe(E_Block_Modify.ID, CheckGround, 0);
+            Locator<IEventHelper>.GetService().Subscribe(E_Block_Recover.ID, Handle_CheckGround, enPriority.level_5);
+            Locator<IEventHelper>.GetService().Subscribe(E_Block_Modify.ID, Handle_CheckGround, enPriority.level_5);
         }
 
         private void OnDisable()
         {
-            //Handle jump start
-            m_Communicator.UnSubscribe(E_Cha_StartJump.ID, HandleJump);
-
+            //Handle leave ground
+            m_Communicator.UnSubscribe(E_Cha_LeaveGround.ID, HandleleaveGround);
+            
             //Handle Touch Ground
             m_Communicator.UnSubscribe(E_Cha_TouchGround.ID, HandleTouchGround);
 
-            //Handle Touch Upside
-            m_Communicator.UnSubscribe(E_Cha_TouchUpsideBlock.ID, HandleTouchUpside);
+            //Handle Character move
+            m_Communicator.UnSubscribe(E_Cha_HasMoved.ID, Handle_CheckGround);
 
-            //Check Ground
-            m_Communicator.UnSubscribe(E_Cha_Moved_XZ.ID, CheckGround);
+            //Handle character moving
+            m_Communicator.UnSubscribe(E_Cha_Fly.ID, Handle_Fly);
 
             //Global Event
-            Locator<IEventHelper>.GetService().UnSubscribe(E_Block_Recover.ID, CheckGround);
-            Locator<IEventHelper>.GetService().UnSubscribe(E_Block_Modify.ID, CheckGround);
+            Locator<IEventHelper>.GetService().UnSubscribe(E_Block_Recover.ID, Handle_CheckGround);
+            Locator<IEventHelper>.GetService().UnSubscribe(E_Block_Modify.ID, Handle_CheckGround);
 
-            CheckGround(null);
+            CheckIsOnGround();
         }
 
         private void Start()
@@ -75,52 +79,77 @@ namespace Assets.Scripts.NCharacter.Component
 
         private void Update()
         {
-            if (m_IsGround == false)
+            switch (m_Character.MovingType)
             {
-                m_YAxisSpeed -= m_Gravity * Time.deltaTime;
-                if (m_YAxisSpeed > 1.0f) m_YAxisSpeed = 0.9999f;
-                if (m_YAxisSpeed < -1.0f) m_YAxisSpeed = -0.9999f;
-                m_Communicator.PublishEvent(new E_Cha_MoveRequest_Y(m_YAxisSpeed)); 
+                case enMovingType.Walking:
+                    {
+                        if (m_IsOnGround == false)
+                        {
+                            m_VDrop += m_Gravity * Time.deltaTime;
+                            m_Communicator.Publish(new E_Cha_TranslateRequest_Y(-m_VDrop));
+                        }
+                    }
+                    break;
+                case enMovingType.Sliding:
+                    {
+                        if (m_IsOnGround == false)
+                        {
+                            m_VDrop = m_Gravity * Time.deltaTime * 0.5f;
+                            m_Communicator.Publish(new E_Cha_TranslateRequest_Y(-m_VDrop));
+                        }
+                    }
+                    break;
+                case enMovingType.suspending:
+                    {
+                        
+
+
+                    }
+                    break;
+                default:
+                    break;
             }
+
+
         }
 
-        private bool HandleJump(IEvent _event)
+        private void HandleleaveGround(IEvent _event)
         {
-            E_Cha_StartJump EJump = _event as E_Cha_StartJump;
-            m_IsGround = false;
-            m_YAxisSpeed = EJump.Force;
-
-            return false;
+            m_IsOnGround = false;
         }
 
-        private bool HandleTouchGround(IEvent _event)
+        private void HandleTouchGround(IEvent _event)
         {
-            m_IsGround = true;
-            m_YAxisSpeed = 0.0f;
-
-            return true;
+            m_VDrop = 0;
+            m_IsOnGround = true;
         }
 
-        private bool HandleTouchUpside(IEvent _event)
-        {           
-            m_YAxisSpeed = 0.0f;
-            return true;
-        }
-
-        //Check Ground
-        private bool CheckGround(IEvent _event)
+        private void CheckIsOnGround()
         {
             Vector3 intersection = Vector3.zero;
 
             BlockLocation Loc =
-                new BlockLocation(transform.position + new Vector3(0, -0.9999f, 0), m_World);
+                new BlockLocation(m_Character.TF_Bottom.position + new Vector3(0, -1, 0), m_World);
 
             //there is a obstacle block downside
-            if (!Loc.IsBlockExists() || !Loc.CurBlockRef.IsObstacle)
+            if (!Loc.IsBlockExists() || !Loc.CurBlock.IsObstacle)
             {
-                m_IsGround = false;
+                m_IsOnGround = false;
             }
-            return true;
+        }
+
+        //Check Ground
+        private void Handle_CheckGround(IEvent _event)
+        {
+            CheckIsOnGround();
+        }
+
+        //Handle fly
+        private void Handle_Fly(IEvent _event)
+        {
+            var fly = _event.Cast<E_Cha_Fly>();
+
+            if (fly.ForceUp > 0) { m_VDrop = 0.0f; }
         }
     }
 }

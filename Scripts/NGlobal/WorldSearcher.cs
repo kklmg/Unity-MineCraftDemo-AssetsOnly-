@@ -48,19 +48,19 @@ namespace Assets.Scripts.NGlobal.WorldSearcher
             if (section == null) return null;
 
             BlockInSection BlockSlot = new BlockInSection(Coord, _World);
-            return section.GetBlock(BlockSlot);
+            return section.Voxel.GetBlock(BlockSlot);
         }
 
-        static public float GetGroundHeight(Vector3 Coord, IWorld _World)
+        static public int GetGroundHeight(Vector3 Coord, IWorld _World)
         {
-            Chunk chk = GetChunk(new ChunkInWorld(), _World);
-            if (chk == null || Coord.y < 0) return 0;
+            Chunk chk = GetChunk(Coord, _World);
+            if (chk == null) return 0;
 
             BlockInSection BlkInSec = new BlockInSection(Coord, _World);
 
-            var hmap = chk.GetHeightMap();
+            var hmap = chk.HeightMap;
 
-            return hmap[BlkInSec.x, BlkInSec.z];
+            return hmap[BlkInSec.x, BlkInSec.z].Height;
         }
     }
 }

@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 4795399628993257479}
   - component: {fileID: 4795399628993257476}
   - component: {fileID: 4795399628993257477}
-  - component: {fileID: 5963327871673415249}
+  - component: {fileID: 7600741576214381056}
   m_Layer: 5
-  m_Name: Slot (60)
+  m_Name: BlockSlot InMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124,7 +124,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &5963327871673415249
+--- !u!114 &7600741576214381056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4795399628993257475}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 616a3ed89a85e3e4f8f9e807724e9efe, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e3090aac2dcfe04cbed26bd665112be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Icon: {fileID: 4795399629298553492}

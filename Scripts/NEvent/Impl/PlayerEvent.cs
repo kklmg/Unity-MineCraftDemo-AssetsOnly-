@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using Assets.Scripts.NCharacter;
+
 namespace Assets.Scripts.NEvent
 {
     //Event: Player's Chunk Location has Changed
@@ -10,7 +12,7 @@ namespace Assets.Scripts.NEvent
 
         public E_Player_Spawned(Vector3 _SpawnPos,Character _player)
         {
-            SetPriority(0);
+            this.Priority = enPriority.Highest;
 
             SpawnPos = _SpawnPos;
             Player = _player;
@@ -23,7 +25,7 @@ namespace Assets.Scripts.NEvent
 
         public E_Player_LeaveChunk(Vector2Int _offset)
         {
-            SetPriority(0);
+            this.Priority = enPriority.Highest;
 
             Offset = _offset;
         }

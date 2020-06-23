@@ -11,16 +11,25 @@ namespace Assets.Scripts.NEvent
     class ListenerStorage
     {
         Dictionary<Guid/*EventID*/, 
-            SortedDictionary<byte/*HandlePriority*/, 
+            SortedDictionary<enPriority/*HandlePriority*/, 
                 List<Del_HandleEvent>/*Handlers*/>> m_Listeners; //Event listeners
 
+        Dictionary<Del_HandleEvent,enPriority> m_PrioritiesDic;//
 
+        //Dictionary
+        //    <Del_HandleEvent, 
+        //    KeyValuePair<enPriority, int /*IndexInLIst*/>> m_PrioritiesDic;//
+
+       
         public ListenerStorage()
         {
-            m_Listeners = new Dictionary<Guid, SortedDictionary<byte, List<Del_HandleEvent>>>();
+            m_Listeners 
+                = new Dictionary<Guid, SortedDictionary<enPriority, List<Del_HandleEvent>>>();
+            m_PrioritiesDic
+                = new Dictionary<Del_HandleEvent, enPriority>();
         }
 
-        public void Add(Guid EventID, Del_HandleEvent EventHandler, byte HandlePriority)
+        public void Add(Guid EventID, Del_HandleEvent EventHandler, enPriority HandlePriority)
         {
             //Case:Exist eventId matched ListenerGroup
             if (m_Listeners.TryGetValue(EventID, out var ListenerGroup))
@@ -29,6 +38,8 @@ namespace Assets.Scripts.NEvent
                 //Act: Just Add Listener
                 if (ListenerGroup.TryGetValue(HandlePriority, out var ListenerList))
                 {
+                    m_PrioritiesDic.Add(EventHandler,HandlePriority);
+
                     ListenerList.Add(EventHandler);
                 }
                 //Case: no priority matched Listener List 
@@ -36,6 +47,9 @@ namespace Assets.Scripts.NEvent
                 else
                 {
                     ListenerList = new List<Del_HandleEvent>();
+
+                    m_PrioritiesDic.Add(EventHandler,HandlePriority);
+
                     ListenerList.Add(EventHandler);
 
                     ListenerGroup.Add(HandlePriority, ListenerList);
@@ -45,10 +59,13 @@ namespace Assets.Scripts.NEvent
             else
             {
                 //Make an instance of ListenerGroup
-                ListenerGroup = new SortedDictionary<byte, List<Del_HandleEvent>>();
+                ListenerGroup = new SortedDictionary<enPriority, List<Del_HandleEvent>>();
 
                 //Make an instance of ListenerList
                 List<Del_HandleEvent> ListenerList = new List<Del_HandleEvent>();
+
+                //Save to dictionary
+                m_PrioritiesDic.Add(EventHandler,HandlePriority);
 
                 //add Handler
                 ListenerList.Add(EventHandler);
@@ -63,12 +80,11 @@ namespace Assets.Scripts.NEvent
 
         public void Remove(Guid ID, Del_HandleEvent EventHandler)
         {
-            if (m_Listeners.TryGetValue(ID, out var ListernGroup))
+            if (m_PrioritiesDic.TryGetValue(EventHandler, out var Priority))
             {
-                foreach (var Listenerlist in ListernGroup)
-                {
-                    Listenerlist.Value.Remove(EventHandler);
-                }
+                m_Listeners[ID][Priority].Remove(EventHandler);
+
+                m_PrioritiesDic.Remove(EventHandler);
             }
         }
 
@@ -82,10 +98,8 @@ namespace Assets.Scripts.NEvent
                 {
                     foreach (var Handler in ListenerList.Value)
                     {
+                        if (_event.HasHandled) return;
                         //Handle event
-
-                        //
-                        if (Handler(_event) == true) break;
                         Handler(_event);
                     }
                 }

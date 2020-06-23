@@ -13,54 +13,24 @@ MonoBehaviour:
   m_Name: 003_Rock
   m_EditorClassIdentifier: 
   m_ID: 3
-  m_Icon: {fileID: 1809367998069827127, guid: eec24019192c8ee48b5bc86962585e78, type: 3}
+  m_Icon: {fileID: -4147651388707130271, guid: eec24019192c8ee48b5bc86962585e78, type: 3}
   m_IsOpaque: 1
   m_IsObstacle: 1
   m_UpTile:
     OriginMesh: {fileID: 11400000, guid: 5d0ec84fb4b66d24e826034d706dccbe, type: 2}
     m_TexID: 0
-    frame:
-      left: 0
-      right: 0.0625
-      top: 1
-      bottom: 0.9375
   m_DownTile:
     OriginMesh: {fileID: 11400000, guid: 0fd8c6158f8778248b388575a4d4fd8a, type: 2}
     m_TexID: 0
-    frame:
-      left: 0
-      right: 0.0625
-      top: 1
-      bottom: 0.9375
   m_LeftTile:
     OriginMesh: {fileID: 11400000, guid: a147570bad9cc004babe0fead41870f1, type: 2}
     m_TexID: 0
-    frame:
-      left: 0
-      right: 0.0625
-      top: 1
-      bottom: 0.9375
   m_RightTile:
     OriginMesh: {fileID: 11400000, guid: 3183188f2188cac408f7e10902391fd4, type: 2}
     m_TexID: 0
-    frame:
-      left: 0
-      right: 0.0625
-      top: 1
-      bottom: 0.9375
   m_FrontTile:
     OriginMesh: {fileID: 11400000, guid: 21460b6b53e84e74b9fe8329980a0012, type: 2}
     m_TexID: 0
-    frame:
-      left: 0
-      right: 0.0625
-      top: 1
-      bottom: 0.9375
   m_BackTile:
     OriginMesh: {fileID: 11400000, guid: 881e26637b4da2d4fa024bb88c9106ac, type: 2}
     m_TexID: 0
-    frame:
-      left: 0
-      right: 0.0625
-      top: 1
-      bottom: 0.9375

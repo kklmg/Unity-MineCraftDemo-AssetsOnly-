@@ -7,27 +7,47 @@ namespace Assets.Scripts.NEvent
     public interface IEvent
     {
         Guid Type { get; }
-        byte Priority { get; }
+        enPriority Priority{ get; }
+        bool HasHandled { set; get; }
+
+        T Cast<T>() where T : class;
     }
 
-    public abstract class EventBase<T> : IEvent
+    public abstract class EventBase<TEventName> : IEvent
     {
         [SerializeField]
         public static readonly Guid ID = Guid.NewGuid();
 
         [SerializeField]
-        private byte m_Priority = 0;
+        private enPriority m_Priority = enPriority.Highest;
 
         [SerializeField]
-        private bool m_IsHandled = false;
+        private bool m_HasHandled = false;
 
         //property
         public Guid Type { get { return ID; } }
-        public byte Priority { get { return m_Priority; } }
-
-        protected void SetPriority(byte priority)
+        public enPriority Priority
         {
-            m_Priority = priority;
+            get { return m_Priority; }
+            protected set { m_Priority = value; }
         }
+        public bool HasHandled
+        {
+            get { return m_HasHandled; }
+            set { m_HasHandled = value; }
+        }
+
+        public T Cast<T>() where T : class
+        {
+            return this as T;
+        }
+
+        //T IEvent.Cast<T>() 
+        //{
+
+        //    T temp = this as T;
+        //    return temp;
+
+        //}
     }
 }

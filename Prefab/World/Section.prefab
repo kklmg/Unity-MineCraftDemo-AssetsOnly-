@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7476805392514824425}
   - component: {fileID: 2715827777839354689}
   - component: {fileID: 7018092970102652906}
-  - component: {fileID: 1014729058952964532}
+  - component: {fileID: 7528145308450352636}
   m_Layer: 0
   m_Name: Section
   m_TagString: Untagged
@@ -79,7 +79,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1014729058952964532
+--- !u!114 &7528145308450352636
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -88,12 +88,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 4004318891117151507}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf6b84e4c9e1fe242a63bd1d181e7cd7, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f309b74afc74a54daa542cb0c4ee316, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MeshDynamic:
-    _Vertices: []
-    _Indicies: 
-    _Texture: []
   m_SecInWorld:
     m_Value: {x: 0, y: 0, z: 0}

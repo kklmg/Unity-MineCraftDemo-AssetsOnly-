@@ -19,12 +19,16 @@ namespace Assets.Scripts.NEvent
             m_EventCenter.HandleAll();
         }
 
-        public void PublishEvent(IEvent _event)
+        public void Publish(IEvent _event)
         {
-            m_EventHelper.PublishAndHandle(_event);
+            m_EventHelper.Publish(_event);
+        }
+        public void HandleImmediately(IEvent _event)
+        {
+            m_EventHelper.Handle(_event);
         }
 
-        public void SubsribeEvent(Guid EventID, Del_HandleEvent handler,byte priority)
+        public void SubsribeEvent(Guid EventID, Del_HandleEvent handler,enPriority priority=enPriority.Lowest)
         {
             m_EventHelper.Subscribe(EventID, handler,priority);
         }

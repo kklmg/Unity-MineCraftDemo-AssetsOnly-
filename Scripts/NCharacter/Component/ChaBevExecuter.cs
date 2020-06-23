@@ -38,16 +38,14 @@ namespace Assets.Scripts.NCharacter
             m_Root.Evaluate(m_BevData);
         }
 
-        public bool Handle_TouchGround(IEvent _event)
+        public void Handle_TouchGround(IEvent _event)
         {
             m_BevData.isInAir = false;
-
-            return true;
         }
 
-        public bool Handle_TouchUpSide(IEvent _event)
+        public void Handle_TouchUpSide(IEvent _event)
         {
-            return true;
+
         }
 
 

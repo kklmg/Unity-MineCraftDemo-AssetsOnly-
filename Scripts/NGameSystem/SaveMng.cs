@@ -8,7 +8,6 @@ using Assets.Scripts.NData;
 namespace Assets.Scripts.NGameSystem
 {
     [System.Serializable]
-    [RequireComponent(typeof(WorldMng))]
     class SaveMng : MonoBehaviour, IGameMng
     {
         public string Test_Name = "TestWorld";
@@ -22,6 +21,9 @@ namespace Assets.Scripts.NGameSystem
         [SerializeField]
         private GameSave m_LoadedSave;
         private string m_LoadedFilePath;
+
+        [SerializeField]
+        private WorldMng m_WorldMng;
 
         private SaveHelper_World m_SaveHelper;
 
@@ -124,9 +126,9 @@ namespace Assets.Scripts.NGameSystem
 
             string tempPath = SaveDirectory +"/"+ WorldName + m_FilePostfix;
 
-            Debug.Log(SaveDirectory + "/" + WorldName + m_FilePostfix);
-            Debug.Log(WorldName);
-            Debug.Log(m_FilePostfix);
+            //Debug.Log(SaveDirectory + "/" + WorldName + m_FilePostfix);
+            //Debug.Log(WorldName);
+            //Debug.Log(m_FilePostfix);
 
 
             //Avoid Duplicate file
@@ -165,11 +167,11 @@ namespace Assets.Scripts.NGameSystem
 
         public void SaveBlock(BlockLocation Location, byte blockId)
         {
-            m_SaveHelper.Modify(Location, blockId,GetComponent<WorldMng>().WorldService);
+            m_SaveHelper.Modify(Location, blockId,m_WorldMng.WorldServ);
         }
         public void LoadBlock(ChunkInWorld chunkInWorld, Chunk chunk)
         {
-            m_SaveHelper.ApplyModification(chunkInWorld, chunk, GetComponent<WorldMng>().WorldService);
+            m_SaveHelper.ApplyModification(chunkInWorld, chunk, m_WorldMng.WorldServ);
         }
 
         public void SavePlayerLocation(Transform PlayerTransform)

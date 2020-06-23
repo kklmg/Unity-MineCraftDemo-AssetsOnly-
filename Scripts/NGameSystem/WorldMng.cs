@@ -8,41 +8,39 @@ using Assets.Scripts.NGlobal.ServiceLocator;
 namespace Assets.Scripts.NGameSystem
 {
     [System.Serializable]
-    [RequireComponent(typeof(SaveMng))]
-    [RequireComponent(typeof(PlayerMng))]
+    [RequireComponent(typeof(BiomeMng))]
     class WorldMng : MonoBehaviour, IGameMng
     {
         public GameObject m_WorldPrefab;
-        private GameObject m_WorldIns;
 
-        public IWorld WorldService { get; private set; }
+        public IWorld WorldServ { private set; get; }
+        public GameObject WorldIns { private set; get; }
+        public BiomeMng BiomeMng { get { return GetComponent<BiomeMng>(); } }
 
-        public GameObject WorldIns { get { return m_WorldIns; } }
+
+        public void ProvideWorldServ(string seed)
+        {
+            WorldIns = Instantiate(m_WorldPrefab);
+
+            WorldServ = WorldIns.GetComponent<World>();
+            
+            WorldServ.Init(seed);
+
+            Locator<IWorld>.ProvideService(WorldServ);
+        }
+
+        public void SpawnWorld(Vector3 center,int extends)
+        {
+            //Get Spawner
+            ChunkSpawner spawner = WorldServ.Entity.GetComponent<ChunkSpawner>();
+
+            //Spawn
+            spawner.SpawnAtArea(center, extends, WorldServ);
+        }
 
         public void ApplySettings(GameSetting setting)
         {
-            
-
             return;
-        }
-
-        public void InitWorldService()
-        {
-            m_WorldIns = Instantiate(m_WorldPrefab);
-
-            WorldService = m_WorldIns.GetComponent<World>();
-            
-            WorldService.Init(GetComponent<SaveMng>().WorldSeed);
-
-            Locator<IWorld>.ProvideService(WorldService);
-        }
-
-        public void SpawnWorld()
-        {
-            ChunkSpawner spawner = WorldService.Entity.GetComponent<ChunkSpawner>();
-            int ViewDistance = (int)GetComponent<PlayerMng>().PlayerView;
-
-            spawner.SpawnAt(GetComponent<SaveMng>().PlayerPos, ViewDistance, WorldService);
         }
 
     }

@@ -12,20 +12,13 @@ namespace Assets.Scripts.NInput
     class CameraController : MonoBehaviour
     {
         public GameObject Prefab_Camera;
-        
+
         [SerializeField]
-        private ChaPlayer m_FollowedPlayer;
+        private Character m_FollowingCha;
         private IController m_Controller;
 
-        private float m_Sensitivity = 1.0f;
-        public float RotateSensitivity
-        {
-            set
-            {
-                m_Sensitivity = value;
-            }
-        }
-
+        [SerializeField]
+        private float m_Sensitivity = 1.0f;   
         [SerializeField]
         private float m_Yaw;
         [SerializeField]
@@ -33,7 +26,9 @@ namespace Assets.Scripts.NInput
 
         public Camera CameraIns { private set; get; }
 
-        public void FollowObj(Transform trans)
+        public float RotateSensitivity { set { m_Sensitivity = value; }get { return m_Sensitivity; } }
+
+        public void SetCameraAt(Transform trans)
         {
             CameraIns.transform.parent = trans;
             CameraIns.transform.localPosition = Vector3.zero;
@@ -49,24 +44,37 @@ namespace Assets.Scripts.NInput
 
         private void Start()
         {
-            m_FollowedPlayer =
-                MonoSingleton<GameSystem>.Instance.PlayerMngIns.PlayerScript;
+            m_FollowingCha = MonoSingleton<GameSystem>.Instance.
+                PlayerMngIns.PlayerIns.GetComponent<Character>();
+
             m_Controller = Locator<IController>.GetService();
 
-            FollowObj(m_FollowedPlayer.TransformEye);
+            SetCameraAt(m_FollowingCha.TF_Eye);
         }
 
 
 
         private void Update()
         {
-            m_Yaw = m_Controller.Rotate_Yaw();
-            m_Pitch = m_Controller.Rotate_Pitch();
-            
-           // m_FollowedPlayer.TransEye.set
+            m_Pitch = -m_Controller.Rotate_Pitch() * m_Sensitivity;
 
             if (Mathf.Approximately(0.0f, m_Pitch)) return;
-            CameraIns.transform.Rotate(Vector3.right * -m_Pitch * m_Sensitivity);
+
+            float Angle = CameraIns.transform.localRotation.eulerAngles.x;
+
+
+            if (m_Pitch > 0 && Angle <= 90 && Angle + m_Pitch > 90)
+            {
+                CameraIns.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            }
+            else if (m_Pitch < 0 && Angle >= 270 && Angle + m_Pitch < 270)
+            {
+                CameraIns.transform.localRotation = Quaternion.Euler(-90, 0, 0);
+            }
+            else
+            {
+                CameraIns.transform.Rotate(Vector3.right * m_Pitch);
+            }
         }
     }
 }

@@ -10,9 +10,9 @@ using Assets.Scripts.NGlobal.ServiceLocator;
 using Assets.Scripts.NGlobal.Singleton;
 
 
-namespace Assets.Scripts.NTouch
+namespace Assets.Scripts.NUI
 {
-    public enum EnPickerMode {eNormal, eSet, ePut, eDestroy }
+    public enum EnPickerMode {eNone, eSet, ePut, eDestroy }
 
     public class Picker : MonoBehaviour
     {
@@ -78,38 +78,19 @@ namespace Assets.Scripts.NTouch
         {
             m_World = Locator<IWorld>.GetService();
             m_Control = Locator<IController>.GetService();
-            m_Player = MonoSingleton<GameSystem>.Instance.PlayerMngIns.PlayerScript;
+            m_Player = MonoSingleton<GameSystem>.Instance.
+                PlayerMngIns.PlayerIns.GetComponent<ChaPlayer>();
         }
 
         private void Update()
         {
-            if (PickerMode == EnPickerMode.eNormal) return;
+            if (PickerMode == EnPickerMode.eNone) return;
             //if (m_bHasPlayerSpawned == false) return;
 
             //check weather mouse has moved
             if (m_Control.HasCursorMoved())
             {
-                _FigureOutPickPutLocation();
-
-                if (m_bIsPickValid && (PickerMode == EnPickerMode.eSet || PickerMode == EnPickerMode.eDestroy))
-                {
-                    Ins_PickCursor.SetActive(true);
-                    Ins_PickCursor.transform.position = m_PickLoc.Bound.center;
-                }
-                else
-                {
-                    Ins_PickCursor.SetActive(false);
-                }
-
-                if (m_bIsPutValid && PickerMode == EnPickerMode.ePut)
-                {
-                    Ins_PutCursor.SetActive(true);
-                    Ins_PutCursor.transform.position = m_PutLoc.Bound.center;
-                }
-                else
-                {
-                    Ins_PutCursor.SetActive(false);
-                }
+                Check();
             }
 
             if (m_Control.CursorDown())
@@ -144,6 +125,32 @@ namespace Assets.Scripts.NTouch
             Locator<IEventHelper>.GetService().Publish(new E_Block_Recover());
         }
 
+        public void Check()
+        {
+            _FigureOutPickPutLocation();
+
+            if (m_bIsPickValid && (PickerMode == EnPickerMode.eSet || PickerMode == EnPickerMode.eDestroy))
+            {
+                Ins_PickCursor.SetActive(true);
+                Ins_PickCursor.transform.position = m_PickLoc.Bound.center;
+            }
+            else
+            {
+                Ins_PickCursor.SetActive(false);
+            }
+
+            if (m_bIsPutValid && PickerMode == EnPickerMode.ePut)
+            {
+                Ins_PutCursor.SetActive(true);
+                Ins_PutCursor.transform.position = m_PutLoc.Bound.center;
+            }
+            else
+            {
+                Ins_PutCursor.SetActive(false);
+            }
+
+        }
+
         private void _SetBlock(IBlock block)
         {
             if (m_bIsPickValid)
@@ -152,11 +159,15 @@ namespace Assets.Scripts.NTouch
                 {
                     //publish event : set block  request
                     Locator<IEventHelper>.GetService().Publish(new E_Block_Modify(ref m_PickLoc, 0));
+
+                    //Debug.Log("pb des");
                 }
                 else
                 {
                     //publish event : set block  request
                     Locator<IEventHelper>.GetService().Publish(new E_Block_Modify(ref m_PickLoc, block.ID));
+
+                    //Debug.Log("pbs set");
                 }
                 
             }
@@ -168,6 +179,7 @@ namespace Assets.Scripts.NTouch
             {
                 Locator<IEventHelper>.GetService().Publish(new E_Block_Modify(ref m_PutLoc, block.ID));
                 m_bIsPutValid = false;
+                Check();
             }
         }
         private void _DestroyBlock()

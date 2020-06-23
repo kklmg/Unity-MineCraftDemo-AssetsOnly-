@@ -20,8 +20,8 @@ namespace Assets.Scripts.NWorld
         //Chunk Creator
         WorldEntity Entity { get; }
 
-        INoiseMaker NoiseMaker { get; }
-        IHashMaker HashMaker { get; }
+        //INoiseMaker NoiseMaker { get; }
+        //IHashMaker HashMaker { get; }
 
         //array of block type array
         BlockPalette BlkPalette { get; }
@@ -30,7 +30,7 @@ namespace Assets.Scripts.NWorld
         TextureSheet TexSheet { get; }
 
         //Chunk Biome
-        Biome GetBiome(ChunkInWorld chunkInWorld);
+        //Biome GetBiome(ChunkInWorld chunkInWorld);
 
         Bounds GetBound(Vector3 Coord);
     }

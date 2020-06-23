@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 002_Dirt
   m_EditorClassIdentifier: 
   m_ID: 2
-  m_Icon: {fileID: -3510465707995865330, guid: eec24019192c8ee48b5bc86962585e78, type: 3}
+  m_Icon: {fileID: 1835326580675924254, guid: eec24019192c8ee48b5bc86962585e78, type: 3}
   m_IsOpaque: 1
   m_IsObstacle: 1
   m_UpTile:

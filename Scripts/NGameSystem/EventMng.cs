@@ -18,7 +18,7 @@ namespace Assets.Scripts.NGameSystem
             return;
         }
 
-        public void InitEventService()
+        public void ProvideEventServ()
         {
             m_EventCenter = new EventCenter(PriorityLevleCount);
             m_EventHelper = new EventHelper(m_EventCenter);

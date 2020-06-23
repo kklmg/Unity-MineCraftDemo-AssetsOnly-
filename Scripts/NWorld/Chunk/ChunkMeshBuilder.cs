@@ -5,26 +5,49 @@ using System.Threading;
 
 using UnityEngine;
 
+using Assets.Scripts.NData;
+using Assets.Scripts.NMesh;
 using Assets.Scripts.NGameSystem;
 using Assets.Scripts.NGlobal.Singleton;
 
 namespace Assets.Scripts.NWorld
 {
+
+    struct MeshBuildResult
+    {
+        Section m_Section;
+        SectionInWorld m_SecInWorld;
+        DynamicMesh m_Mesh;
+    }
+
+
     class ChunkMeshBuilder : MonoBehaviour
     {
+        //---------------------------------------------------------------
+
+        private object m_Locker;
+
         [SerializeField]
         private System.Threading.ThreadPriority m_BuildPriority;
 
         private Thread m_TMeshBuilder;
-        private object m_Locker;
+
         private EventWaitHandle m_WaitHandle;
 
-        //chunks need to build
-        private Queue<Chunk> m_BuildRequests = new Queue<Chunk>();    
+        //Building requests
+        private Queue<Chunk> m_BuildRequests = new Queue<Chunk>();
 
-        private Chunk m_ChunkCache;
+        //Task Count Listeners
+        private List<Action<int>> m_TCountListeners = new List<Action<int>>();
 
         private bool IsThreadInvoked = false;
+
+        //Cache
+        private Chunk m_ChunkCache;
+
+        //---------------------------------------------------------------
+
+        public int RemainedTask{ get { return m_BuildRequests.Count; } }
 
         private void Awake()
         {
@@ -37,9 +60,25 @@ namespace Assets.Scripts.NWorld
             m_WaitHandle.Set();
         }
 
-        private void Start()
+        public void AddListener(Action<int> action)
         {
-            m_TMeshBuilder.Start();
+            m_TCountListeners.Add(action);
+        }
+
+        public void NotifyListeners()
+        {
+            foreach (var listener in m_TCountListeners)
+            {
+                listener(m_BuildRequests.Count);
+            }
+        }
+
+        public void StartBuildingThread()
+        {
+            if (m_TMeshBuilder.ThreadState == ThreadState.Unstarted)
+            {
+                m_TMeshBuilder.Start();
+            }
         }
 
 
@@ -64,7 +103,7 @@ namespace Assets.Scripts.NWorld
             }
         }
 
-        public void RequestBuildChunk(Chunk _chunk)
+        public void AddRequest(Chunk _chunk)
         {           
             lock (m_Locker)
             {
@@ -86,6 +125,8 @@ namespace Assets.Scripts.NWorld
                         m_ChunkCache = m_BuildRequests.Dequeue();
                     }
                     m_ChunkCache.BuildMesh();
+
+                    NotifyListeners();
                 }
                 else
                 {
@@ -106,7 +147,7 @@ namespace Assets.Scripts.NWorld
         private void OnDestroy()
         {
             m_TMeshBuilder.Abort();
-            Debug.Log("Mesh Building Thread aborted");
+            Debug.Log("Mesh Building Thread has aborted");
         }
     }
 }

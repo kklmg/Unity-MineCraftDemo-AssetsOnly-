@@ -7,9 +7,14 @@ namespace Assets.Scripts.NInput
     {
         float Horizontal();
         float Vertical();
-        
-        bool Fire();
+
+        float Move_Y();
+
         bool Jump();
+        bool Fire();
+       
+
+
         bool Sprint();
         bool Back();
 

@@ -44,7 +44,7 @@ namespace Assets.Scripts.NWorld
         {
             foreach (var Change in m_Changes)
             {
-                section.SetBlock(new BlockInSection(Change.Slot, world), Change.Value, false);
+                section.Voxel.SetBlock(new BlockInSection(Change.Slot, world), Change.Value, false);
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 using Assets.Scripts.NGlobal.ServiceLocator;
-using Assets.Scripts.NTouch;
+using Assets.Scripts.NUI;
 using Assets.Scripts.NInput;
 
 namespace Assets.Scripts.NGameSystem
@@ -51,7 +51,7 @@ namespace Assets.Scripts.NGameSystem
             if (Locator<IController>.GetService() == null)
                 Locator<IController>.ProvideService(new Control_PC());
 
-            Debug.Log(Locator<IController>.GetService());
+            //Debug.Log(Locator<IController>.GetService());
 
             return true;
         }

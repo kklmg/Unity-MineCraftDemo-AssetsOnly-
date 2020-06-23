@@ -3,57 +3,133 @@
 using UnityEngine;
 
 using Assets.Scripts.NNoise;
+using Assets.Scripts.NGameSystem;
+using Assets.Scripts.NGlobal.Singleton;
 
 namespace Assets.Scripts.NWorld
 {
+    [System.Serializable]
+    public struct HeightUnit
+    {
+        public LayerData Layer;
+        public int Height;
+
+        public HeightUnit(int height,LayerData layer)
+        {
+            Height = height;
+            Layer = layer;
+        }
+    }
+
+
     [Serializable]
     public class ChunkHeightMap
     {
-        int[,] m_MapData;       //Height map data
+        HeightUnit[,] m_MapData;       //Height map data
 
-        public int MinHeight { private set; get; }
-        public int MaxHeight { private set; get; }
+        public Vector2Int ChunkInWorld { private set; get; }
+        public Vector2Int PivotLB { private set; get; }
+        public int Width { private set; get; }
+        public int Depth { private set; get; }
+        public int MinAltitude { private set; get; }
+        public int MaxAltitude { private set; get; }
 
         //Indexer
-        public int this[int i, int j]
+        public HeightUnit this[int i, int j]
         {
             get
             {
                 return m_MapData[i, j];
             }
+            set
+            {
+                m_MapData[i, j] = value;
+                UpdateMaxMinAltitude(m_MapData[i, j].Height);
+            }
+        }
+
+        public void SetHeight(int i, int j, int height)
+        {
+            m_MapData[i, j].Height = height;
+            UpdateMaxMinAltitude(height);
+        }
+
+        public void SetLayer(int i, int j, LayerData Layer)
+        {
+            m_MapData[i, j].Layer = Layer;
         }
 
         //Constructor
-        public ChunkHeightMap(IWorld world)
+        public ChunkHeightMap(int _Width, int _Depth, Vector2Int _ChunkInWorld)
         {
-            m_MapData = new int[world.Section_Width, world.Section_Depth];
-        }     
+            Width = _Width;
+            Depth = _Depth;
+            ChunkInWorld = _ChunkInWorld;
+            PivotLB = new Vector2Int(_ChunkInWorld.x * _Width, _ChunkInWorld.y * _Depth);
 
-        public void Generate(Vector2Int coord,Biome biome,IWorld world)
+            m_MapData = new HeightUnit[Width, Depth];
+        }
+
+        public ChunkHeightMap(int _Width, int _Depth)
         {
-            MaxHeight = int.MinValue;
-            MinHeight = int.MaxValue;
+            Width = _Width;
+            Depth = _Depth;
 
-            INoiseMaker noiseMaker = world.NoiseMaker;
+            m_MapData = new HeightUnit[Width, Depth];
+        }
 
-            ushort i, j;
-            for (i = 0; i < world.Section_Width; ++i)
+        public ChunkHeightMap(ChunkHeightMap Other)
+        {
+            Width = Other.Width;
+            Depth = Other.Depth;
+            ChunkInWorld = Other.ChunkInWorld;
+            PivotLB = new Vector2Int(ChunkInWorld.x * Width, ChunkInWorld.y * Depth);
+
+            m_MapData = new HeightUnit[Width, Depth];
+
+
+            //Save Max and Min Altitude of This Chunk
+            MaxAltitude = Other.MaxAltitude;
+            MinAltitude = Other.MinAltitude;
+
+            int i, j;
+            for (i = 0; i < Width; ++i)
             {
-                for (j = 0; j < world.Section_Depth; ++j)
+                for (j = 0; j < Depth; ++j)
                 {
-                    //Generate HeightMap use noise Maker
-                    m_MapData[i, j] =
-                        (int)noiseMaker.MakeOctave_2D
-                        (new Vector2(i + coord.x + biome.Offset, j + coord.y + biome.Offset)   //coord
-                        , biome.Frequency    //Frequecy
-                        , biome.Amplitude - biome.GroundHeight,6) + biome.GroundHeight;    //Height
-
-
-                    //Save Max and Min Height of This Chunk
-                    MaxHeight = Math.Max(MaxHeight, m_MapData[i, j]);
-                    MinHeight = Math.Min(MinHeight, m_MapData[i, j]);
+                    m_MapData[i, j] = Other[i, j];
                 }
             }
         }
+
+        private void UpdateMaxMinAltitude(int altitude)
+        {
+            //Save Max and Min Altitude of This Chunk
+            MaxAltitude = Math.Max(MaxAltitude, altitude);
+            MinAltitude = Math.Min(MinAltitude, altitude);
+        }
+
+        public void GenerateNormal(Biome _Biome, INoiseMaker _NoiseMaker, int octave)
+        {
+            int i, j;
+            for (i = 0; i < Width; ++i)
+            {
+                for (j = 0; j < Depth; ++j)
+                {
+                    //Calculate Height 
+                    m_MapData[i, j].Height = _Biome.GetHeight(new Vector2Int(i + PivotLB.x, j + PivotLB.y), _NoiseMaker, octave);    //Height
+
+                    //Assign layer Data
+                    m_MapData[i, j].Layer = _Biome.Layer;
+
+                    Debug.Assert(m_MapData[i, j].Layer != null);
+
+                    //Save Max and Min Altitude of This Chunk
+                    MaxAltitude = Math.Max(MaxAltitude, m_MapData[i, j].Height);
+                    MinAltitude = Math.Min(MinAltitude, m_MapData[i, j].Height);
+                }
+            }
+        }
+
     }
 }

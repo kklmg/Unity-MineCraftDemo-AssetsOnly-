@@ -29,13 +29,13 @@ namespace Assets.Scripts.NNoise
 
         public HashMakerBase(string str)
         {
-            BIT_NOISE1 = 5381;
+            BIT_NOISE1 = 7;
             BIT_NOISE2 = 0xcf87c3e6;
             BIT_NOISE3 = 0x7a39ccf3;
 
             foreach (var c in str)
             {
-                BIT_NOISE1 = ((BIT_NOISE1 << 5) + BIT_NOISE1) + c;
+                BIT_NOISE1 = BIT_NOISE1*31 + c;
             }
         }
 

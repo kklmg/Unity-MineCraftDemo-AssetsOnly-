@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Assets.Scripts.NWorld;
+using Assets.Scripts.NNoise;
 
 
 [Serializable]
@@ -59,25 +60,23 @@ public class LayerData
 }
 
 
-
-
 [CreateAssetMenu(menuName ="Biome")]
 public class Biome : ScriptableObject
 {
     [SerializeField]
-    public LayerData m_LayerData;
+    private LayerData m_LayerData;
 
     [SerializeField]
-    public int GroundHeight;
+    private float m_Offset;
 
     [SerializeField]
-    public float Offset;
+    private float m_Frequency;
 
     [SerializeField]
-    public float Frequency;
+    private int m_LowestAltitude;
 
     [SerializeField]
-    public float Amplitude;
+    private float m_HighestAltitude;
     
     public LayerData Layer { get { return m_LayerData; } }
 
@@ -85,4 +84,30 @@ public class Biome : ScriptableObject
     {
         m_LayerData.Init();
     }
+
+    public int GetHeight(Vector2Int vector2Int,INoiseMaker noiseMaker,int octave)
+    {
+        return (int)noiseMaker.MakeOctave_2D(vector2Int/*coord*/, m_Frequency
+                , m_HighestAltitude - m_LowestAltitude, octave) + m_LowestAltitude;    //Height
+    }
 }
+
+[System.Serializable]
+public struct BiomeProportion
+{
+    [Range(0.0f,1.0f)]
+    public float m_Min;
+    [Range(0.0f, 1.0f)]
+    public float m_Max;
+
+    public Biome m_Biome;
+
+    public BiomeProportion(float _min,float _max,Biome _biome)
+    {
+        m_Min = _min;
+        m_Max = _max;
+        m_Biome = _biome;
+    }
+}
+
+

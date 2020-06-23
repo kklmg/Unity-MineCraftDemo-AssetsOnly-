@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1030289025402896720}
   - component: {fileID: 191212670518527710}
   - component: {fileID: 8507781762345714923}
-  - component: {fileID: 4448756048340548732}
   - component: {fileID: 2378653085317049491}
   - component: {fileID: 9179987432422314294}
   m_Layer: 0
@@ -49,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Prefab_Chunk: {fileID: 8934294959748640073, guid: 20bdbd2b2fe6534429e234d55d7765f1,
     type: 3}
+  m_CacheSize: 20
 --- !u!114 &8507781762345714923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,20 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e89c7c6fc724a3439ac0c5311cb8c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4448756048340548732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6053392720309429976}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aa58a0dda92e134e884a1da4d8c83a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ChunkReplaced: []
-  m_ViewArea:
+  m_CoverArea:
     left: 0
     right: 0
     top: 0

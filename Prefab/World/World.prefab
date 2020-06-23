@@ -48,8 +48,13 @@ MonoBehaviour:
   m_Section_Height: 16
   m_Section_Depth: 16
   m_Chunk_Height: 16
-  m_Bimoes:
-  - {fileID: 11400000, guid: a1c3625b8d76d8646953d3de32b3dde1, type: 2}
+  m_Biomes:
+  - m_Min: 0
+    m_Max: 0.5
+    m_Biome: {fileID: 11400000, guid: a1c3625b8d76d8646953d3de32b3dde1, type: 2}
+  - m_Min: 0.5
+    m_Max: 1
+    m_Biome: {fileID: 11400000, guid: 5065de8dc983d9f4fb110fa0af56f08a, type: 2}
   m_BlockPalette: {fileID: 11400000, guid: 3959564630b592b419d08ff8e0615517, type: 2}
   m_TextureSheet: {fileID: 11400000, guid: eeb3dd502a7c11a4789db0872810ce75, type: 2}
 --- !u!1001 &8798113988720707787

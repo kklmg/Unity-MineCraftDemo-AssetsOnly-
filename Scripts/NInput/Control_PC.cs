@@ -12,6 +12,12 @@ namespace Assets.Scripts.NInput
         {
             return Input.GetAxis(KEY_INPUT.VERTICAL);
         }
+        public float Move_Y()
+        {
+
+            return Input.GetAxis(KEY_INPUT.MOVE_Y);
+        }
+
 
         public bool Fire()
         {

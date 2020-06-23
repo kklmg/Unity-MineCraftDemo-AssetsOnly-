@@ -302,6 +302,7 @@ namespace Assets.Scripts.NData
             m_Bound = new Bounds();
             m_Bound.SetMinMax(m_Value, m_Value + Vector3Int.one);
         }
+
         public BlockInWorld(SectionInWorld SecInWorld, BlockInSection blockInSec, IWorld _World)
         {
             m_Value = new Vector3Int(
@@ -374,12 +375,12 @@ namespace Assets.Scripts.NData
 
         public Chunk CurChunk { get { return m_Chunk; } }
         public Section CurSection { get { return m_Section; } }
-        public IBlock CurBlockRef
+        public IBlock CurBlock
         {
             get
             {
                 if (m_Section == null) return null;
-                else return m_Section.GetBlock(m_BlkInSection);
+                else return m_Section.Voxel.GetBlock(m_BlkInSection);
             }
         }
         public byte CurBlockID
@@ -387,7 +388,7 @@ namespace Assets.Scripts.NData
             get
             {
                 if (m_Section == null) return 0;
-                return m_Section.GetBlockID(m_BlkInSection);
+                return m_Section.Voxel.GetBlockID(m_BlkInSection);
             }
             set
             {
@@ -402,7 +403,7 @@ namespace Assets.Scripts.NData
                 }
                 else
                 {
-                    m_Section.SetBlock(m_BlkInSection, value);
+                    m_Section.Voxel.SetBlock(m_BlkInSection, value);
                 }
             }
         }
@@ -431,7 +432,7 @@ namespace Assets.Scripts.NData
             if (m_Section == null) { m_Block = null; ; return; }
 
             //Get Block
-            m_Block = m_Section.GetBlock(m_BlkInSection);
+            m_Block = m_Section.Voxel.GetBlock(m_BlkInSection);
         }
         public BlockLocation(SectionInWorld SecInWorld,BlockInSection BlkInSec, IWorld _World)
         {
@@ -453,7 +454,7 @@ namespace Assets.Scripts.NData
             if (m_Section == null) { m_Block = null; ; return; }
 
             //Get Block
-            m_Block = m_Section.GetBlock(m_BlkInSection);
+            m_Block = m_Section.Voxel.GetBlock(m_BlkInSection);
         }
 
 
@@ -477,7 +478,7 @@ namespace Assets.Scripts.NData
             if (m_Section == null) { m_Block = null; ; return; }
 
             //Get Block
-            m_Block = m_Section.GetBlock(m_BlkInSection);
+            m_Block = m_Section.Voxel.GetBlock(m_BlkInSection);
         }
 
         public BlockLocation Offset_Blk(Vector3Int offset,IWorld _world)
@@ -516,5 +517,10 @@ namespace Assets.Scripts.NData
         {
             return m_Block != null;
         }
+        public bool HasObstacle()
+        {
+            return m_Block != null && m_Block.IsObstacle == true;
+        }
+
     }
 }

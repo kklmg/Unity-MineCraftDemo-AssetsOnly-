@@ -1,110 +1,123 @@
 ﻿using System.Collections.Generic;
 
+using UnityEngine;
+
 namespace Assets.Scripts.NCache
 {
-    class LRUCache<TKEY,TVALUE>
+    class LRUCache<TKEY,TVALUE> 
     {
         //Field
         //-----------------------------------------------------------------
         private uint m_Capacity;    //Cache Capicity
 
-        Dictionary<TKEY, TVALUE> m_Cache;   
-        Dictionary<TKEY, LinkedListNode<TKEY>> m_LRU_POS;
-        LinkedList<TKEY> m_LRU;
+        Dictionary<TKEY, TVALUE> m_DataDic; 
+        
+        Dictionary<TKEY, LinkedListNode<TKEY>> m_LRUDic;
+        LinkedList<TKEY> m_LRULinkList;
 
         //Constructor
         //-----------------------------------------------------------------
         public LRUCache(uint capacity)
         {
-            m_Cache = new Dictionary<TKEY, TVALUE>();
-            m_LRU_POS = new Dictionary<TKEY, LinkedListNode<TKEY>>();
-            m_LRU = new LinkedList<TKEY>();
+            m_DataDic = new Dictionary<TKEY, TVALUE>();
+            m_LRUDic = new Dictionary<TKEY, LinkedListNode<TKEY>>();
+            m_LRULinkList = new LinkedList<TKEY>();
 
             m_Capacity = capacity;
         }
 
 
-        //Puvblic Function
+        //Public Function
         //-----------------------------------------------------------------
         public bool TryGetValue(TKEY key,out TVALUE Value)
         {
             //int Value;
-            if (m_Cache.TryGetValue(key, out Value))
+            if (m_DataDic.TryGetValue(key, out Value))
             {
-                _UpdateLRU(key);
-                Value = m_Cache[key];
+                //update Least recent used 
+                _UpdateLRUState(key);
+
+                //get Data
+                Value = m_DataDic[key];
 
                 return true;
             }
             return false;
         }
 
-
-        public TVALUE Pop_LRU()
+        public bool TryRemove(TKEY key, out TVALUE Value)
         {
-            TVALUE Temp = m_Cache[m_LRU.Last.Value];
-            _Evict();
-            return Temp;
+            if (m_DataDic.TryGetValue(key, out Value))
+            {
+                m_LRULinkList.Remove(m_LRUDic[key]);
+                m_LRUDic.Remove(key);
+                m_DataDic.Remove(key);
+
+                return true;
+            }
+            else return false;
+        }
+
+        public TVALUE Pop()
+        {
+            TVALUE temp = m_DataDic[m_LRULinkList.Last.Value];
+
+            //remove mapping data
+            m_LRUDic.Remove(m_LRULinkList.Last.Value);
+
+            //remove data
+            m_DataDic.Remove(m_LRULinkList.Last.Value);
+
+            //remove lru order data
+            m_LRULinkList.RemoveLast();
+
+            return temp;
         }
 
         //Get least rencently used data
         public TVALUE GetLRUData()
         {
-            TKEY TempKey = m_LRU.Last.Value;
-            _UpdateLRU(m_LRU.Last.Value);
-            return m_Cache[TempKey];
+            TKEY TempKey = m_LRULinkList.Last.Value;
+            _UpdateLRUState(m_LRULinkList.Last.Value);
+            return m_DataDic[TempKey];
         }
 
         //try to put data to cache. if no enough space remove LRU(least rencently used) Data
-        public void Put(TKEY key, TVALUE value)
+        public TVALUE Put(TKEY key, TVALUE value)
         {
-            if (m_Cache.Count == m_Capacity && m_Cache.TryGetValue(key, out TVALUE Value))
+            TVALUE removedData = default;
+
+            //space if full and the key is not exist
+            if (m_DataDic.Count == m_Capacity && !m_DataDic.TryGetValue(key, out TVALUE Value))
             {
-                _Evict();
+                removedData = Pop();
             }
-            _UpdateLRU(key);
-            m_Cache[key] = value;
-        }
+            _UpdateLRUState(key);
+            m_DataDic[key] = value;
 
-        public bool TryPut(TKEY key, TVALUE value)
-        {
-            if (m_Cache.Count == m_Capacity)
-                return false;
-
-            _UpdateLRU(key);
-            m_Cache[key] = value;
-
-            return true;
+            return removedData;
         }
 
 
         public bool IsFull()
         {
-            return m_Cache.Count == m_Capacity;
+            return m_DataDic.Count == m_Capacity;
         }
 
         //Private Function
         //-----------------------------------------------------------------
 
-        private void _UpdateLRU(TKEY key)
+        private void _UpdateLRUState(TKEY key)
         {
-            if (m_Cache.TryGetValue(key, out TVALUE Value))
+            if (m_DataDic.TryGetValue(key, out TVALUE Value))
             {
-                m_LRU.Remove(m_LRU_POS[key]);
+                m_LRULinkList.Remove(m_LRUDic[key]);
             }
             //Move Current Value to first of lru list
-            m_LRU.AddFirst(key);
+            m_LRULinkList.AddFirst(key);
 
             //Save key Position
-            m_LRU_POS[key] = m_LRU.First;
+            m_LRUDic[key] = m_LRULinkList.First;
         }
-
-        private void _Evict()
-        {
-            m_LRU_POS.Remove(m_LRU.Last.Value);
-            m_Cache.Remove(m_LRU.Last.Value);
-            m_LRU.RemoveLast();
-        }
-
     };
 }

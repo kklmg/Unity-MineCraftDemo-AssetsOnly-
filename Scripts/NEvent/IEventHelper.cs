@@ -8,11 +8,12 @@ namespace Assets.Scripts.NEvent
 {
     public interface IEventHelper
     {
-        void Subscribe(Guid EventID, Del_HandleEvent handler,byte HandlePriority);
+        void Subscribe(Guid EventID, Del_HandleEvent handler,enPriority HandlePriority= enPriority.Default);
         void UnSubscribe(Guid EventID, Del_HandleEvent handler);
 
         void Publish(IEvent _event);
+
         //publish the event and handle this immediately
-        void PublishAndHandle(IEvent _event);
+        void Handle(IEvent _event);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using Assets.Scripts.NCache;
+
 
 namespace Assets.Scripts.NNoise
 {
@@ -126,15 +128,15 @@ namespace Assets.Scripts.NNoise
             m_lerpAbove = _FadeLerp(m_Weight_LT, m_Weight_RT, offset.x);
 
             m_lerpBottom = _FadeLerp(m_Weight_LB, m_Weight_RB, offset.x);
-
+            
 
             return GetPositiveRes == true ?  
                 (_FadeLerp(m_lerpBottom, m_lerpAbove, offset.y)+1)/2.0f  //result Range: (0,1)
                 :_FadeLerp(m_lerpBottom, m_lerpAbove, offset.y);         //result Range: (-1,1)
 
-            
+
         }
-        public float Make_2D(Vector2 point, float frequency, float amplitude, bool GetPositiveRes = true)
+        public float Make_2D(Vector2 point, float frequency, float amplitude = 1.0f, bool GetPositiveRes = true)
         {
             return Make_2D(new Vector2(point.x * frequency, point.y * frequency), GetPositiveRes) * amplitude;
         }

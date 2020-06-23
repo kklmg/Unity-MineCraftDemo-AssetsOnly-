@@ -9,7 +9,7 @@ namespace Assets.Scripts.NEvent
     public interface IEventCenter
     {
         void AddEvent(IEvent _event);
-        void SubScribe(Guid ID, Del_HandleEvent EventHandler, byte HandlePriority);
+        void SubScribe(Guid ID, Del_HandleEvent EventHandler, enPriority HandlePriority);
         void UnSubScribe(Guid ID, Del_HandleEvent EventHandler);
         void Handle(IEvent _event);
         void HandleAll();

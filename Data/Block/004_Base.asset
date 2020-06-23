@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 004_Base
   m_EditorClassIdentifier: 
   m_ID: 4
-  m_Icon: {fileID: -4738682275269105297, guid: eec24019192c8ee48b5bc86962585e78, type: 3}
+  m_Icon: {fileID: 8165611752615474250, guid: eec24019192c8ee48b5bc86962585e78, type: 3}
   m_IsOpaque: 1
   m_IsObstacle: 1
   m_UpTile:

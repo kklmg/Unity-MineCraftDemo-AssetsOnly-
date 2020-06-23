@@ -39,11 +39,11 @@ namespace Assets.Scripts.NWorld
         {
             m_refWorld = Locator<IWorld>.GetService();
 
-            Locator<IEventHelper>.GetService().Subscribe(E_Block_Modify.ID, Handle_BlockModify, 0);
-            Locator<IEventHelper>.GetService().Subscribe(E_Block_Recover.ID, Handle_BlockRecover, 0);
+            Locator<IEventHelper>.GetService().Subscribe(E_Block_Modify.ID, Handle_BlockModify, enPriority.Highest);
+            Locator<IEventHelper>.GetService().Subscribe(E_Block_Recover.ID, Handle_BlockRecover, enPriority.Highest);
         }
 
-        public bool Handle_BlockModify(IEvent _event)
+        public void Handle_BlockModify(IEvent _event)
         {
             E_Block_Modify temp = (_event as E_Block_Modify);
 
@@ -61,10 +61,9 @@ namespace Assets.Scripts.NWorld
             {
                 m_BlockModified.RemoveFirst();
             }
-            return true;
         }
 
-        public bool Handle_BlockRecover(IEvent _event)
+        public void Handle_BlockRecover(IEvent _event)
         {
             if (m_BlockModified.Count > 0)
             {
@@ -75,11 +74,8 @@ namespace Assets.Scripts.NWorld
                 m_SaveMng.SaveBlock(m_BlockModified.Last.Value.Location, m_BlockModified.Last.Value.PreID);
 
                 m_BlockModified.RemoveLast();
-                
-                return true;
-            }
 
-            else return false;
+            }
         }
     }
 

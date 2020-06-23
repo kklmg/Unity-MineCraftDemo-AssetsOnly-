@@ -22,6 +22,12 @@ namespace Assets.Scripts.NData
         {
             WorldName = _WorldName;
             WorldSeed = _WorldSeed;
+
+            int hash = WorldSeed.GetHashCode();
+
+            PlayerPos.x = hash >> 22;
+            PlayerPos.z = hash >> 27;
+
             LastPlayed.Assign(System.DateTime.Now);
             WorldModfication = new WorldChange();
         }

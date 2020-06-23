@@ -16,7 +16,7 @@ namespace Assets.Scripts.NGameSystem
         public GameObject m_PrefabPlayer;
 
         [SerializeField]
-        [Range(1, 5)]
+        [Range(0, 5)]
         private int m_ViewDistance = 2;
 
         [SerializeField]
@@ -35,20 +35,6 @@ namespace Assets.Scripts.NGameSystem
         public int Speed { get { return m_Speed; }set { m_Speed = value; } }
         public float JumpForce { get { return m_JumpForce; } set { m_JumpForce = value; } }
 
-        public ChaBevData BevData
-        {
-            get
-            {
-                return m_playerIns.GetComponent<ChaBevExecuter>().BevData;
-            }
-        }
-        public ChaPlayer PlayerScript
-        {
-            get
-            {
-                return m_playerIns.GetComponent<ChaPlayer>();
-            }
-        }
 
         public void ApplySettings(GameSetting setting)
         {
@@ -65,7 +51,7 @@ namespace Assets.Scripts.NGameSystem
             IWorld world = Locator<IWorld>.GetService();
 
             if (!Mng.IsFirstCreated)
-            {
+            {                
                 Mng.PlayerAltitude = GWorldSearcher.GetGroundHeight(Mng.PlayerPos, world) + 3;
                 Mng.IsFirstCreated = true;
             }

@@ -42,7 +42,7 @@ namespace Assets.Scripts.NEditor
 
         private void OnDisable()
         {
-            EditorUtility.SetDirty(target);
+            //EditorUtility.SetDirty(target);
         }
 
     }

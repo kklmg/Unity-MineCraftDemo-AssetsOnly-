@@ -21,18 +21,12 @@ namespace Assets.Scripts.NCharacter
         private SaveMng m_SaveMng;
         private Character m_Character;
 
-
-        [SerializeField]
-        private Transform m_Eye;
-
         //Player Location
         private BlockLocation m_CurLoc;
         private Vector2Int m_PreChunkLoc;
         private Vector3Int m_PreSecLoc;
 
-        public Transform TransformEye { get { return m_Eye; } }
-
-
+        //caches
         private E_Player_LeaveChunk m_Cache_EChunkChange;
 
         private void Awake()
@@ -80,7 +74,6 @@ namespace Assets.Scripts.NCharacter
         {
             return m_Character.GlobalBodyBound.Intersects(target);
         }
-        
 
         void OnGUI()
         {

@@ -48,6 +48,7 @@ namespace Assets.Scripts.NWorld
 
 
         //function-----------------------------------------------------
+
         public void SetMaxRow(int row)
         {
             m_nMaxRow = row;

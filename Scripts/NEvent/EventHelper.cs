@@ -12,7 +12,7 @@ namespace Assets.Scripts.NEvent
             m_EventCenter = EventCenter;
         }
 
-        public void Subscribe(Guid EventID, Del_HandleEvent handler, byte HandlePriority)
+        public void Subscribe(Guid EventID, Del_HandleEvent handler, enPriority HandlePriority)
         {
             m_EventCenter.SubScribe(EventID, handler,HandlePriority);
         }
@@ -27,7 +27,7 @@ namespace Assets.Scripts.NEvent
             m_EventCenter.AddEvent(_event);
         }
 
-        public void PublishAndHandle(IEvent _event)
+        public void Handle(IEvent _event)
         {
             m_EventCenter.Handle(_event);
         }

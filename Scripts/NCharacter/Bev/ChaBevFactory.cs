@@ -35,11 +35,20 @@ namespace Assets.Scripts.NCharacter
         public BevNodeBase ChaAct_Base()
         {
             BevParallel parall = new BevParallel();
-           
-            parall.AddChild(new BevRepeator(new ChaBev_HandleJump()));
+            BevSelector Selector_Y = new BevSelector();
+
+            //x y translation
             parall.AddChild(this.ChaMoving_Control());
+
+            //Action in Y axis
+            Selector_Y.AddChild(new ChaBev_HandleJump());
+            Selector_Y.AddChild(new ChaBev_HandleFlying());
+            Selector_Y.AddChild(new ChaBev_HandleSuspending());
+
+            parall.AddChild(new BevRepeator(Selector_Y));
+
+            //Rotation
             parall.AddChild(this.ChaRotation_Control());
-            //parall.AddChild(this.Camera_Control());
 
             return parall;
         }

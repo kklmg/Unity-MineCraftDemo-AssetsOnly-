@@ -56,29 +56,16 @@ namespace Assets.Scripts.NCharacter
         {
             ChaBevData thisData = workData as ChaBevData;
 
-            if (thisData.Request_Translation.TryHandle(out Vector3 reqTrans))
+            Vector3 translationRequest;
+
+            if (thisData.Request_Translation.TryHandle(out translationRequest))
             {
-                reqTrans = thisData.isWalking ?
-                  reqTrans * thisData.Character.WalkSpeed
-                : reqTrans * thisData.Character.RunSpeed;
-              
-                if (reqTrans.x > 1.0f)
-                {
-                    reqTrans.x = 1.0f;
-                }
-                if (reqTrans.y > 1.0f)
-                {
-                    reqTrans.y = 1.0f;
-                }
-                if (reqTrans.z > 1.0f)
-                {
-                    reqTrans.z = 1.0f;
-                }
-
-                E_Cha_MoveRequest_XZ req = new E_Cha_MoveRequest_XZ(reqTrans);
-
+                translationRequest = thisData.Character.transform.rotation * translationRequest
+                    * (thisData.isWalking ? thisData.Character.WalkSpeed : thisData.Character.RunSpeed)
+                    * Time.deltaTime;
+                              
                 //publih this event to character's components
-                thisData.NotifyOtherComponents(new E_Cha_MoveRequest_XZ(reqTrans));
+                thisData.NotifyOtherComponents(new E_Cha_TranslateRequest_XZ(translationRequest));
 
                 m_enRunningState = eRunningState.Suceed;
                 return m_enRunningState;
@@ -98,7 +85,7 @@ namespace Assets.Scripts.NCharacter
         protected override eRunningState Tick(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
-        
+
             if (thisData.Request_Yaw.TryHandle(out float reqYaw))
             {
                 //publih this event to character's components
@@ -115,23 +102,81 @@ namespace Assets.Scripts.NCharacter
         }
     }
 
-    public class ChaBev_HandleJump : BevConditionBase
+    public class ChaBev_HandleJump : BevLeaf
     {
-        public override bool Check(BevData workData)
+        protected override eRunningState Tick(BevData workData)
         {
             ChaBevData thisData = workData as ChaBevData;
 
             //Check Jump Request 
-            if (thisData.Request_Jump.TryHandle(out bool isJump) && !thisData.isInAir)
+            if (thisData.Character.MovingType == enMovingType.Walking)
             {
-                thisData.isInAir = true;
-                
-                thisData.NotifyOtherComponents(new E_Cha_StartJump(thisData.Character.JumpForce));
-                return true;
+                if (thisData.Request_Jump.TryHandle(out bool isJump) && !thisData.isInAir)
+                {
+                    thisData.isInAir = true;
+
+                    thisData.NotifyOtherComponents(new E_Cha_JumpUp(thisData.Character.JumpForce));                 
+                }
+                m_enRunningState = eRunningState.Suceed;
+                return eRunningState.Suceed;
             }
             else
             {
-                return false;
+                m_enRunningState = eRunningState.Failed;
+                return eRunningState.Failed;
+            }
+        }
+
+    }
+
+    public class ChaBev_HandleFlying : BevLeaf
+    {
+        protected override eRunningState Tick(BevData workData)
+        {
+            ChaBevData thisData = workData as ChaBevData;
+
+            //Check Jump Request 
+            if (thisData.Character.MovingType == enMovingType.Sliding)
+            {
+                if (thisData.Request_Slide.TryHandle(out var _value))
+                {
+                    thisData.isInAir = true;
+
+                    thisData.NotifyOtherComponents(new E_Cha_Fly(_value.Key,_value.Value));
+                }
+                m_enRunningState = eRunningState.Suceed;
+                return eRunningState.Suceed;
+            }
+            else
+            {
+                m_enRunningState = eRunningState.Failed;
+                return eRunningState.Failed;
+            }
+        }
+    }
+
+    public class ChaBev_HandleSuspending : BevLeaf
+    {
+        protected override eRunningState Tick(BevData workData)
+        {
+            ChaBevData thisData = workData as ChaBevData;
+
+            //Check Jump Request 
+            if (thisData.Character.MovingType == enMovingType.suspending)
+            {
+                if (thisData.Request_UpDown.TryHandle(out float _value))
+                {
+                    thisData.isInAir = true;
+
+                    thisData.NotifyOtherComponents(new E_Cha_Suspend(_value));
+                }
+                m_enRunningState = eRunningState.Suceed;
+                return eRunningState.Suceed;
+            }
+            else
+            {
+                m_enRunningState = eRunningState.Failed;
+                return eRunningState.Failed;
             }
         }
     }
@@ -149,7 +194,7 @@ namespace Assets.Scripts.NCharacter
     //        ChaBevData thisData = workData as ChaBevData;
     //        IController control = Locator<IController>.GetService();
 
-            
+
     //        IBlock adj = GWorldSearcher.GetBlock(thisData.Character.transform.position + Vector3.down,m_refWorld);
     //        return !(adj != null && adj.IsObstacle);
     //    }

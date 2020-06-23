@@ -69,7 +69,7 @@ namespace Assets.Scripts.NData
 
         public RangedFloat(float _minValue, float _maxValue,float _defaultValue)
         {
-            Debug.Assert(_defaultValue > _minValue && _defaultValue < _maxValue, "InValid Range");
+            Debug.Assert(_defaultValue >= _minValue && _defaultValue <= _maxValue, "InValid Range");
 
             MinValue = _minValue;
             MaxValue = _maxValue;
