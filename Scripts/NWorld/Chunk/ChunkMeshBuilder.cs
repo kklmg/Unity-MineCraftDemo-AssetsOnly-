@@ -28,7 +28,7 @@ namespace Assets.Scripts.NWorld
         private object m_Locker;
 
         [SerializeField]
-        private System.Threading.ThreadPriority m_BuildPriority;
+        private System.Threading.ThreadPriority m_BuildPriority = System.Threading.ThreadPriority.AboveNormal;
 
         private Thread m_TMeshBuilder;
 

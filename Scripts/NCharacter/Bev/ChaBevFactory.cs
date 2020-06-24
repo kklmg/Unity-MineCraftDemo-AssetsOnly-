@@ -19,6 +19,7 @@ namespace Assets.Scripts.NCharacter
 
             return repeat;
         }
+
         public BevNodeBase ChaRotation_Control()
         { 
             BevSequence seq = new BevSequence();
