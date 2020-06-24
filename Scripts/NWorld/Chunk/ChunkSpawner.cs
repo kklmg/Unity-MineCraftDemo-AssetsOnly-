@@ -45,7 +45,8 @@ namespace Assets.Scripts.NWorld
         }
         private void OnDisable()
         {
-
+            Locator<IEventHelper>.GetService().
+               UnSubscribe(E_Player_LeaveChunk.ID, Handle_PlayerLeaveChunk);
         }
 
 
@@ -90,8 +91,6 @@ namespace Assets.Scripts.NWorld
             //Interpret Event
             E_Player_LeaveChunk LeaveChunk = (_event as E_Player_LeaveChunk);
 
-            
-
             AreaRect TempArea = m_CoverArea;
             TempArea.Move(LeaveChunk.Offset);
 
@@ -135,95 +134,3 @@ namespace Assets.Scripts.NWorld
         }
     }
 }
-
-
-
-////using System;
-////using System.Collections.Generic;
-////using System.Threading;
-
-////using UnityEngine;
-
-////using Assets.Scripts.NData;
-////using Assets.Scripts.NGameSystem;
-////using Assets.Scripts.NEvent;
-////using Assets.Scripts.NGlobal.Singleton;
-////using Assets.Scripts.NGlobal.ServiceLocator;
-
-
-//namespace Assets.Scripts.NWorld
-//{
-//    [RequireComponent(typeof(WorldEntity))]
-//    [RequireComponent(typeof(ChunkMeshBuilder))]
-//    class ChunkReplacer : MonoBehaviour
-//    {
-//        private IWorld m_refWorld;
-//        private WorldEntity m_WorldEntiry;
-//        private SaveMng m_SaveMng;
-//        private PlayerMng m_PlayerMng;
-
-//        private ChunkMeshBuilder m_ChunkMeshBuilder;
-
-//        [SerializeField]
-//        private List<Chunk> m_ChunkReplaced;
-
-//        private List<ChunkInWorld> m_LocNotInView;
-
-//        [SerializeField]
-//        private Dictionary<Vector2Int, Vector2Int> m_Replace;
-
-//        [SerializeField]
-//        private AreaRect m_ViewArea;
-
-//        //Unity Function
-//        //---------------------------------------------------------------------------
-//        private void Awake()
-//        {
-//            m_WorldEntiry = GetComponent<WorldEntity>();
-//            m_PlayerMng = MonoSingleton<GameSystem>.Instance.PlayerMngIns;
-//            m_SaveMng = MonoSingleton<GameSystem>.Instance.SaveMngIns;
-
-//            m_Replace = new Dictionary<Vector2Int, Vector2Int>();
-//            m_ChunkReplaced = new List<Chunk>();
-//            m_LocNotInView = new List<ChunkInWorld>();
-
-//            m_ChunkMeshBuilder = GetComponent<ChunkMeshBuilder>();
-//        }
-
-//        private void Start()
-//        {
-//            m_refWorld = Locator<IWorld>.GetService();
-
-//            Locator<IEventHelper>.GetService().Subscribe(E_Player_LeaveChunk.ID, Handle_PlayerLeaveChunk, enPriority.Highest);
-//            Locator<IEventHelper>.GetService().Subscribe(E_Player_Spawned.ID, Handle_PlayerSpawn, enPriority.Highest);
-//        }
-
-//        //public Function
-//        //--------------------------------------------------------------------------- 
-//        public Chunk Replace(ChunkInWorld Original, ChunkInWorld Place)
-//        {
-//            //Case: The Chunk has already spawned
-//            if (m_WorldEntiry.TryGetChunk(Original, out Chunk TempChunk))
-//            {
-//                m_WorldEntiry.Remove(Original);
-
-//                TempChunk.ClearUnityMesh();
-
-//                //reset chunk
-//                TempChunk.SetLocation(Place);
-
-//                TempChunk.GenerateBlocks();
-
-//                m_SaveMng.LoadBlock(Place, TempChunk);
-
-//                m_ChunkMeshBuilder.AddRequest(TempChunk);
-
-//                m_WorldEntiry.AddChunk(Place, TempChunk);
-
-//                return TempChunk;
-//            }
-//            else return null;
-//        }
-
-
-//}
