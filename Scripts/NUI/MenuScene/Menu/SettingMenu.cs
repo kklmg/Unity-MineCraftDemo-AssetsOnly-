@@ -15,13 +15,17 @@ namespace Assets.Scripts.NUI.Menu
         public Button SaveButton;
         public Button DefaultButton;
 
+        public Dropdown ScreenModeOptions;
+
         public BasicSlider ViewSlider;
         public BasicSlider RotateSensSlider;
         public BasicSlider JumpForceSlider;
         public BasicSlider PlayerSpeedSlider;
         public BasicSlider PickingDisSlider;
 
-        public GameSetting m_GameSetting;
+       
+
+        private  GameSetting m_GameSetting;
 
         protected override void Init()
         {
@@ -37,6 +41,14 @@ namespace Assets.Scripts.NUI.Menu
             SaveButton.onClick.AddListener(HandleSave);
             ResetButton.onClick.AddListener(HandleReset);
             DefaultButton.onClick.AddListener(HandleResetToDefault);
+
+            //Init Screen Mode Options
+            ScreenModeOptions.options.Add(new Dropdown.OptionData(FullScreenMode.ExclusiveFullScreen.ToString()));
+            ScreenModeOptions.options.Add(new Dropdown.OptionData(FullScreenMode.FullScreenWindow.ToString()));
+            ScreenModeOptions.options.Add(new Dropdown.OptionData(FullScreenMode.MaximizedWindow.ToString()));
+            ScreenModeOptions.options.Add(new Dropdown.OptionData(FullScreenMode.Windowed.ToString()));
+
+            ScreenModeOptions.SetValueWithoutNotify((int)Screen.fullScreenMode);
         }
 
         private void OnEnable()
@@ -63,6 +75,8 @@ namespace Assets.Scripts.NUI.Menu
 
             //save
             MonoSingleton<GameSystem>.Instance.SaveSettings();
+
+            Screen.fullScreenMode = (FullScreenMode)ScreenModeOptions.value;
         }
 
         private void _AssignDataToSlider(GameSetting Setting)
